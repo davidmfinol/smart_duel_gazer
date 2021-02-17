@@ -45,7 +45,7 @@ namespace SocketIO
 		[Header("Socket IO Component")]
 		//Devan Edited: This is where the url was originally set
 		public NetworkInfo networkInfo;
-		private string url;
+
 		public bool autoConnect = false;
 		public int reconnectDelay = 5;
 		public float ackExpirationTime = 30f;
@@ -77,6 +77,8 @@ namespace SocketIO
 		private List<Ack> ackList;
 
 		private int packetId;
+
+		private string url;
 
 		private object eventQueueLock;
 		private Queue<SocketIOEvent> eventQueue;
