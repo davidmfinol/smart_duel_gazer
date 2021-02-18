@@ -2,18 +2,22 @@ using UnityEngine;
 using SocketIO;
 using Project.Extensions;
 using System.Linq;
+using Newtonsoft.Json;
 
-// Followed a tutorial on YouTube by Alex Hicks
+// Followed a tutorial on YouTube by Alex Hicks on using Socket.IO
 // URL: https://www.youtube.com/watch?v=J0udhTJwR88&ab_channel=AlexHicks
 namespace Project.Networking
 {
     public class NetworkClient : SocketIOComponent
     {
+        private static readonly int SummoningAnimatorId = Animator.StringToHash(SUMMONING_TRIGGER_NAME);
+
         private const string RESOURCES_MONSTERS_FOLDER_NAME = "Monsters";
-        private const string SummoningTriggerName = "SummoningTrigger";
+        private const string SUMMONING_TRIGGER_NAME = "SummoningTrigger";
         private const string SUMMON_EVENT_NAME = "summonEvent";
 
-        private static readonly int SummoningAnimatorId = Animator.StringToHash(SummoningTriggerName);
+        private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
+        private const string CONNECTION_INFO_KEY = "connectionInfo";
 
         [SerializeField]
         private GameObject _interaction;
@@ -25,7 +29,6 @@ namespace Project.Networking
             base.Start();
 
             Init();
-            SetupEvents();
         }
 
         public override void Update()
@@ -34,6 +37,34 @@ namespace Project.Networking
         }
 
         private void Init()
+        {
+            ConnectToServer();
+            SetScreenRotationToAuto();
+            LoadCardModels();
+            SetupEvents();
+        }
+
+        private void ConnectToServer()
+        {
+            if (!PlayerPrefs.HasKey(CONNECTION_INFO_KEY))
+            {
+                return;
+            }
+
+            var json = PlayerPrefs.GetString(CONNECTION_INFO_KEY);
+            var connectionInfo = JsonConvert.DeserializeObject<ConnectionInfo>(json);
+
+            url = string.Format(CONNECTION_URL, connectionInfo?.IpAddress, connectionInfo?.Port);
+
+            Connect();
+        }
+
+        private void SetScreenRotationToAuto()
+        {
+            Screen.orientation = ScreenOrientation.AutoRotation;
+        }
+
+        private void LoadCardModels()
         {
             _cardModels = Resources.LoadAll<GameObject>(RESOURCES_MONSTERS_FOLDER_NAME);
         }
