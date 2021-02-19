@@ -3,6 +3,7 @@ using SocketIO;
 using Project.Extensions;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 // Followed a tutorial on YouTube by Alex Hicks on using Socket.IO
 // URL: https://www.youtube.com/watch?v=J0udhTJwR88&ab_channel=AlexHicks
@@ -14,7 +15,9 @@ namespace Project.Networking
 
         private const string RESOURCES_MONSTERS_FOLDER_NAME = "Monsters";
         private const string SUMMONING_TRIGGER_NAME = "SummoningTrigger";
+
         private const string SUMMON_EVENT_NAME = "summonEvent";
+        private const string REMOVE_CARD_EVENT = "removeCardEvent";
 
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
         private const string CONNECTION_INFO_KEY = "connectionInfo";
@@ -23,6 +26,8 @@ namespace Project.Networking
         private GameObject _interaction;
 
         private GameObject[] _cardModels;
+
+        private Dictionary<string, GameObject> _instantiatedModels;
 
         public override void Start()
         {
@@ -38,6 +43,8 @@ namespace Project.Networking
 
         private void Init()
         {
+            _instantiatedModels = new Dictionary<string, GameObject>();
+
             ConnectToServer();
             SetScreenRotationToAuto();
             LoadCardModels();
@@ -71,30 +78,53 @@ namespace Project.Networking
 
         private void SetupEvents()
         {
-            On(SUMMON_EVENT_NAME, (E) =>
+            On(SUMMON_EVENT_NAME, OnSummonEventReceived);
+            On(REMOVE_CARD_EVENT, OnRemovecardEventReceived);
+        }
+
+        private void OnSummonEventReceived(SocketIOEvent e)
+        {
+            var yugiohCardId = e.data["yugiohCardId"].ToString().RemoveQuotes();
+            var zoneName = e.data["zoneName"].ToString().RemoveQuotes();
+
+            var arTapToPlaceObject = _interaction.GetComponent<ARTapToPlaceObject>();
+            var speedDuelField = arTapToPlaceObject.PlacedObject;
+
+            var zone = speedDuelField.transform.Find(zoneName);
+            if (zone == null)
             {
-                string yugiohCardId = E.data["yugiohCardId"].ToString().RemoveQuotes();
-                string zoneName = E.data["zoneName"].ToString().RemoveQuotes();
+                return;
+            }
 
-                var arTapToPlaceObject = _interaction.GetComponent<ARTapToPlaceObject>();
-                var speedDuelField = arTapToPlaceObject.PlacedObject;
-                var zone = speedDuelField.transform.Find(zoneName);
+            var cardModel = _cardModels.SingleOrDefault(cm => cm.name == yugiohCardId);
+            if (cardModel == null)
+            {
+                return;
+            }
 
-                var cardModel = _cardModels.SingleOrDefault(cm => cm.name == yugiohCardId);
+            var instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation);
 
-                if (cardModel != null && zone != null)
-                {
-                    var instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation);
+            var animator = instantiatedModel.GetComponentInChildren<Animator>();
+            if (animator != null)
+            {
+                animator.SetTrigger(SummoningAnimatorId);
+            }
 
-                    var animator = instantiatedModel.GetComponentInChildren<Animator>();
-                    if (animator != null)
-                    {
-                        animator.SetTrigger(SummoningAnimatorId);
-                    }
-                }
+            _instantiatedModels.Add(zoneName, instantiatedModel);
+        }
 
-                Debug.Log($"Card played with ID: {yugiohCardId}");
-            });
+        private void OnRemovecardEventReceived(SocketIOEvent e)
+        {
+            var zoneName = e.data["zoneName"].ToString().RemoveQuotes();
+
+            var modelExists = _instantiatedModels.TryGetValue(zoneName, out var model);
+            if (!modelExists)
+            {
+                return;
+            }
+
+            Destroy(model);
+            _instantiatedModels.Remove(zoneName);
         }
     }
 }
