@@ -1,11 +1,13 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Project.Core.Dialog.Interface;
 using Zenject;
+using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
+using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
+using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 
 namespace Project.Features.Connection
 {
@@ -13,8 +15,6 @@ namespace Project.Features.Connection
     {
         private static readonly Regex IP_ADDRESS_REGEX = new Regex(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$");
         private static readonly Regex PORT_REGEX = new Regex("[0-9]+");
-
-        private const string CONNECTION_INFO_KEY = "connectionInfo";
 
         [SerializeField]
         TMP_InputField IpAddressInputField;
@@ -25,35 +25,32 @@ namespace Project.Features.Connection
         [SerializeField]
         Button ConnectButton;
 
-        //private IDialogService _dialogService;
+        private INavigationService _navigationService;
+        private IDialogService _dialogService;
+        private IDataManager _dataManager;
 
-        //[Inject]
-        //public void Construct(IDialogService dialogService)
-        //{
-        //    _dialogService = dialogService;
-        //}
-
-        private void Start()
+        [Inject]
+        public void Construct(
+            INavigationService navigationService,
+            IDialogService dialogService,
+            IScreenService screenService,
+            IDataManager dataManager)
         {
-            SetScreenRotationToPortrait();
+            _navigationService = navigationService;
+            _dialogService = dialogService;
+            _dataManager = dataManager;
+
+            screenService.UsePortraitOrientation();
             InitFormFields();
-        }
-
-        // TODO: create a service for updating the screen rotation.
-        private void SetScreenRotationToPortrait()
-        {
-            Screen.orientation = ScreenOrientation.Portrait;
         }
 
         private void InitFormFields()
         {
-            if (PlayerPrefs.HasKey(CONNECTION_INFO_KEY))
+            var connectionInfo = _dataManager.GetConnectionInfo();
+            if (connectionInfo != null)
             {
-                var json = PlayerPrefs.GetString(CONNECTION_INFO_KEY);
-                var connectionInfo = JsonConvert.DeserializeObject<ConnectionInfo>(json);
-
-                IpAddressInputField.text = connectionInfo?.IpAddress;
-                PortInputField.text = connectionInfo?.Port;
+                IpAddressInputField.text = connectionInfo.IpAddress;
+                PortInputField.text = connectionInfo.Port;
             }
 
             ConnectButton.onClick.AddListener(OnConnectPressed);
@@ -95,24 +92,21 @@ namespace Project.Features.Connection
 
             if (toastMessage != default)
             {
-                //_dialogService.ShowToast(toastMessage);
+                _dialogService.ShowToast(toastMessage);
             }
 
             return toastMessage == default;
         }
 
-        // TODO: create a storage service.
         private void SaveConnectionInfo()
         {
             var connectionInfo = new ConnectionInfo(IpAddressInputField.text, PortInputField.text);
-            var json = JsonConvert.SerializeObject(connectionInfo);
-            PlayerPrefs.SetString(CONNECTION_INFO_KEY, json);
+            _dataManager.SaveConnectionInfo(connectionInfo);
         }
 
-        // TODO: create a routing service.
         private void ShowMainScene()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            _navigationService.ShowMainScene();
         }
     }
 }

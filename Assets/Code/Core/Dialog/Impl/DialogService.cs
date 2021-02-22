@@ -1,6 +1,6 @@
-﻿using Project.Core.Dialog.Interface;
+﻿using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 
-namespace Project.Core.Dialog.Impl
+namespace AssemblyCSharp.Assets.Code.Core.Dialog.Impl
 {
     public class DialogService : IDialogService
     {

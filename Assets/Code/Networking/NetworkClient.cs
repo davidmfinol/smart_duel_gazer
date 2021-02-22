@@ -1,9 +1,10 @@
 using UnityEngine;
 using SocketIO;
-using Project.Extensions;
-using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using System.Linq;
 
 // Followed a tutorial on YouTube by Alex Hicks on using Socket.IO
 // URL: https://www.youtube.com/watch?v=J0udhTJwR88&ab_channel=AlexHicks

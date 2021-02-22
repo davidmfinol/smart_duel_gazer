@@ -1,4 +1,4 @@
-﻿namespace Project.Core.Dialog.Interface
+﻿namespace AssemblyCSharp.Assets.Code.Core.Dialog.Interface
 {
     public interface IDialogService
     {
