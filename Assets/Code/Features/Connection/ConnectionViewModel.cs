@@ -1,7 +1,4 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using Zenject;
+﻿using Zenject;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
@@ -11,21 +8,15 @@ using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
 
 namespace AssemblyCSharp.Assets.Code.Features.Connection
 {
-    public class ConnectionView : MonoBehaviour
+    public class ConnectionViewModel
     {
-        [SerializeField]
-        private TMP_InputField IpAddressInputField;
-
-        [SerializeField]
-        private TMP_InputField PortInputField;
-
-        [SerializeField]
-        private Button ConnectButton;
-
         private ConnectionFormValidators _connectionFormValidators;
         private INavigationService _navigationService;
         private IDialogService _dialogService;
         private IDataManager _dataManager;
+
+        public string IpAddress { get; set; }
+        public string Port { get; set; }
 
         [Inject]
         public void Construct(
@@ -49,11 +40,9 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             var connectionInfo = _dataManager.GetConnectionInfo();
             if (connectionInfo != null)
             {
-                IpAddressInputField.text = connectionInfo.IpAddress;
-                PortInputField.text = connectionInfo.Port;
+                IpAddress = connectionInfo.IpAddress;
+                Port = connectionInfo.Port;
             }
-
-            ConnectButton.onClick.AddListener(OnConnectPressed);
         }
 
         private void OnConnectPressed()
@@ -72,19 +61,19 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
         {
             string toastMessage = default;
 
-            if (string.IsNullOrEmpty(IpAddressInputField.text))
+            if (string.IsNullOrEmpty(IpAddress))
             {
                 toastMessage = "IP address is required.";
             }
-            else if (string.IsNullOrEmpty(PortInputField.text))
+            else if (string.IsNullOrEmpty(Port))
             {
                 toastMessage = "Port is required.";
             }
-            else if (!_connectionFormValidators.IsValidIpAddress(IpAddressInputField.text))
+            else if (!_connectionFormValidators.IsValidIpAddress(IpAddress))
             {
                 toastMessage = "Not a valid IP address.";
             }
-            else if (!_connectionFormValidators.IsValidPort(PortInputField.text))
+            else if (!_connectionFormValidators.IsValidPort(Port))
             {
                 toastMessage = "Not a valid port.";
             }
@@ -99,7 +88,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
 
         private void SaveConnectionInfo()
         {
-            var connectionInfo = new ConnectionInfo(IpAddressInputField.text, PortInputField.text);
+            var connectionInfo = new ConnectionInfo(IpAddress, Port);
             _dataManager.SaveConnectionInfo(connectionInfo);
         }
 

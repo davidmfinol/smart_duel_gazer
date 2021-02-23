@@ -13,6 +13,7 @@ using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
+using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -31,6 +32,12 @@ namespace AssemblyCSharp.Assets.Code.Di
 
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
+
+            #endregion
+
+            #region Features
+
+            Container.Bind<ConnectionFormValidators>().AsSingle();
 
             #endregion
         }
