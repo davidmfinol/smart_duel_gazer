@@ -14,6 +14,7 @@ using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
 using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
+using AssemblyCSharp.Assets.Code.Features.Connection;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -37,6 +38,7 @@ namespace AssemblyCSharp.Assets.Code.Di
 
             #region Features
 
+            Container.Bind<ConnectionViewModel>().AsTransient();
             Container.Bind<ConnectionFormValidators>().AsSingle();
 
             #endregion

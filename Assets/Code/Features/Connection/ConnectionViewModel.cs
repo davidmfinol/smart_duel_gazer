@@ -45,7 +45,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             }
         }
 
-        private void OnConnectPressed()
+        public void OnConnectPressed()
         {
             var isFormValid = ValidateForm();
             if (!isFormValid)
