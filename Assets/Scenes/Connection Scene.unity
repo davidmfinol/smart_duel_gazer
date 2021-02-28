@@ -928,9 +928,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 974af8d8fef4e49f09f76dd2f93565cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipAddressInputField: {fileID: 1681157497}
-  portInputField: {fileID: 2116237020}
-  connectButton: {fileID: 2001876878}
+  _ipAddressInputField: {fileID: 1681157497}
+  _portInputField: {fileID: 2116237020}
+  _connectButton: {fileID: 2001876878}
 --- !u!1 &1471357327
 GameObject:
   m_ObjectHideFlags: 0

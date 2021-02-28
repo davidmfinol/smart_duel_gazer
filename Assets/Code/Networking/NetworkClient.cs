@@ -1,16 +1,16 @@
 using UnityEngine;
-using SocketIO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using System.Linq;
+using Dpoch.SocketIO;
 
 // Followed a tutorial on YouTube by Alex Hicks on using Socket.IO
 // URL: https://www.youtube.com/watch?v=J0udhTJwR88&ab_channel=AlexHicks
 namespace Project.Networking
 {
-    public class NetworkClient : SocketIOComponent
+    public class NetworkClient : MonoBehaviour
     {
         private static readonly int SummoningAnimatorId = Animator.StringToHash(SUMMONING_TRIGGER_NAME);
 
@@ -27,19 +27,13 @@ namespace Project.Networking
         private GameObject _interaction;
 
         private GameObject[] _cardModels;
-
         private Dictionary<string, GameObject> _instantiatedModels;
 
-        public override void Start()
-        {
-            base.Start();
+        private SocketIO _socket;
 
+        public void Start()
+        {
             Init();
-        }
-
-        public override void Update()
-        {
-            base.Update();
         }
 
         private void Init()
@@ -49,7 +43,6 @@ namespace Project.Networking
             ConnectToServer();
             SetScreenRotationToAuto();
             LoadCardModels();
-            SetupEvents();
         }
 
         private void ConnectToServer()
@@ -62,9 +55,17 @@ namespace Project.Networking
             var json = PlayerPrefs.GetString(CONNECTION_INFO_KEY);
             var connectionInfo = JsonConvert.DeserializeObject<ConnectionInfo>(json);
 
-            url = string.Format(CONNECTION_URL, connectionInfo?.IpAddress, connectionInfo?.Port);
+            var url = $"ws://{connectionInfo?.IpAddress}:{connectionInfo?.Port}/socket.io/?EIO=4&transport=websocket";
+            var socket = new SocketIO(url);
 
-            Connect();
+            socket.OnOpen += () => Debug.Log("Socket open!");
+            socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
+            socket.OnClose += () => Debug.Log("Socket closed!");
+            socket.OnError += (err) => Debug.Log("Socket Error: " + err);
+            socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
+            socket.On(REMOVE_CARD_EVENT, OnRemovecardEventReceived);
+
+            socket.Connect();
         }
 
         private void SetScreenRotationToAuto()
@@ -77,16 +78,10 @@ namespace Project.Networking
             _cardModels = Resources.LoadAll<GameObject>(RESOURCES_MONSTERS_FOLDER_NAME);
         }
 
-        private void SetupEvents()
-        {
-            On(SUMMON_EVENT_NAME, OnSummonEventReceived);
-            On(REMOVE_CARD_EVENT, OnRemovecardEventReceived);
-        }
-
         private void OnSummonEventReceived(SocketIOEvent e)
         {
-            var yugiohCardId = e.data["yugiohCardId"].ToString().RemoveQuotes();
-            var zoneName = e.data["zoneName"].ToString().RemoveQuotes();
+            var yugiohCardId = e.Data["yugiohCardId"].ToString().RemoveQuotes();
+            var zoneName = e.Data["zoneName"].ToString().RemoveQuotes();
 
             var arTapToPlaceObject = _interaction.GetComponent<ARTapToPlaceObject>();
             var speedDuelField = arTapToPlaceObject.PlacedObject;
@@ -116,7 +111,7 @@ namespace Project.Networking
 
         private void OnRemovecardEventReceived(SocketIOEvent e)
         {
-            var zoneName = e.data["zoneName"].ToString().RemoveQuotes();
+            var zoneName = e.Data["zoneName"].ToString().RemoveQuotes();
 
             var modelExists = _instantiatedModels.TryGetValue(zoneName, out var model);
             if (!modelExists)
