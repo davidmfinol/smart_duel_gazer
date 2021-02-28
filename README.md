@@ -10,11 +10,11 @@ The SDD runs on an Android/iOS device and is something you wear on your arm, lik
 
 ## Which AR glasses / AR headsets are supported?
 
-We're currently looking into running the app on an Android device and integrate the Google Cardboard API to let the user wear their device on their head. We thought about programming for the HoloLens but it's too expensive for consumers. The Oculus Quest 2 will get AR support later this year, we'll definitely look into it. AR glasses would be idea, but those don't exist yet. We'll have to wait until 2023/2024 for this technology to become available.
+We're currently looking into running the app on an Android device and integrate the Google Cardboard API to let the user wear their device on their head. We thought about programming for the HoloLens but it's too expensive for consumers. AR glasses would be ideal, but those don't exist yet. We'll have to wait until 2023/2024 for this technology to become available.
 
 ## How to install the app?
 
-The app is currently in a very experimental stage so you can't download the app yet.
+The app currently isn't published in the Play Store but luckily on Android it's possible to download and install the app without it. Head over to [the releases page][Releases] to download and install the latest version of the app.
 
 ## I'm a Unity developer, can I help?
 
@@ -26,5 +26,6 @@ Yes! If you're interested in helping out, send me a message on [our Discord serv
 2. Build and run the app
 
 [Smart Duel Disk]: https://github.com/BramDC3/smart_duel_disk
+[Releases]: https://github.com/BramDC3/smart_duel_gazer/releases
 [Discord link]: https://discord.gg/XCcfcbBcjE
 [Unity download]: https://unity3d.com/get-unity/download
