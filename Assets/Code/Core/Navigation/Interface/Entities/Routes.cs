@@ -3,6 +3,6 @@
     public enum Routes
     {
         Connection = 0,
-        Main = 1,
+        SpeedDuel = 1,
     }
 }

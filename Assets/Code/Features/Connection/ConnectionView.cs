@@ -9,8 +9,6 @@ using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
-using Dpoch.SocketIO;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.Helpers;
 
 namespace AssemblyCSharp.Assets.Code.Features.Connection
 {
@@ -26,22 +24,21 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
         private Button _connectButton;
 
         private ConnectionFormValidators _connectionFormValidators;
-        private SmartDuelEventHandler _smartDuelEventHandler;
         private INavigationService _navigationService;
         private IDialogService _dialogService;
         private IDataManager _dataManager;
 
+        #region Constructors
+
         [Inject]
         public void Construct(
             ConnectionFormValidators connectionFormValidators,
-            SmartDuelEventHandler smartDuelEventHandler,
             INavigationService navigationService,
             IDialogService dialogService,
             IScreenService screenService,
             IDataManager dataManager)
         {
             _connectionFormValidators = connectionFormValidators;
-            _smartDuelEventHandler = smartDuelEventHandler;
             _navigationService = navigationService;
             _dialogService = dialogService;
             _dataManager = dataManager;
@@ -49,6 +46,10 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             screenService.UsePortraitOrientation();
             InitFormFields();
         }
+
+        #endregion
+
+        #region Connection form
 
         private void InitFormFields()
         {
@@ -72,7 +73,6 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
 
             SaveConnectionInfo();
             ShowMainScene();
-            // ConnectToServer();
         }
 
         private bool ValidateForm()
@@ -112,27 +112,9 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
 
         private void ShowMainScene()
         {
-            _navigationService.ShowMainScene();
+            _navigationService.ShowSpeedDuelScene();
         }
 
-        private const string SUMMON_EVENT_NAME = "summonEvent";
-        private const string REMOVE_CARD_EVENT = "removeCardEvent";
-
-        private void ConnectToServer()
-        {
-            var connectionInfo = _dataManager.GetConnectionInfo();
-
-            var url = $"ws://{connectionInfo?.IpAddress}:{connectionInfo?.Port}/socket.io/?EIO=4&transport=websocket";
-            var socket = new SocketIO(url);
-
-            socket.OnOpen += () => Debug.Log("Socket open!");
-            socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
-            socket.OnClose += () => Debug.Log("Socket closed!");
-            socket.OnError += (err) => Debug.Log("Socket Error: " + err);
-            socket.On(SUMMON_EVENT_NAME, _smartDuelEventHandler.OnSummonEventReceived);
-            socket.On(REMOVE_CARD_EVENT, _smartDuelEventHandler.OnRemovecardEventReceived);
-
-            socket.Connect();
-        }
+        #endregion
     }
 }

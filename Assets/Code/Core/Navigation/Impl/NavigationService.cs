@@ -6,9 +6,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
 {
     public class NavigationService : INavigationService
     {
-        public void ShowMainScene()
+        public void ShowSpeedDuelScene()
         {
-            SceneManager.LoadScene((int)Routes.Main);
+            SceneManager.LoadScene((int)Routes.SpeedDuel);
         }
     }
 }

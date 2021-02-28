@@ -14,7 +14,10 @@ using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
 using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.Helpers;
+using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
+using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -30,6 +33,9 @@ namespace AssemblyCSharp.Assets.Code.Di
 
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
+            Container.Bind<ICardModelDataManager>().To<CardModelDataManager>().AsSingle();
+
+            Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
@@ -39,8 +45,6 @@ namespace AssemblyCSharp.Assets.Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
-
-            Container.Bind<SmartDuelEventHandler>().AsSingle();
 
             #endregion
         }

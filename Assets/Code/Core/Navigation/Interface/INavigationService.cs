@@ -2,6 +2,6 @@
 {
     public interface INavigationService
     {
-        void ShowMainScene();
+        void ShowSpeedDuelScene();
     }
 }
