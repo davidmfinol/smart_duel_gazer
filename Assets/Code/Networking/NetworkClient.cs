@@ -80,8 +80,9 @@ namespace Project.Networking
 
         private void OnSummonEventReceived(SocketIOEvent e)
         {
-            var yugiohCardId = e.Data["yugiohCardId"].ToString().RemoveQuotes();
-            var zoneName = e.Data["zoneName"].ToString().RemoveQuotes();
+            var data = e.Data[0];
+            var yugiohCardId = data["yugiohCardId"].ToString().RemoveQuotes();
+            var zoneName = data["zoneName"].ToString().RemoveQuotes();
 
             var arTapToPlaceObject = _interaction.GetComponent<ARTapToPlaceObject>();
             var speedDuelField = arTapToPlaceObject.PlacedObject;
@@ -111,7 +112,8 @@ namespace Project.Networking
 
         private void OnRemovecardEventReceived(SocketIOEvent e)
         {
-            var zoneName = e.Data["zoneName"].ToString().RemoveQuotes();
+            var data = e.Data[0];
+            var zoneName = data["zoneName"].ToString().RemoveQuotes();
 
             var modelExists = _instantiatedModels.TryGetValue(zoneName, out var model);
             if (!modelExists)
