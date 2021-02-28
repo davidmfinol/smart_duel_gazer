@@ -39,7 +39,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         public GameObject GetCardModel(string cardId)
         {
-            throw new System.NotImplementedException();
+            return _cardModelDataManager.GetCardModel(cardId);
         }
 
         #endregion

@@ -57,6 +57,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         private void OnSummonEventReceived(SocketIOEvent e)
         {
+            Debug.Log($"OnSummonEventReceived(SocketIOEvent: {e})");
+
             var data = e.Data[0];
             var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
@@ -66,6 +68,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         private void OnRemoveCardEventReceived(SocketIOEvent e)
         {
+            Debug.Log($"OnRemoveCardEventReceived(SocketIOEvent: {e})");
+
             var data = e.Data[0];
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
 

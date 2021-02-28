@@ -10,7 +10,6 @@ using Zenject;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
-    [RequireComponent(typeof(ARRaycastManager))]
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
         private static readonly int SummoningAnimatorId = Animator.StringToHash("SummoningTrigger");
@@ -41,8 +40,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         public void Construct(
             ISmartDuelServer smartDuelServer,
             IDataManager dataManager,
-            IScreenService screenService
-        )
+            IScreenService screenService)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
