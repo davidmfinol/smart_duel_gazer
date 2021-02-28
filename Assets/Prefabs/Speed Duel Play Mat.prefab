@@ -300,7 +300,6 @@ GameObject:
   - component: {fileID: 6480290508694421723}
   - component: {fileID: 6480290508694421722}
   - component: {fileID: 6480290508694421717}
-  - component: {fileID: -3077689550007471132}
   m_Layer: 0
   m_Name: Speed Duel Play Mat
   m_TagString: Untagged
@@ -388,15 +387,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &-3077689550007471132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6480290508694421716}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b951c8a05ae094fcfa23a49b90d45315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
