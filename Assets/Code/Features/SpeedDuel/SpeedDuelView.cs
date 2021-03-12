@@ -212,10 +212,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 OnRemovecardEventReceived(removeCardEvent);
             }
-            else if (smartDuelEvent is PositionChangeEvent positionChangeEvent)
-            {
-                OnPositionChangeEventRecieved(positionChangeEvent);
-            }
         }
 
         private void OnSummonEventReceived(SummonEvent summonEvent)
@@ -241,24 +237,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
-
-            if (summonEvent.IsSet)
-            {                
-                var cardBack = _dataManager.GetCardModel(Card_Back);
-                if (cardBack == null)
-                {
-                    return;
-                }
-
-                var characterMesh = instantiatedModel.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
-
-                var setCardBack = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
-            }
         }
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
@@ -282,63 +260,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             Destroy(model, 10f);
             Destroy(destructionParticles, 10f);
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
-
-            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
-            if (!modelIsSet)
-            {
-                return;
-            }
-            
-            InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
-            Destroy(setCardBack);
-        }
-
-        private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
-        {
-            var zone = SpeedDuelField.transform.Find("Playmat/" + positionChangeEvent.ZoneName);
-            
-            var modelExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName, out var model);
-            if (!modelExists)
-            {
-                return;
-            }
-
-            if (!positionChangeEvent.IsSet)
-            {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = true;
-                }                
-                return;
-            }
-
-            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var setCardBack);
-            if (!cardBackExists)
-            {
-                var cardBack = _dataManager.GetCardModel(Card_Back);
-                if (cardBack == null)
-                {
-                    return;
-                }
-
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
-
-                var setCardBackModel = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(positionChangeEvent.ZoneName + "SetCard", setCardBackModel);
-            }
-            else
-            {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
-            }
         }
         #endregion
     }
