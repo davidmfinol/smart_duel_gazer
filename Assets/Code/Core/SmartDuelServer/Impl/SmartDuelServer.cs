@@ -45,7 +45,6 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
             _socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
-            _socket.On(POSITION_CHANGE_EVENT, OnPositionChangeEventReceived);
 
             _socket.Connect();
         }
