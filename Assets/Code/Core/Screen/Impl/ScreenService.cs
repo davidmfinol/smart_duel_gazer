@@ -14,5 +14,10 @@ namespace AssemblyCSharp.Assets.Code.Core.Screen.Impl
         {
             UnityEngine.Screen.orientation = ScreenOrientation.Portrait;
         }
+
+        public void UseLandscapeOrientation()
+        {
+            UnityEngine.Screen.orientation = ScreenOrientation.Landscape;
+        }
     }
 }

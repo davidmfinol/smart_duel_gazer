@@ -13,6 +13,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
         private const string SUMMON_EVENT_NAME = "summonEvent";
         private const string REMOVE_CARD_EVENT = "removeCardEvent";
+        private const string POSITION_CHANGE_EVENT = "positionChangeEvent";
 
         private IDataManager _dataManager;
 
@@ -44,6 +45,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
             _socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
+            _socket.On(POSITION_CHANGE_EVENT, OnPositionChangeEventReceived);
 
             _socket.Connect();
         }

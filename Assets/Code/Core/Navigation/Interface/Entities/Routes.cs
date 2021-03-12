@@ -4,5 +4,6 @@
     {
         Connection = 0,
         SpeedDuel = 1,
+        ModelView = 2,
     }
 }
