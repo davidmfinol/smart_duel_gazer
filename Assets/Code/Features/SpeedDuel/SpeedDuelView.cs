@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.General;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
@@ -161,19 +162,40 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var scalePlane = _arPlaneManager.GetPlane(hits[hits.Count-1].trackableId);
+            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count-1].trackableId));
 
-            if (scalePlane.size.y <= 0)
+            if (scalePlane <= 0)
             {
                 return;
             }
 
-            SpeedDuelField.transform.localScale = new Vector3(scalePlane.size.y, scalePlane.size.y, scalePlane.size.y);
+            SpeedDuelField.transform.localScale = new Vector3(scalePlane, scalePlane, scalePlane);
             SpeedDuelField.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             //SpeedDuelField.GetComponent<PlaymatViewLogic>().SetScaleStartPosition(scalePlane.size.y);
 
             _arPlaneManager.SetTrackablesActive(false);
             _arPlaneManager.enabled = false;
+        }
+
+        private float GetCameraOrientation(ARPlane plane)
+        {
+            float scaleAmount;
+            var cameraOriantation = Camera.current.transform.rotation.y;
+
+            if (cameraOriantation.IsWithin(45, 135) || cameraOriantation.IsWithin(225, 315))
+            {
+                scaleAmount = plane.size.y;
+            }
+            else if (cameraOriantation.IsWithin(-45, -135) || cameraOriantation.IsWithin(-225, -315))
+            {
+                scaleAmount = plane.size.y;
+            }
+            else
+            {
+                scaleAmount = plane.size.x;
+            }
+
+            return scaleAmount;
         }
 
         private void OnPlaymatDestroyed()
@@ -232,8 +254,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
-            bool isSet = summonEvent.IsSet;
-            if (isSet)
+            if (summonEvent.IsSet)
             {                
                 var cardBack = _dataManager.GetCardModel(Card_Back);
                 if (cardBack == null)
@@ -279,6 +300,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 return;
             }
+            
             InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
             Destroy(setCardBack);
         }

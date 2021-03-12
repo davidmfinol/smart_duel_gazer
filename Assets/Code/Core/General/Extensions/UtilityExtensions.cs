@@ -11,6 +11,11 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
             return (value - originalMin) / (originalMax - originalMin) * (newMax - newMin) + newMin;
         }
 
+        public static bool IsWithin(this float value, float min, float max)
+        {
+            return value >= min && value <= max;
+        }
+        
         public static bool CheckIfTrue(string data)
         {
             if(data == "0")
