@@ -32,7 +32,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void ScalePlaymat(float scale) 
         {
-            var mappedScale = scale.Map(_scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
+            var mappedScale = scale.MapToNewValue(_scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
             _playmatShell.transform.localScale = new Vector3(mappedScale, mappedScale, mappedScale);
         }
 
