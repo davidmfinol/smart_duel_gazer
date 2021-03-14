@@ -170,11 +170,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             float scaleAmount;
             var cameraOriantation = Camera.current.transform.rotation.y;
 
-            if (cameraOriantation.IsWithin(45, 135) || cameraOriantation.IsWithin(225, 315))
+            if (cameraOriantation.IsWithinRange(45, 135) || cameraOriantation.IsWithinRange(225, 315))
             {
                 scaleAmount = plane.size.y;
             }
-            else if (cameraOriantation.IsWithin(-45, -135) || cameraOriantation.IsWithin(-225, -315))
+            else if (cameraOriantation.IsWithinRange(-45, -135) || cameraOriantation.IsWithinRange(-225, -315))
             {
                 scaleAmount = plane.size.y;
             }
