@@ -15,7 +15,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
-        private readonly string Card_Back = "CardBack";
         private static readonly string Card_Back = "CardBack";
         
         [SerializeField]
@@ -170,12 +169,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             float scaleAmount;
             var cameraOriantation = Camera.current.transform.rotation.y;
 
-            //This section has been refactored. Will be changed in future iterations
-            if (cameraOriantation.IsWithinRange(45, 135) || cameraOriantation.IsWithinRange(225, 315))
-            {
-                scaleAmount = plane.size.y;
-            }
-            else if (cameraOriantation.IsWithinRange(-45, -135) || cameraOriantation.IsWithinRange(-225, -315))
             if (cameraOriantation.IsWithin(45, 135)   || 
                 cameraOriantation.IsWithin(225, 315)  ||
                 cameraOriantation.IsWithin(-45, -135) || 
