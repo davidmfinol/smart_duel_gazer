@@ -45,6 +45,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
             _socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
+            _socket.On(POSITION_CHANGE_EVENT, OnPositionChangeEventReceived);
 
             _socket.Connect();
         }
@@ -63,8 +64,10 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             var data = e.Data[0];
             var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
+            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
-            _listener.onSmartDuelEventReceived(new SummonEvent(cardId, zoneName));
+            _listener.onSmartDuelEventReceived(new SummonEvent(cardId, zoneName, isDefenceMode, isSet));
         }
 
         private void OnRemoveCardEventReceived(SocketIOEvent e)
@@ -73,8 +76,22 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
             var data = e.Data[0];
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
+            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
-            _listener.onSmartDuelEventReceived(new RemoveCardEvent(zoneName));
+            _listener.onSmartDuelEventReceived(new RemoveCardEvent(zoneName, isDefenceMode, isSet));
+        }
+
+        private void OnPositionChangeEventReceived(SocketIOEvent e)
+        {
+            Debug.Log($"OnPositionChangeEventReceived(SocketIOEvent: {e})");
+
+            var data = e.Data[0];
+            var zoneName = data["zoneName"].ToString().RemoveQuotes();
+            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
+
+            _listener.onSmartDuelEventReceived(new PositionChangeEvent(zoneName, isDefenceMode, isSet));
         }
     }
 }
