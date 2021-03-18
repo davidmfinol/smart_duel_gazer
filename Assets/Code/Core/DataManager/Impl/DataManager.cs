@@ -1,9 +1,11 @@
 ﻿using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
+using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using UnityEngine;
 using Zenject;
+using System.Collections.Generic;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
@@ -11,14 +13,17 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
     {
         private readonly IConnectionDataManager _connectionDataManager;
         private readonly ICardModelDataManager _cardModelDataManager;
+        private readonly IModelRecycler _modelRecycler;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
-            ICardModelDataManager cardModelDataManager)
+            ICardModelDataManager cardModelDataManager,
+            IModelRecycler modelRecycler)
         {
             _connectionDataManager = connectionDataManager;
             _cardModelDataManager = cardModelDataManager;
+            _modelRecycler = modelRecycler;
         }
 
         #region Connection
@@ -40,6 +45,57 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         public GameObject GetCardModel(string cardId)
         {
             return _cardModelDataManager.GetCardModel(cardId);
+        }
+
+        #endregion
+
+        #region ModelRecycler
+
+        public void CreateRecycler()
+        {
+            _modelRecycler.CreateRecycler();
+        }
+
+        public void AddToQueue(int key, GameObject model)
+        {
+            _modelRecycler.AddToQueue(key, model);
+        }
+
+        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            return _modelRecycler.UseFromQueue(key, position, rotation, parent);
+        }
+        public GameObject UseFromQueue(int key,
+                                       Vector3 position,
+                                       Quaternion rotation,
+                                       Transform parent,
+                                       SkinnedMeshRenderer meshToDestroy)
+        {
+            return _modelRecycler.UseFromQueue(key, position, rotation, parent, meshToDestroy);
+        }
+        public GameObject UseFromQueue(int key, Transform parent)
+        {
+            return _modelRecycler.UseFromQueue(key, parent);
+        }
+
+        public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj)
+        {
+            return _modelRecycler.GetMeshRenderers(key, obj);
+        }
+
+        public bool CheckForExistingModel(string key)
+        {
+            return _modelRecycler.CheckForExistingModel(key);
+        }
+        
+        public GameObject GetExistingModel(string key, Transform parent)
+        {
+            return _modelRecycler.GetExistingModel(key, parent);
+        }
+
+        public void RecycleModel(string key, GameObject model)
+        {
+            _modelRecycler.RecycleModel(key, model);
         }
 
         #endregion
