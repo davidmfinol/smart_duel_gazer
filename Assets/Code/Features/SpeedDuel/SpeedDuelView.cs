@@ -151,7 +151,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count-1].trackableId));
+            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count].trackableId));
 
             if (scalePlane <= 0)
             {
