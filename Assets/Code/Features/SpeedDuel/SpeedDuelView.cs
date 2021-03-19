@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Zenject;
+using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -27,6 +28,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
 
+        private ApiWebRequest _webRequest;
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private List<ARRaycastHit> _hits;
@@ -63,6 +65,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void Awake()
         {
             GetObjectReferences();
+<<<<<<< Updated upstream
+=======
+        }
+
+        private void Start()
+        {
+            _dataManager.CreateRecycler();
+            InstantiateObjectPool("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
+            InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
+>>>>>>> Stashed changes
         }
 
         private void Update()
@@ -243,8 +255,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             bool isSet = summonEvent.IsSet;
             if (isSet)
             {
+<<<<<<< Updated upstream
                 var cardBack = _dataManager.GetCardModel(Card_Back);
                 if (cardBack == null)
+=======
+                _webRequest.GetImageFromAPI(cardModel.name);
+
+                var setCardImage = _dataManager.GetCardModel(SET_CARD);
+                if (setCardImage == null)
+>>>>>>> Stashed changes
                 {
                     return;
                 }
@@ -255,8 +274,21 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     item.enabled = false;
                 }
 
+<<<<<<< Updated upstream
                 var setCardBack = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
+=======
+                var setCardModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                if (!_dataManager.CheckForCachedImage(cardModel.name))
+                {
+                    Debug.LogError("No Cached Image");
+                    return;
+                }
+                var imageSetter = setCardModel.GetComponentInChildren<IImageSetter>();
+                imageSetter.ChangeImageFromAPI(cardModel.name);
+
+                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardModel);
+>>>>>>> Stashed changes
             }
         }
 
@@ -282,13 +314,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             Destroy(destructionParticles, 10f);
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
+            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardModel);
             if (!modelIsSet)
             {
                 return;
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
+<<<<<<< Updated upstream
             Destroy(setCardBack);
+=======
+            _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCardModel);
+>>>>>>> Stashed changes
         }
 
         private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
