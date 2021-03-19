@@ -2,6 +2,7 @@
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
+using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using UnityEngine;
 using Zenject;
 
@@ -11,14 +12,17 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
     {
         private readonly IConnectionDataManager _connectionDataManager;
         private readonly ICardModelDataManager _cardModelDataManager;
+        private readonly IModelRecycler _modelRecycler;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
-            ICardModelDataManager cardModelDataManager)
+            ICardModelDataManager cardModelDataManager,
+            IModelRecycler modelRecycler)
         {
             _connectionDataManager = connectionDataManager;
             _cardModelDataManager = cardModelDataManager;
+            _modelRecycler = modelRecycler;
         }
 
         #region Connection
@@ -43,8 +47,6 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         }
 
         #endregion
-<<<<<<< Updated upstream
-=======
 
         #region ModelRecycler
 
@@ -111,6 +113,5 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         }
 
         #endregion
->>>>>>> Stashed changes
     }
 }

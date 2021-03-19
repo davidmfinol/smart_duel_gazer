@@ -11,13 +11,15 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Zenject;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
-        private static readonly string Card_Back = "CardBack";
-        
+        private static readonly string SET_CARD = "SetCard";
+        private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
+
         [SerializeField]
         private GameObject _objectToPlace;
         [SerializeField]
@@ -65,8 +67,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void Awake()
         {
             GetObjectReferences();
-<<<<<<< Updated upstream
-=======
         }
 
         private void Start()
@@ -74,7 +74,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _dataManager.CreateRecycler();
             InstantiateObjectPool("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
             InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
->>>>>>> Stashed changes
         }
 
         private void Update()
@@ -97,9 +96,32 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
         }
 
+        private void InstantiateObjectPool(string parentName, int key, GameObject prefab, int amount)
+        {
+            var parent = new GameObject(parentName + " Pool");
+
+            for (int i = 0; i < amount; i++)
+            {
+                var obj = Instantiate(prefab, parent.transform);
+                _dataManager.AddToQueue(key, obj);
+            }
+        }
+
         private void UpdatePlacementIndicatorIfNecessary()
         {
+
+#if UNITY_EDITOR
+            if (!_objectPlaced && Input.GetKeyDown(KeyCode.Space))
+            {
+                PlaceObject();
+            }
+
+            return;
+#endif
+
+#pragma warning disable CS0162 // Unreachable code detected
             if (_objectPlaced)
+#pragma warning restore CS0162 // Unreachable code detected
             {
                 return;
             }
@@ -181,10 +203,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             float scaleAmount;
             var cameraOriantation = Camera.current.transform.rotation.y;
 
-            if (cameraOriantation.IsWithin(45, 135)   || 
-                cameraOriantation.IsWithin(225, 315)  ||
-                cameraOriantation.IsWithin(-45, -135) || 
-                cameraOriantation.IsWithin(-225, -315))
+            if (cameraOriantation.IsWithinRange(45, 135)   || 
+                cameraOriantation.IsWithinRange(225, 315)  ||
+                cameraOriantation.IsWithinRange(-45, -135) || 
+                cameraOriantation.IsWithinRange(-225, -315))
             {
                 scaleAmount = plane.size.y;
             }
@@ -230,7 +252,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnSummonEventReceived(SummonEvent summonEvent)
         {
-            var zone = SpeedDuelField.transform.Find("Playmat/" + summonEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
             if (zone == null)
             {
                 return;
@@ -255,15 +277,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             bool isSet = summonEvent.IsSet;
             if (isSet)
             {
-<<<<<<< Updated upstream
-                var cardBack = _dataManager.GetCardModel(Card_Back);
-                if (cardBack == null)
-=======
                 _webRequest.GetImageFromAPI(cardModel.name);
 
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
->>>>>>> Stashed changes
                 {
                     return;
                 }
@@ -274,10 +291,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     item.enabled = false;
                 }
 
-<<<<<<< Updated upstream
-                var setCardBack = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
-=======
                 var setCardModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 if (!_dataManager.CheckForCachedImage(cardModel.name))
                 {
@@ -288,48 +301,45 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 imageSetter.ChangeImageFromAPI(cardModel.name);
 
                 InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardModel);
->>>>>>> Stashed changes
             }
         }
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + removeCardEvent.ZoneName);
+
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (!modelExists)
             {
                 return;
             }
 
-            var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-            foreach (SkinnedMeshRenderer item in characterMesh)
-            {
-                item.enabled = false;
-            }
+            var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+            characterMesh.SetRendererVisibility(false);
 
-            var meshToDestroy = _particles.GetComponent<ISetMeshCharacter>();
-            meshToDestroy.GetCharacterMesh(characterMesh[0]);
-            var destructionParticles = Instantiate(_particles, SpeedDuelField.transform);
+            var destructionParticles = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles,
+                                                                 zone.transform.position,
+                                                                 zone.transform.rotation,
+                                                                 SpeedDuelField.transform,
+                                                                 characterMesh[0]);
 
-            Destroy(model, 10f);
-            Destroy(destructionParticles, 10f);
+            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles, 10f));
+            StartCoroutine(WaitToProceed(model.name, model, 10f));
+
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardModel);
+            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
             if (!modelIsSet)
             {
                 return;
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
-<<<<<<< Updated upstream
-            Destroy(setCardBack);
-=======
-            _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCardModel);
->>>>>>> Stashed changes
+            _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCardBack);
         }
 
         private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
         {
-            var zone = SpeedDuelField.transform.Find("Playmat/" + positionChangeEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + positionChangeEvent.ZoneName);
 
             var modelExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName, out var model);
             if (!modelExists)
@@ -339,41 +349,48 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             if (!positionChangeEvent.IsSet)
             {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = true;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(true);
                 return;
             }
 
-            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var setCardBack);
+            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var _);
             if (!cardBackExists)
             {
-                var cardBack = _dataManager.GetCardModel(Card_Back);
+                var cardBack = _dataManager.GetCardModel(SET_CARD);
                 if (cardBack == null)
                 {
                     return;
                 }
 
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(false);
 
-                var setCardBackModel = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
+                var setCardBackModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(positionChangeEvent.ZoneName + "SetCard", setCardBackModel);
             }
             else
             {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(false);
             }
         }
+
+        #endregion
+
+        #region Coroutines
+
+        private IEnumerator WaitToProceed(int key, GameObject model, float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            _dataManager.AddToQueue(key, model);
+        }
+        private IEnumerator WaitToProceed(string key, GameObject model, float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            _dataManager.RecycleModel(key, model);
+        }
+
         #endregion
     }
 }
