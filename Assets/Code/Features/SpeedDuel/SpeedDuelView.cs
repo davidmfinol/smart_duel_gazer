@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
@@ -6,6 +7,7 @@ using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -15,8 +17,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
-        private static readonly string Card_Back = "CardBack";
-        
+        private static readonly string SET_CARD = "SetCard";
+        private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
+
         [SerializeField]
         private GameObject _objectToPlace;
         [SerializeField]
@@ -30,14 +33,18 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private List<ARRaycastHit> _hits;
+        private List<GameObject> _inactiveModels;
         private Pose _placementPose;
         private bool _placementPoseIsValid = false;
         private bool _objectPlaced = false;
+        
+        private GameObject _testModel;
 
         #region Properties
 
         private GameObject SpeedDuelField { get; set; }
         private Dictionary<string, GameObject> InstantiatedModels { get; } = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> InactiveModels { get; } = new Dictionary<string, GameObject>();
 
         #endregion
 
@@ -63,6 +70,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void Awake()
         {
             GetObjectReferences();
+            _inactiveModels = new List<GameObject>();
+        }
+
+        private void Start()
+        {
+            _dataManager.CreateRecycler();
+            InstantiateObjectPool("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
+            InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
         }
 
         private void Update()
@@ -85,9 +100,42 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
         }
 
+        private void InstantiateObjectPool(string parentName, int key, GameObject prefab, int amount)
+        {
+            var parent = new GameObject(parentName + " Pool");
+            
+            for (int i = 0; i < amount; i++)
+            {
+                var obj = Instantiate(prefab, parent.transform);
+                _dataManager.AddToQueue(key, obj);
+            }
+        }
+
         private void UpdatePlacementIndicatorIfNecessary()
         {
+
+#if UNITY_EDITOR
+            if (_objectPlaced && Input.GetKeyDown(KeyCode.F))
+            {
+                _testModel = FlipRandomImage();
+            }
+
+            if (_objectPlaced && Input.GetKeyDown(KeyCode.G))
+            {
+                ReturnToFaceDown(_testModel);
+            }
+
+            if (!_objectPlaced && Input.GetKeyDown(KeyCode.Space))
+            {
+                PlaceObject();
+            }
+
+            return;
+#endif
+
+#pragma warning disable CS0162 // Unreachable code detected
             if (_objectPlaced)
+#pragma warning restore CS0162 // Unreachable code detected
             {
                 return;
             }
@@ -151,7 +199,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count-1].trackableId));
+            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count].trackableId));
 
             if (scalePlane <= 0)
             {
@@ -169,10 +217,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             float scaleAmount;
             var cameraOriantation = Camera.current.transform.rotation.y;
 
-            if (cameraOriantation.IsWithin(45, 135)   || 
-                cameraOriantation.IsWithin(225, 315)  ||
-                cameraOriantation.IsWithin(-45, -135) || 
-                cameraOriantation.IsWithin(-225, -315))
+            if (cameraOriantation.IsWithinRange(45, 135)   || 
+                cameraOriantation.IsWithinRange(225, 315)  ||
+                cameraOriantation.IsWithinRange(-45, -135) || 
+                cameraOriantation.IsWithinRange(-225, -315))
             {
                 scaleAmount = plane.size.y;
             }
@@ -183,6 +231,30 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             return scaleAmount;
         }
+
+        private GameObject FlipRandomImage()
+        {
+            bool exists = InstantiatedModels.TryGetValue("mainMonster3SetCard", out var model);
+            if(!exists)
+            {
+                return null;
+            }
+
+            var image = model.GetComponentInChildren<IImageSetter>();
+            image.ChangeImage();
+            model.transform.rotation = Quaternion.Euler(0, 90, 90);
+
+            return model;
+        }
+
+        private void ReturnToFaceDown(GameObject model)
+        {
+            if(model != null)
+            {
+                model.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }            
+        }
+
 
         private void OnPlaymatDestroyed()
         {
@@ -218,7 +290,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnSummonEventReceived(SummonEvent summonEvent)
         {
-            var zone = SpeedDuelField.transform.Find("Playmat/" + summonEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
             if (zone == null)
             {
                 return;
@@ -230,8 +302,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
-
+            GameObject instantiatedModel;
+            if (_dataManager.CheckForExistingModel(cardModel.name + "(Clone)"))
+            {
+                instantiatedModel = _dataManager.GetExistingModel(cardModel.name + "(Clone)", SpeedDuelField.transform);
+                instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
+            }
+            else
+            {
+                instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
+            }
+            
             var animator = instantiatedModel.GetComponentInChildren<Animator>();
             if (animator != null)
             {
@@ -240,46 +321,44 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
-            bool isSet = summonEvent.IsSet;
-            if (isSet)
+            if (summonEvent.IsSet)
             {
-                var cardBack = _dataManager.GetCardModel(Card_Back);
-                if (cardBack == null)
+                var setCardImage = _dataManager.GetCardModel(SET_CARD);
+                if (setCardImage == null)
                 {
                     return;
                 }
 
-                var characterMesh = instantiatedModel.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(instantiatedModel.name, instantiatedModel);
+                characterMesh.SetRendererVisibility(false);                
 
-                var setCardBack = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
+                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
             }
-        }
+        }        
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + removeCardEvent.ZoneName);
+
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (!modelExists)
             {
                 return;
             }
 
-            var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-            foreach (SkinnedMeshRenderer item in characterMesh)
-            {
-                item.enabled = false;
-            }
+            var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+            characterMesh.SetRendererVisibility(false);
 
-            var meshToDestroy = _particles.GetComponent<ISetMeshCharacter>();
-            meshToDestroy.GetCharacterMesh(characterMesh[0]);
-            var destructionParticles = Instantiate(_particles, SpeedDuelField.transform);
+            var destructionParticles = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles, 
+                                                                 zone.transform.position,
+                                                                 zone.transform.rotation,
+                                                                 SpeedDuelField.transform,
+                                                                 characterMesh[0]);
 
-            Destroy(model, 10f);
-            Destroy(destructionParticles, 10f);
+            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles, 10f));
+            StartCoroutine(WaitToProceed(model.name, model, 10f));
+
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
             var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
@@ -288,12 +367,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
-            Destroy(setCardBack);
+            _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCardBack);
         }
 
         private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
         {
-            var zone = SpeedDuelField.transform.Find("Playmat/" + positionChangeEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + positionChangeEvent.ZoneName);
 
             var modelExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName, out var model);
             if (!modelExists)
@@ -303,41 +382,48 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             if (!positionChangeEvent.IsSet)
             {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = true;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(true);
                 return;
             }
 
-            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var setCardBack);
+            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var _);
             if (!cardBackExists)
             {
-                var cardBack = _dataManager.GetCardModel(Card_Back);
+                var cardBack = _dataManager.GetCardModel(SET_CARD);
                 if (cardBack == null)
                 {
                     return;
                 }
 
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(false);
 
-                var setCardBackModel = Instantiate(cardBack, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
+                var setCardBackModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(positionChangeEvent.ZoneName + "SetCard", setCardBackModel);
             }
             else
             {
-                var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer item in characterMesh)
-                {
-                    item.enabled = false;
-                }
+                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
+                characterMesh.SetRendererVisibility(false);
             }
         }
+
+        #endregion
+
+        #region Coroutines
+
+        private IEnumerator WaitToProceed(int key, GameObject model, float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            _dataManager.AddToQueue(key, model);
+        }
+        private IEnumerator WaitToProceed(string key, GameObject model, float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            _dataManager.RecycleModel(key, model);
+        }
+
         #endregion
     }
 }
