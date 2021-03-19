@@ -64,8 +64,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             var data = e.Data[0];
             var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
-            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
-            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
+            bool isDefenceMode = CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
             _listener.onSmartDuelEventReceived(new SummonEvent(cardId, zoneName, isDefenceMode, isSet));
         }
@@ -76,8 +76,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
             var data = e.Data[0];
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
-            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
-            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
+            bool isDefenceMode = CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
             _listener.onSmartDuelEventReceived(new RemoveCardEvent(zoneName, isDefenceMode, isSet));
         }
@@ -88,10 +88,20 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
             var data = e.Data[0];
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
-            bool isDefenceMode = UtilityExtensions.CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
-            bool isSet = UtilityExtensions.CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
+            bool isDefenceMode = CheckIfTrue(data["battleMode"].ToString().RemoveQuotes());
+            bool isSet = CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
             _listener.onSmartDuelEventReceived(new PositionChangeEvent(zoneName, isDefenceMode, isSet));
+        }
+
+        private bool CheckIfTrue(string mode)
+        {
+            if (mode == "0")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
