@@ -14,6 +14,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
         private const string SUMMON_EVENT_NAME = "summonEvent";
         private const string REMOVE_CARD_EVENT = "removeCardEvent";
         private const string POSITION_CHANGE_EVENT = "positionChangeEvent";
+        private const string SPELL_TRAP_SET_EVENT = "spellTrapSetEvent";
 
         private IDataManager _dataManager;
 
@@ -46,6 +47,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
             _socket.On(POSITION_CHANGE_EVENT, OnPositionChangeEventReceived);
+            _socket.On(SPELL_TRAP_SET_EVENT, OnSpellTrapSetEventReceived);
 
             _socket.Connect();
         }
@@ -92,6 +94,19 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             bool isSet = CheckIfTrue(data["faceMode"].ToString().RemoveQuotes());
 
             _listener.onSmartDuelEventReceived(new PositionChangeEvent(zoneName, isDefenceMode, isSet));
+        }
+
+        private void OnSpellTrapSetEventReceived(SocketIOEvent e)
+        {
+            Debug.Log($"OnSpellTrapSetEventReceived(SocketIOEvent: {e})");
+
+            var data = e.Data[0];
+            var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
+            var zoneName = data["zoneName"].ToString().RemoveQuotes();
+            bool isSet = CheckIfTrue(data["setMode"].ToString().RemoveQuotes());
+            bool isDefenceMode = CheckIfTrue(data["extraMode"].ToString().RemoveQuotes());
+
+            _listener.onSmartDuelEventReceived(new SpellTrapSetEvent(cardId, zoneName, isDefenceMode, isSet));
         }
 
         private bool CheckIfTrue(string mode)

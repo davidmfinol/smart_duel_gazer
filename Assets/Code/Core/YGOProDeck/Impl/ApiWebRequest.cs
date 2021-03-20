@@ -13,17 +13,17 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
         private const string API_IMAGE_URL = "https://storage.googleapis.com/ygoprodeck.com/pics/";
         private const string IMAGE_FILE_EXT = ".jpg";
 
-        private IDataManager _datamanager;
+        private IDataManager _dataManager;
 
         [Inject]
         public void Construct(IDataManager dataManager)
         {
-            _datamanager = dataManager;
+            _dataManager = dataManager;
         }
 
         public void GetImageFromAPI(string cardID)
         {
-            if (!_datamanager.CheckForCachedImage(cardID))
+            if (!_dataManager.CheckForCachedImage(cardID))
             {
                 string url = API_IMAGE_URL + cardID + IMAGE_FILE_EXT;
                 StartCoroutine(GetRequest(url, cardID));
@@ -31,12 +31,12 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
         }
 
         private IEnumerator GetRequest(string URL, string cardID)
-        {
+        {           
             using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
             yield return webRequest.SendWebRequest();
             DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
 
-            _datamanager.CacheImage(cardID, handlerTexture.texture);
+            _dataManager.CacheImage(cardID, handlerTexture.texture);
         }
     }
 }

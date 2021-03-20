@@ -8,23 +8,17 @@ public class SetImageFromAPI : MonoBehaviour, IImageSetter
 {
     [SerializeField]
     private Renderer _image;
-    public string cardID;
-    
+
     private IDataManager _dataManager;
 
     [Inject]
-    public void Construct (IDataManager dataManager)
+    public void Construct(IDataManager dataManager)
     {
         _dataManager = dataManager;
     }
 
+    public void ChangeImage(Texture texture) => _image.material.SetTexture("_MainTex", texture);
     
-    public void ChangeImage()
-    {
-    }
-    
-    public void ChangeImageFromAPI(string cardID)
-    {
-        _image.material.SetTexture("_MainTex", _dataManager.GetCachedImage(cardID));
-    }
+    //TODO: Find out why DataManager isn't initializing
+    public void ChangeImageFromAPI(string cardID) => _image.material.SetTexture("_MainTex", _dataManager.GetCachedImage(cardID));
 }

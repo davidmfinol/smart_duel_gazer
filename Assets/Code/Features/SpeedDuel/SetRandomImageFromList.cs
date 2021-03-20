@@ -9,7 +9,7 @@ public class SetRandomImageFromList : MonoBehaviour, IImageSetter
     [SerializeField]
     private List<Texture> _cardImages;
 
-    public void ChangeImage()
+    public void ChangeImage(Texture texture)
     {
         var randomTexture = _cardImages[Random.Range(0, _cardImages.Count+1)];
         _image.material.SetTexture("_MainTex", randomTexture);
