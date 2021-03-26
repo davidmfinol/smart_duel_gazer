@@ -3,7 +3,8 @@
     public enum Routes
     {
         Connection = 0,
-        SpeedDuel = 1,
-        ModelView = 2,
+        MainMenu = 1,
+        SpeedDuel = 2,
+        ModelView = 3,
     }
 }

@@ -19,6 +19,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!136 &7212309857191246421
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3788011267198208183}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.002198662
+  m_Height: 0.010372874
+  m_Direction: 1
+  m_Center: {x: -0.00012450515, y: 0.0052047777, z: 0.0009769616}
 --- !u!1 &7224916136937916771
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,6 +118,22 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
       propertyPath: m_Name
       value: Buster Blader
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}

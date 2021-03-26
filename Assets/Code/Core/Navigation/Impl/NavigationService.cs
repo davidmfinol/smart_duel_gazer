@@ -10,6 +10,11 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
         {
             SceneManager.LoadScene((int)Routes.Connection);
         }
+
+        public void ShowMainMenuScene()
+        {
+            SceneManager.LoadScene((int)Routes.MainMenu);
+        }
         
         public void ShowSpeedDuelScene()
         {

@@ -60,21 +60,20 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _modelRecycler.AddToQueue(key, model);
         }
 
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation)
         {
-            return _modelRecycler.UseFromQueue(key, position, rotation, parent);
+            return _modelRecycler.UseFromQueue(key, position, rotation);
         }
         public GameObject UseFromQueue(int key,
                                        Vector3 position,
                                        Quaternion rotation,
-                                       Transform parent,
                                        SkinnedMeshRenderer meshToDestroy)
         {
-            return _modelRecycler.UseFromQueue(key, position, rotation, parent, meshToDestroy);
+            return _modelRecycler.UseFromQueue(key, position, rotation, meshToDestroy);
         }
-        public GameObject UseFromQueue(int key, Transform parent)
+        public GameObject UseFromQueue(int key)
         {
-            return _modelRecycler.UseFromQueue(key, parent);
+            return _modelRecycler.UseFromQueue(key);
         }
 
         public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj)
@@ -86,7 +85,12 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         {
             return _modelRecycler.CheckForExistingModel(key);
         }
-        
+
+
+        public GameObject GetExistingModel(string key)
+        {
+            return _modelRecycler.GetExistingModel(key);
+        }
         public GameObject GetExistingModel(string key, Transform parent)
         {
             return _modelRecycler.GetExistingModel(key, parent);

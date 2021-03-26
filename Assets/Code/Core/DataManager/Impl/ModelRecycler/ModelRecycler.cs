@@ -25,32 +25,28 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             model.SetActive(false);
         }
 
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation)
         {
             var model = _generalRecycler[key].Dequeue();
             model.transform.SetPositionAndRotation(position, rotation);
-            model.transform.parent = parent;
             model.SetActive(true);
             return model;
         }
         public GameObject UseFromQueue(int key, 
                                        Vector3 position, 
-                                       Quaternion rotation, 
-                                       Transform parent, 
+                                       Quaternion rotation,  
                                        SkinnedMeshRenderer meshToDestroy)
         {
             var model = _generalRecycler[key].Dequeue();
             var mesh = model.GetComponent<ISetMeshCharacter>();
             mesh.GetCharacterMesh(meshToDestroy);
             model.transform.SetPositionAndRotation(position, rotation);
-            model.transform.parent = parent;
             model.SetActive(true);
             return model;
         }
-        public GameObject UseFromQueue(int key, Transform parent)
+        public GameObject UseFromQueue(int key)
         {
             var model = _generalRecycler[key].Dequeue();
-            model.transform.parent = parent;
             model.SetActive(true);
             return model;
         }
@@ -79,6 +75,19 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             return _modelRecycler.ContainsKey(key);
         }
 
+        public GameObject GetExistingModel(string key)
+        {
+            var model = _modelRecycler[key].Dequeue();
+            var renderers = GetMeshRenderers(key, model);
+
+            foreach (SkinnedMeshRenderer item in renderers)
+            {
+                item.enabled = true;
+            }
+
+            model.SetActive(true);
+            return model;
+        }
         public GameObject GetExistingModel(string key, Transform parent)
         {
             var model = _modelRecycler[key].Dequeue();

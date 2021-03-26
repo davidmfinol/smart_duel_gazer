@@ -4,21 +4,24 @@ using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using Zenject;
 
-public class SetImageFromAPI : MonoBehaviour, IImageSetter
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
-    [SerializeField]
-    private Renderer _image;
-
-    private IDataManager _dataManager;
-
-    [Inject]
-    public void Construct(IDataManager dataManager)
+    public class SetImageFromAPI : MonoBehaviour, IImageSetter
     {
-        _dataManager = dataManager;
-    }
+        [SerializeField]
+        private Renderer _image;
 
-    public void ChangeImage(Texture texture) => _image.material.SetTexture("_MainTex", texture);
-    
-    //TODO: Find out why DataManager isn't initializing
-    public void ChangeImageFromAPI(string cardID) => _image.material.SetTexture("_MainTex", _dataManager.GetCachedImage(cardID));
+        private IDataManager _dataManager;
+
+        [Inject]
+        public void Construct(IDataManager dataManager)
+        {
+            _dataManager = dataManager;
+        }
+
+        public void ChangeImage(Texture texture) => _image.material.SetTexture("_MainTex", texture);
+
+        //TODO: Find out why DataManager isn't initializing
+        public void ChangeImageFromAPI(string cardID) => _image.material.SetTexture("_MainTex", _dataManager.GetCachedImage(cardID));
+    }
 }

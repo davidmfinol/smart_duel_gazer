@@ -20,11 +20,13 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
 using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
+using AssemblyCSharp.Assets.Code.Features.ModelViewer;
+using UnityEngine;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
     public class GameInstaller : MonoInstaller
-    {
+    {        
         public override void InstallBindings()
         {
             #region Core
@@ -48,6 +50,8 @@ namespace AssemblyCSharp.Assets.Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
+            Container.BindFactory<GameObject, SummonModelButton, SummonModelButton.SummonModelButtonFactory>()
+                .FromFactory<PrefabFactory<SummonModelButton>>();
 
             #endregion
         }

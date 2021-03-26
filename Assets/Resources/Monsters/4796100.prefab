@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4210257269238931650}
   m_Layer: 0
-  m_Name: 04796100
+  m_Name: 4796100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,6 +50,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!65 &7282516986429895028
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8199538412124757066}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0038950362, y: 0.0052512605, z: 0.0078003453}
+  m_Center: {x: -0.00007953629, y: 0.0026508209, z: -0.00015213489}
 --- !u!1001 &9010565340011225371
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104,6 +117,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 3cc4ee7fc10e24006a97438c96dbd1e1, type: 3}
       propertyPath: m_Name
       value: Chimera The Flying Mythical Beast
+      objectReference: {fileID: 0}
+    - target: {fileID: 1727106324853143265, guid: 3cc4ee7fc10e24006a97438c96dbd1e1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00048
+      objectReference: {fileID: 0}
+    - target: {fileID: 1727106324853143265, guid: 3cc4ee7fc10e24006a97438c96dbd1e1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3cc4ee7fc10e24006a97438c96dbd1e1, type: 3}

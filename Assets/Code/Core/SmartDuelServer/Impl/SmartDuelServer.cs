@@ -58,7 +58,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket = null;
             _listener = null;
         }
-
+        
         private void OnSummonEventReceived(SocketIOEvent e)
         {
             Debug.Log($"OnSummonEventReceived(SocketIOEvent: {e})");
