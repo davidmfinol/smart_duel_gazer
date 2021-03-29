@@ -146,7 +146,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             if (_placementPoseIsValid && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 PlaceObject();
-                SetPendulumScale(_hits);
+                SetPlaymatScale(_hits);
             }
         }
 
@@ -189,7 +189,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
         }
 
-        private void SetPendulumScale(List<ARRaycastHit> hits)
+        private void SetPlaymatScale(List<ARRaycastHit> hits)
         {
             var screenCenter = Camera.current.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
             _arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinBounds);
