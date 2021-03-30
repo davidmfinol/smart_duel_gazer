@@ -33,7 +33,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
                 if(webRequest.result == UnityWebRequest.Result.ProtocolError)
                 {
                     Debug.LogWarning($"Error {webRequest.error} on cardID: {cardID}");
-                    yield break;
+                    yield return null;
                 }
                     
                 DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
@@ -41,7 +41,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
                 _dataManager.CacheImage(cardID, handlerTexture.texture);
             }
 
-            yield break;
+            yield return null;
         }
     }
 }

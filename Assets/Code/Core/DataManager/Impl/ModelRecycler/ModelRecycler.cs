@@ -52,7 +52,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         }
 
         public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj)
-        {
+        {           
             bool modelExists = _renderers.TryGetValue(key, out var renderers);
             if (!modelExists)
             {

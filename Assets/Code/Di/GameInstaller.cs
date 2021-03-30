@@ -22,6 +22,7 @@ using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Features.ModelViewer;
 using UnityEngine;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -52,6 +53,8 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<ConnectionFormValidators>().AsSingle();
             Container.BindFactory<GameObject, SummonModelButton, SummonModelButton.SummonModelButtonFactory>()
                 .FromFactory<PrefabFactory<SummonModelButton>>();
+            Container.BindFactory<GameObject, SetImageFromAPI, SetImageFromAPIFactory>()
+                .FromFactory<PrefabFactory<SetImageFromAPI>>();
 
             #endregion
         }

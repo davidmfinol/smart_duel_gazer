@@ -10,9 +10,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         [SerializeField]
         private GameObject _playmatShell;
         [SerializeField]
-        private GameObject _menu;
+        private GameObject _bottomMenu;
         [SerializeField]
         private Slider _scaleSlider;
+        [SerializeField]
+        private Toggle _menuToggle;
 
         private MeshRenderer[] _renderers;
         private Animator[] _animators;
@@ -22,7 +24,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             _renderers = GetComponentsInChildren<MeshRenderer>();
             _animators = GetComponentsInChildren<Animator>();
-            //TODO Create a more solid connection to Indicator object
             _interaction = GameObject.FindGameObjectWithTag(Tags.Indicator);
         }
 
@@ -64,6 +65,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 animator.SetTrigger(AnimatorParams.Remove_Playfield_Trigger);
             }
+            _menuToggle.isOn = false;
         }
 
         private void DestroyPlaymat()

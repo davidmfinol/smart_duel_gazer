@@ -3,6 +3,8 @@ using UniRx;
 using UnityEngine.UI;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
 using Zenject;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace AssemblyCSharp.Assets.Code.Features.MainMenu
 {
@@ -29,12 +31,27 @@ namespace AssemblyCSharp.Assets.Code.Features.MainMenu
 
         private void ShowModelViewScene()
         {
-            _navigation.ShowModelViewScene();
+            StartCoroutine(AnimationsBuffer(1));
         }
 
         private void ShowSpeedDuelScene()
         {
-            _navigation.ShowSpeedDuelScene();
+            StartCoroutine(AnimationsBuffer(2));
+        }
+
+        private IEnumerator AnimationsBuffer(int i)
+        {
+            yield return new WaitForSeconds(2);
+
+            switch(i)
+            {
+                case 1:
+                    _navigation.ShowModelViewScene();
+                    break;
+                case 2:
+                    _navigation.ShowSpeedDuelScene();
+                    break;
+            }
         }
     }
 }

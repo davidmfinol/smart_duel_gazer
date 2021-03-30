@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6881984992089224567}
   - component: {fileID: 6449040263555882889}
   - component: {fileID: 5900957566526114146}
-  - component: {fileID: 137166186262224882}
   m_Layer: 0
   m_Name: CardFrontImage
   m_TagString: Untagged
@@ -97,19 +96,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &137166186262224882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3779645452488413171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b71a4da729252a24c8c31c8d33976042, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _image: {fileID: 6449040263555882889}
 --- !u!1 &5233387070911847034
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,6 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6078133470133549960}
   - component: {fileID: 803751776278859818}
+  - component: {fileID: 6177563346596507354}
   m_Layer: 0
   m_Name: SetCard
   m_TagString: Untagged
@@ -161,6 +148,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6177563346596507354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5233387070911847034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b71a4da729252a24c8c31c8d33976042, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _image: {fileID: 6449040263555882889}
+  _errorImages:
+  - {fileID: 2800000, guid: 6a38d1594d1c7964fbb2592fab580e27, type: 3}
+  - {fileID: 2800000, guid: bf34c175736d5fa4ab0db7e63aac3646, type: 3}
+  - {fileID: 2800000, guid: b9b901f4040bb9d489cddf50a46c50d3, type: 3}
+  - {fileID: 2800000, guid: b74f5b0fdb6e19c48b13bada07a4b0fd, type: 3}
 --- !u!1 &6709147893820554981
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,7 +271,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9088938638584870820}
   m_Layer: 0
-  m_Name: PivotPoint
+  m_Name: Error Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
