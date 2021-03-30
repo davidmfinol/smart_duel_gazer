@@ -10,7 +10,8 @@ namespace AssemblyCSharp.Assets.Code.Core.General
         public static readonly int Animator_Activate_Spell_Or_Trap = Animator.StringToHash("ActivateSpellTrap");
         public static readonly int Animator_Remove_Spell_Or_Trap = Animator.StringToHash("RemoveSpellTrap");
         public static readonly int Animator_Show_Set_Monster = Animator.StringToHash("ShowSetMonster");
-        
+        public static readonly int Death_Trigger = Animator.StringToHash("Death");
+
         #endregion
 
         #region UI Animations
