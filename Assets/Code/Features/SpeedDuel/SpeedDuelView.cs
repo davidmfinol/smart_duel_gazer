@@ -12,6 +12,8 @@ using UnityEngine.XR.ARSubsystems;
 using Zenject;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -32,6 +34,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private GameObject _particles;
         [SerializeField]
         private GameObject _prefabManager;
+        [SerializeField]
+        private ModelEventHandler _eventHandler;
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
@@ -42,6 +46,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private ARPlaneManager _arPlaneManager;
         private List<ARRaycastHit> _hits;
         private Pose _placementPose;
+        private WaitForSeconds _waitTime = new WaitForSeconds(10);
         private bool _placementPoseIsValid = false;
         private bool _objectPlaced = false;
 
@@ -310,12 +315,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 instantiatedModel = Instantiate(cardModel, zone.position, zone.rotation, SpeedDuelField.transform);
             }
 
-            var animator = instantiatedModel.GetComponentInChildren<Animator>();
-            if (animator != null)
-            {
-                animator.SetTrigger(AnimatorParams.Summoning_Trigger);
-            }
-
+            _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
             if (summonEvent.IsSet)
@@ -324,7 +324,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
                 StartCoroutine(AwaitImage(setCardModel, cardModel.name));
 
-                _dataManager.GetMeshRenderers(instantiatedModel.name, instantiatedModel).SetRendererVisibility(false);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
                 InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardModel);
             }
@@ -332,14 +332,19 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + removeCardEvent.ZoneName);
-
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (modelExists)
             {
-                var characterMesh = _dataManager.GetMeshRenderers(model.name, model);
-                characterMesh.SetRendererVisibility(false);
-                var destructionParticles = _dataManager.UseFromQueue(_keyParticles, zone.position, zone.rotation, characterMesh[0]);
+                return;
+            }
+
+            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
+
+            var destructionParticles = _dataManager.UseFromQueue(
+                (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
+
+            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
+            StartCoroutine(WaitToProceed(model.name, model));
 
                 StartCoroutine(WaitToProceed(_keyParticles, destructionParticles, 10f));
                 StartCoroutine(WaitToProceed(model.name, model, 10f));
@@ -352,6 +357,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
+            //TODO: Modify to new eventHandler
             var animator = setCardBack.GetComponent<Animator>();
             if (animator != null)
             {
@@ -375,8 +381,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             if (!positionChangeEvent.IsSet)
             {
-                //Change into Attack Mode
-                _dataManager.GetMeshRenderers(model.name, model).SetRendererVisibility(true);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, zone.name, true);
                 return;
             }
             
@@ -392,6 +397,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     _dataManager.AddToQueue(_keySetCard, newModel);
                 }
 
+                //TODO: Update to new eventHandler
                 _dataManager.GetMeshRenderers(model.name, model).SetRendererVisibility(false);
 
                 var setCard = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
@@ -405,6 +411,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnSpellTrapSetEventRecieved(SpellTrapSetEvent spellTrapSetEvent)
         {
+            //TODO: Update to new eventHandler
             var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + spellTrapSetEvent.ZoneName);
             if (zone == null)
             {
@@ -455,14 +462,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         #region Coroutines
 
-        private IEnumerator WaitToProceed(int key, GameObject model, float seconds)
+        private IEnumerator WaitToProceed(int key, GameObject model)
         {
-            yield return new WaitForSeconds(seconds);
+            yield return _waitTime;
             _dataManager.AddToQueue(key, model);
         }
-        private IEnumerator WaitToProceed(string key, GameObject model, float seconds)
+        private IEnumerator WaitToProceed(string key, GameObject model)
         {
-            yield return new WaitForSeconds(seconds);
+            yield return _waitTime;
             _dataManager.RecycleModel(key, model);
         }
 

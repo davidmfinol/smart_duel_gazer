@@ -23,6 +23,7 @@ using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Features.ModelViewer;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -40,7 +41,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
             Container.Bind<ICardModelDataManager>().To<CardModelDataManager>().AsSingle();
             Container.Bind<IModelRecycler>().To<ModelRecycler>().AsSingle();
-
+            
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();

@@ -21,6 +21,8 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!135 &4947628129576335689
 SphereCollider:
+--- !u!114 &2517819043969605501
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -32,6 +34,12 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.0040827035
   m_Center: {x: -0.0000298959, y: 0.004, z: -0.001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &7962529826709931688
 GameObject:
   m_ObjectHideFlags: 0

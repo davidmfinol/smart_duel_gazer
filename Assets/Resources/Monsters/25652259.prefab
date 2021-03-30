@@ -21,6 +21,8 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!65 &1969948807837061418
 BoxCollider:
+--- !u!114 &177246868212399833
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -32,6 +34,12 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.0036732461, y: 0.008441975, z: 0.0035482508}
   m_Center: {x: -0.000019495039, y: 0.004004078, z: 0.0005383909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &7711504625746407119
 GameObject:
   m_ObjectHideFlags: 0

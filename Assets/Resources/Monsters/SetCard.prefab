@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c21213bae6712a47bc936fb32c7410a, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 6078133470133549960}
   - component: {fileID: 803751776278859818}
   - component: {fileID: 6177563346596507354}
+  - component: {fileID: 2593973266946666098}
   m_Layer: 0
   m_Name: SetCard
   m_TagString: Untagged
@@ -149,6 +150,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &6177563346596507354
+--- !u!114 &2593973266946666098
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,6 +168,10 @@ MonoBehaviour:
   - {fileID: 2800000, guid: bf34c175736d5fa4ab0db7e63aac3646, type: 3}
   - {fileID: 2800000, guid: b9b901f4040bb9d489cddf50a46c50d3, type: 3}
   - {fileID: 2800000, guid: b74f5b0fdb6e19c48b13bada07a4b0fd, type: 3}
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &6709147893820554981
 GameObject:
   m_ObjectHideFlags: 0

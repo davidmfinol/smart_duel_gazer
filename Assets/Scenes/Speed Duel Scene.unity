@@ -295,6 +295,7 @@ MonoBehaviour:
   _placementIndicator: {fileID: 633987594}
   _particles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
   _prefabManager: {fileID: 957963882}
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!4 &223974228
 Transform:
   m_ObjectHideFlags: 0

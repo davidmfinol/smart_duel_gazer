@@ -52,6 +52,8 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!65 &6467185563556859491
 BoxCollider:
+--- !u!114 &3558557135537863475
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -63,6 +65,12 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.0041230842, y: 0.007607206, z: 0.003762716}
   m_Center: {x: -0.0003149709, y: 0.0039043492, z: -0.00005521476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1001 &6542608679276545857
 PrefabInstance:
   m_ObjectHideFlags: 0

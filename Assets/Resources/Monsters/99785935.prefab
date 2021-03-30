@@ -52,6 +52,8 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!135 &6217973769808681280
 SphereCollider:
+--- !u!114 &3181664051992595507
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -63,6 +65,12 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.0030467445
   m_Center: {x: 0, y: 0.003, z: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1001 &1420189779538765016
 PrefabInstance:
   m_ObjectHideFlags: 0

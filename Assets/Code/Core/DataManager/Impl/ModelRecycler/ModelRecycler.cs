@@ -10,7 +10,6 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
     {
         private readonly Dictionary<int, Queue<GameObject>> _generalRecycler = new Dictionary<int, Queue<GameObject>>();
         private readonly Dictionary<string, Queue<GameObject>> _modelRecycler = new Dictionary<string, Queue<GameObject>>();
-        private readonly Dictionary<string, SkinnedMeshRenderer[]> _renderers = new Dictionary<string, SkinnedMeshRenderer[]>();
         private readonly Dictionary<string, Texture> _images = new Dictionary<string, Texture>();
 
         public void CreateRecycler()
@@ -29,18 +28,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         {
             var model = _generalRecycler[key].Dequeue();
             model.transform.SetPositionAndRotation(position, rotation);
-            model.SetActive(true);
-            return model;
-        }
-        public GameObject UseFromQueue(int key, 
-                                       Vector3 position, 
-                                       Quaternion rotation,  
-                                       SkinnedMeshRenderer meshToDestroy)
-        {
-            var model = _generalRecycler[key].Dequeue();
-            var mesh = model.GetComponent<ISetMeshCharacter>();
-            mesh.GetCharacterMesh(meshToDestroy);
-            model.transform.SetPositionAndRotation(position, rotation);
+            model.transform.SetParent(parent);
             model.SetActive(true);
             return model;
         }
@@ -49,19 +37,6 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             var model = _generalRecycler[key].Dequeue();
             model.SetActive(true);
             return model;
-        }
-
-        public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj)
-        {           
-            bool modelExists = _renderers.TryGetValue(key, out var renderers);
-            if (!modelExists)
-            {
-                renderers = obj.GetComponentsInChildren<SkinnedMeshRenderer>();
-                _renderers.Add(key, renderers);
-                return renderers;
-            }
-
-            return renderers;
         }
 
         public bool CheckForExistingModel(string key)
@@ -91,14 +66,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         public GameObject GetExistingModel(string key, Transform parent)
         {
             var model = _modelRecycler[key].Dequeue();
-            var renderers = GetMeshRenderers(key, model);
-
-            foreach (SkinnedMeshRenderer item in renderers)
-            {
-                item.enabled = true;
-            }
-
-            model.transform.parent = parent;
+            model.transform.SetParent(parent);
             model.SetActive(true);
             return model;
         }

@@ -21,6 +21,8 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!136 &7212309857191246421
 CapsuleCollider:
+--- !u!114 &4809478565838419739
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -33,6 +35,12 @@ CapsuleCollider:
   m_Height: 0.010372874
   m_Direction: 1
   m_Center: {x: -0.00012450515, y: 0.0052047777, z: 0.0009769616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &7224916136937916771
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,6 +143,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8007432631361551688, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d32a02d382505074a898ed9a54102eab, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
 --- !u!1 &3788011267198208183 stripped

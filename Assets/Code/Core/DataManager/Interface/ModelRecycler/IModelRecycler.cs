@@ -6,13 +6,8 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler
     {
         public void CreateRecycler();
         public void AddToQueue(int key, GameObject model);
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation);
-        public GameObject UseFromQueue(int key,
-                                       Vector3 position,
-                                       Quaternion rotation,
-                                       SkinnedMeshRenderer meshToDestroy);
-        public GameObject UseFromQueue(int key);
-        public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj);
+        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent);
+        public GameObject UseFromQueue(int key, Transform parent);
         public bool CheckForExistingModel(string key);
         public GameObject GetExistingModel(string key);
         public GameObject GetExistingModel(string key, Transform parent);
