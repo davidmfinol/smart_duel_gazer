@@ -2,6 +2,8 @@
 {
     public interface INavigationService
     {
+        void ShowConnectionScene();
         void ShowSpeedDuelScene();
+        void ShowModelViewScene();
     }
 }

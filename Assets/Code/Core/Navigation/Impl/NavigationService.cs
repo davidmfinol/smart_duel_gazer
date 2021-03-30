@@ -6,9 +6,19 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
 {
     public class NavigationService : INavigationService
     {
+        public void ShowConnectionScene()
+        {
+            SceneManager.LoadScene((int)Routes.Connection);
+        }
+        
         public void ShowSpeedDuelScene()
         {
             SceneManager.LoadScene((int)Routes.SpeedDuel);
+        }
+
+        public void ShowModelViewScene()
+        {
+            SceneManager.LoadScene((int)Routes.ModelView);
         }
     }
 }

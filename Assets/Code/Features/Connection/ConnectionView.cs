@@ -21,7 +21,10 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
         private TMP_InputField _portInputField;
 
         [SerializeField]
-        private Button _connectButton;
+        private Button _speedDuelButton;
+
+        [SerializeField]
+        private Button _modelViewButton;
 
         private ConnectionFormValidators _connectionFormValidators;
         private INavigationService _navigationService;
@@ -60,10 +63,11 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
                 _portInputField.text = connectionInfo.Port;
             }
 
-            _connectButton.onClick.AsObservable().Subscribe(_ => OnConnectPressed());
+            _speedDuelButton.onClick.AsObservable().Subscribe(_ => OnSpeedDuelPressed());
+            _modelViewButton.onClick.AsObservable().Subscribe(_ => OnModelViewPressed());
         }
 
-        public void OnConnectPressed()
+        public void OnSpeedDuelPressed()
         {
             var isFormValid = ValidateForm();
             if (!isFormValid)
@@ -73,6 +77,18 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
 
             SaveConnectionInfo();
             ShowMainScene();
+        }
+
+        public void OnModelViewPressed()
+        {
+            var isFormValid = ValidateForm();
+            if (!isFormValid)
+            {
+                return;
+            }
+
+            SaveConnectionInfo();
+            ShowModelViewScene();
         }
 
         private bool ValidateForm()
@@ -113,6 +129,11 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
         private void ShowMainScene()
         {
             _navigationService.ShowSpeedDuelScene();
+        }
+
+        private void ShowModelViewScene()
+        {
+            _navigationService.ShowModelViewScene();
         }
 
         #endregion

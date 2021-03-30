@@ -13,6 +13,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
         private const string SUMMON_EVENT_NAME = "summonEvent";
         private const string REMOVE_CARD_EVENT = "removeCardEvent";
+        private const string POSITION_CHANGE_EVENT = "positionChangeEvent";
 
         private IDataManager _dataManager;
 

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.General;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
@@ -11,18 +14,20 @@ using Zenject;
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
-    {
-        private static readonly int SummoningAnimatorId = Animator.StringToHash("SummoningTrigger");
-
+    {       
         [SerializeField]
         private GameObject _objectToPlace;
         [SerializeField]
         private GameObject _placementIndicator;
+        [SerializeField]
+        private GameObject _particles;
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
 
         private ARRaycastManager _arRaycastManager;
+        private ARPlaneManager _arPlaneManager;
+        private List<ARRaycastHit> _hits;
         private Pose _placementPose;
         private bool _placementPoseIsValid = false;
         private bool _objectPlaced = false;
@@ -53,9 +58,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         #region Lifecycle
 
-        private void Start()
+        private void Awake()
         {
-            StartPlacementIndicator();
+            GetObjectReferences();
         }
 
         private void Update()
@@ -72,9 +77,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         #region Placement indicator
 
-        private void StartPlacementIndicator()
+        private void GetObjectReferences()
         {
             _arRaycastManager = FindObjectOfType<ARRaycastManager>();
+            _arPlaneManager = FindObjectOfType<ARPlaneManager>();
         }
 
         private void UpdatePlacementIndicatorIfNecessary()
@@ -84,16 +90,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            UpdatePlacementPose();
+            _hits = UpdatePlacementPose();
             UpdatePlacementIndicator();
 
             if (_placementPoseIsValid && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 PlaceObject();
+                SetPlaymatScale(_hits);
             }
         }
 
-        private void UpdatePlacementPose()
+        private List<ARRaycastHit> UpdatePlacementPose()
         {
             var screenCenter = Camera.current.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
             var hits = new List<ARRaycastHit>();
@@ -102,12 +109,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _placementPoseIsValid = hits.Count > 0;
             if (_placementPoseIsValid)
             {
-                _placementPose = hits[0].pose;
+                _placementPose = hits[hits.Count-1].pose;
 
                 var cameraForward = Camera.current.transform.forward;
                 var cameraBearing = new Vector3(cameraForward.x, 0, cameraForward.z).normalized;
                 _placementPose.rotation = Quaternion.LookRotation(cameraBearing);
             }
+
+            return hits;
         }
 
         private void UpdatePlacementIndicator()
@@ -128,6 +137,59 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectPlaced = true;
             _placementIndicator.SetActive(false);
             SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
+        }
+
+        private void SetPlaymatScale(List<ARRaycastHit> hits)
+        {
+            var screenCenter = Camera.current.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
+            _arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinBounds);
+
+            if (hits == null)
+            {
+                return;
+            }
+
+            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count].trackableId));
+
+            if (scalePlane <= 0)
+            {
+                return;
+            }
+
+            SpeedDuelField.transform.localScale = new Vector3(scalePlane, scalePlane, scalePlane);
+            SpeedDuelField.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+
+            _arPlaneManager.SetTrackablesActive(false);
+            _arPlaneManager.enabled = false;
+        }
+
+        private float GetCameraOrientation(ARPlane plane)
+        {
+            float scaleAmount;
+            var cameraOriantation = Camera.current.transform.rotation.y;
+
+            //This section has been refactored. Will be changed in future iterations
+            if (cameraOriantation.IsWithinRange(45, 135) || cameraOriantation.IsWithinRange(225, 315))
+            {
+                scaleAmount = plane.size.y;
+            }
+            else if (cameraOriantation.IsWithinRange(-45, -135) || cameraOriantation.IsWithinRange(-225, -315))
+            {
+                scaleAmount = plane.size.y;
+            }
+            else
+            {
+                scaleAmount = plane.size.x;
+            }
+
+            return scaleAmount;
+        }
+
+        private void OnPlaymatDestroyed()
+        {
+            _objectPlaced = false;
+            _placementIndicator.SetActive(true);
+            _arPlaneManager.enabled = true;
         }
 
         #endregion
@@ -153,7 +215,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnSummonEventReceived(SummonEvent summonEvent)
         {
-            var zone = SpeedDuelField.transform.Find(summonEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find("Playmat/" + summonEvent.ZoneName);
             if (zone == null)
             {
                 return;
@@ -165,12 +227,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation);
+            var instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
 
             var animator = instantiatedModel.GetComponentInChildren<Animator>();
             if (animator != null)
             {
-                animator.SetTrigger(SummoningAnimatorId);
+                animator.SetTrigger(AnimatorIDSetter.Animator_Summoning_Trigger);
             }
 
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
@@ -184,10 +246,20 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            Destroy(model);
+            var characterMesh = model.GetComponentsInChildren<SkinnedMeshRenderer>();
+            foreach (SkinnedMeshRenderer item in characterMesh)
+            {
+                item.enabled = false;
+            }
+
+            var meshToDestroy = _particles.GetComponent<ISetMeshCharacter>();
+            meshToDestroy.GetCharacterMesh(characterMesh[0]);
+            var destructionParticles = Instantiate(_particles, SpeedDuelField.transform);
+
+            Destroy(model, 10f);
+            Destroy(destructionParticles, 10f);
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
         }
-
         #endregion
     }
 }

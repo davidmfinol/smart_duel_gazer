@@ -4,5 +4,6 @@
     {
         void UseAutoOrientation();
         void UsePortraitOrientation();
+        void UseLandscapeOrientation();
     }
 }
