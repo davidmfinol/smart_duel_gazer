@@ -5190,6 +5190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8822457068913206628}
   - component: {fileID: 7469847071139311034}
+  - component: {fileID: 4309176937675360488}
   m_Layer: 0
   m_Name: Dark Magician GIrl
   m_TagString: Untagged
@@ -5245,6 +5246,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4309176937675360488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8591960344830967565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &8644284043672328900
 GameObject:
   m_ObjectHideFlags: 0

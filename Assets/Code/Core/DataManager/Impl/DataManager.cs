@@ -65,22 +65,9 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         {
             return _modelRecycler.UseFromQueue(key, position, rotation, parent);
         }
-        public GameObject UseFromQueue(int key,
-                                       Vector3 position,
-                                       Quaternion rotation,
-                                       Transform parent,
-                                       SkinnedMeshRenderer meshToDestroy)
-        {
-            return _modelRecycler.UseFromQueue(key, position, rotation, parent, meshToDestroy);
-        }
         public GameObject UseFromQueue(int key, Transform parent)
         {
             return _modelRecycler.UseFromQueue(key, parent);
-        }
-
-        public SkinnedMeshRenderer[] GetMeshRenderers(string key, GameObject obj)
-        {
-            return _modelRecycler.GetMeshRenderers(key, obj);
         }
 
         public bool CheckForExistingModel(string key)
