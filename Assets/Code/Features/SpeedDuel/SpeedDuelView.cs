@@ -1,19 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.General;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
+using Zenject;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using Zenject;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl;
+using System.Collections;
+using System.Collections.Generic;
+using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
+using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
+using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -271,9 +269,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             GameObject instantiatedModel;
-            if (_dataManager.CheckForExistingModel(cardModel.name + "(Clone)"))
+            if (_dataManager.CheckForExistingModel(cardModel.name))
             {
-                instantiatedModel = _dataManager.GetExistingModel(cardModel.name + "(Clone)", SpeedDuelField.transform);
+                instantiatedModel = _dataManager.UseFromQueue(cardModel.name, SpeedDuelField.transform);
                 instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
             }
             else
@@ -284,19 +282,19 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
-            if (summonEvent.IsSet)
-            {
-                var setCardImage = _dataManager.GetCardModel(SET_CARD);
-                if (setCardImage == null)
-                {
-                    return;
-                }
+            //if (summonEvent.IsSet)
+            //{
+            //    var setCardImage = _dataManager.GetCardModel(SET_CARD);
+            //    if (setCardImage == null)
+            //    {
+            //        return;
+            //    }
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
+            //    _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
-                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
-            }
+            //    var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+            //    InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
+            //}
         }        
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
@@ -307,10 +305,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
-
             var destructionParticles = _dataManager.UseFromQueue(
                 (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
+            
+            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
             StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
             StartCoroutine(WaitToProceed(model.name, model));
@@ -373,7 +371,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private IEnumerator WaitToProceed(string key, GameObject model)
         {
             yield return _waitTime;
-            _dataManager.RecycleModel(key, model);
+            _dataManager.AddToQueue(key, model);
         }
 
         #endregion

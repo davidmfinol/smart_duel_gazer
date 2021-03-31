@@ -1,10 +1,11 @@
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.General;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
+namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
@@ -21,13 +22,17 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
         {
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-
-            SubscribeToEvents();
         }
 
         private void OnEnable()
         {
-            _eventHandler.OnSummonMonster += SummonMonster;
+            SubscribeToEvents();
+        }
+
+        private void OnDisable()
+        {
+            _zone = null;
+            _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
         }
 
         #endregion
@@ -64,14 +69,15 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
                     _animator.SetTrigger(AnimatorIDSetter.Death_Trigger);
                     return;
                 }
-                BlowUpMonster();
+                ActivateParticlesAndRemoveModel();
             }
         }
 
-        public void BlowUpMonster()
+        public void ActivateParticlesAndRemoveModel()
         {
             _eventHandler.RaiseEvent(EventNames.OnMonsterDestruction, _renderers);
             _renderers.SetRendererVisibility(false);
+            _eventHandler.OnDestroyMonster -= DestroyMonster;
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using Zenject;
 using UniRx;
 
-namespace AssemblyCSharp.Assets.Code.Core.General.Navigation
+namespace AssemblyCSharp.Assets.Code.UIComponents.General
 {
     public class ReturnToMainMenu : MonoBehaviour
     {

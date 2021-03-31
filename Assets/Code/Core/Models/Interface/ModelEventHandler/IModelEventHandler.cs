@@ -1,5 +1,5 @@
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 public interface IModelEventHandler
 {

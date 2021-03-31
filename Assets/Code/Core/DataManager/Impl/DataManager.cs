@@ -5,7 +5,6 @@ using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using UnityEngine;
 using Zenject;
-using System.Collections.Generic;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
@@ -60,6 +59,10 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         {
             _modelRecycler.AddToQueue(key, model);
         }
+        public void AddToQueue(string key, GameObject model)
+        {
+            _modelRecycler.AddToQueue(key, model);
+        }
 
         public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
         {
@@ -69,20 +72,14 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         {
             return _modelRecycler.UseFromQueue(key, parent);
         }
+        public GameObject UseFromQueue(string key, Transform parent)
+        {
+            return _modelRecycler.UseFromQueue(key, parent);
+        }
 
         public bool CheckForExistingModel(string key)
         {
             return _modelRecycler.CheckForExistingModel(key);
-        }
-        
-        public GameObject GetExistingModel(string key, Transform parent)
-        {
-            return _modelRecycler.GetExistingModel(key, parent);
-        }
-
-        public void RecycleModel(string key, GameObject model)
-        {
-            _modelRecycler.RecycleModel(key, model);
         }
 
         #endregion

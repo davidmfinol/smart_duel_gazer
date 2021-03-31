@@ -1,10 +1,9 @@
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
-    public class DestructionParticles : MonoBehaviour, ISetToMeshShape
+    public class DestructionParticles : MonoBehaviour
     {
         [SerializeField]
         private ModelEventHandler _eventHandler;

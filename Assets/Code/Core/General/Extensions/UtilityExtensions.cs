@@ -8,6 +8,11 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
         {
             return value >= min && value <= max;
         }
+        
+        public static int StringToInt(this string value, char splitCharacter = '(', int index = 0)
+        {
+            return int.Parse(value.Split(splitCharacter)[index]);
+        }
 
         public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
         {
