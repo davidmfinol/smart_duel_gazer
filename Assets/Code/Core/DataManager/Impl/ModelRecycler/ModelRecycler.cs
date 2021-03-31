@@ -10,7 +10,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
     {
         private readonly Dictionary<int, Queue<GameObject>> _generalRecycler = new Dictionary<int, Queue<GameObject>>();
         private readonly Dictionary<string, Queue<GameObject>> _modelRecycler = new Dictionary<string, Queue<GameObject>>();
-        private readonly Dictionary<string, Texture> _images = new Dictionary<string, Texture>();
+        private readonly Dictionary<string, Texture2D> _images = new Dictionary<string, Texture2D>();
 
         public void CreateRecycler()
         {
@@ -28,7 +28,6 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         {
             var model = _generalRecycler[key].Dequeue();
             model.transform.SetPositionAndRotation(position, rotation);
-            model.transform.SetParent(parent);
             model.SetActive(true);
             return model;
         }
@@ -53,13 +52,6 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         public GameObject GetExistingModel(string key)
         {
             var model = _modelRecycler[key].Dequeue();
-            var renderers = GetMeshRenderers(key, model);
-
-            foreach (SkinnedMeshRenderer item in renderers)
-            {
-                item.enabled = true;
-            }
-
             model.SetActive(true);
             return model;
         }
@@ -82,7 +74,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             model.SetActive(false);
         }
 
-        public void CacheImage(string key, Texture texture)
+        public void CacheImage(string key, Texture2D texture)
         {
             _images.Add(key, texture);
         }
@@ -94,8 +86,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         public Texture GetCachedImage(string key)
         {
-            bool textureExists = _images.TryGetValue(key, out var texture);
-            if (!textureExists)
+            if (_images.TryGetValue(key, out var texture))
             {
                 Debug.LogWarning("Texture Doesn't Exist");
                 return null;

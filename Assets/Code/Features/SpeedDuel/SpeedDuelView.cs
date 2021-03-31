@@ -318,36 +318,29 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
-            if (summonEvent.IsSet)
-            {
-                //TODO: Add logic for Face Up Defence special summon
-                var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
-                StartCoroutine(AwaitImage(setCardModel, cardModel.name));
+            //if (summonEvent.IsSet)
+            //{
+            //    //TODO: Add logic for Face Up Defence special summon
+            //    var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
+            //    StartCoroutine(AwaitImage(setCardModel, cardModel.name));
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
+            //    _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
-                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardModel);
-            }
+            //    InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardModel);
+            //}
         }
 
+        //Fix this
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (modelExists)
             {
-                return;
-            }
+                var destructionParticles = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles);
+                _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
-            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
-
-            var destructionParticles = _dataManager.UseFromQueue(
-                (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
-
-            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
-            StartCoroutine(WaitToProceed(model.name, model));
-
-                StartCoroutine(WaitToProceed(_keyParticles, destructionParticles, 10f));
-                StartCoroutine(WaitToProceed(model.name, model, 10f));
+                StartCoroutine(WaitToProceed(_keyParticles, destructionParticles));
+                StartCoroutine(WaitToProceed(model.name, model));
                 InstantiatedModels.Remove(removeCardEvent.ZoneName);
             }
 
@@ -365,7 +358,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
-            StartCoroutine(WaitToProceed(_keySetCard, setCardBack, 5));
+            StartCoroutine(WaitToProceed(_keySetCard, setCardBack));
         }
 
         private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
@@ -397,15 +390,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     _dataManager.AddToQueue(_keySetCard, newModel);
                 }
 
-                //TODO: Update to new eventHandler
-                _dataManager.GetMeshRenderers(model.name, model).SetRendererVisibility(false);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, positionChangeEvent.ZoneName, false);
 
                 var setCard = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
                 InstantiatedModels.Add(positionChangeEvent.ZoneName + SET_CARD, setCard);
                 return;
             }
-            
-            _dataManager.GetMeshRenderers(model.name, model).SetRendererVisibility(true);
+
+            _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, positionChangeEvent.ZoneName, true);
             setCardModel.GetComponent<Animator>().SetTrigger(AnimatorParams.Show_Set_Monster_Trigger);
         }
 
@@ -445,7 +437,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             //Temporary activation call for testing. Remove for gameplay
             setCardModel.GetComponent<Animator>()
-                .SetTrigger(AnimatorParams.Activate_Spell_Or_Trap_Trigger); ;
+                .SetTrigger(AnimatorParams.Activate_Spell_Or_Trap_Trigger);
 
             if (InstantiatedModels.ContainsKey(spellTrapSetEvent.ZoneName + SET_CARD))
             {

@@ -30,6 +30,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
             SetRandomErrorImage();
+            print("setting error image");
         }
 
         private void SetRandomErrorImage()

@@ -1,4 +1,5 @@
 ﻿using Zenject;
+using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Impl;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
@@ -21,9 +22,7 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
 using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Features.ModelViewer;
-using UnityEngine;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {

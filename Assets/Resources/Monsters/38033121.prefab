@@ -5191,7 +5191,7 @@ GameObject:
   - component: {fileID: 8822457068913206628}
   - component: {fileID: 7469847071139311034}
   - component: {fileID: 4921023886598548872}
-  - component: {fileID: 4309176937675360488}
+  - component: {fileID: 318704706674567278}
   m_Layer: 0
   m_Name: Dark Magician GIrl
   m_TagString: Untagged
@@ -5249,8 +5249,6 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!65 &4921023886598548872
 BoxCollider:
---- !u!114 &4309176937675360488
-MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5262,6 +5260,13 @@ MonoBehaviour:
   serializedVersion: 2
   m_Size: {x: 7.5961294, y: 24.552628, z: 7.015363}
   m_Center: {x: -0.11967495, y: 16.337309, z: -1.8938195}
+--- !u!114 &318704706674567278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8591960344830967565}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}

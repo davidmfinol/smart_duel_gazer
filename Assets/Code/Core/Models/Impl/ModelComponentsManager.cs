@@ -3,6 +3,7 @@ using AssemblyCSharp.Assets.Code.Core.General;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
 {
@@ -43,7 +44,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
         {
             _zone = zone;
             _renderers.SetRendererVisibility(true);
-            _animator.SetTrigger(AnimatorIDSetter.Animator_Summoning_Trigger);
+            _animator.SetTrigger(AnimatorParams.Summoning_Trigger);
             _eventHandler.OnSummonMonster -= SummonMonster;
         }
 
@@ -59,9 +60,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
         {
             if (zone == _zone)
             {
-                if (_animator.HasState(0, AnimatorIDSetter.Death_Trigger))
+                if (_animator.HasState(0, AnimatorParams.Death_Trigger))
                 {
-                    _animator.SetTrigger(AnimatorIDSetter.Death_Trigger);
+                    _animator.SetTrigger(AnimatorParams.Death_Trigger);
                     return;
                 }
                 BlowUpMonster();

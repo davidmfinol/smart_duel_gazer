@@ -39,9 +39,10 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
                 DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
 
                 _dataManager.CacheImage(cardID, handlerTexture.texture);
+                print($"{cardID}, {handlerTexture.texture}");
             }
 
-            yield return null;
+            yield break;
         }
     }
 }

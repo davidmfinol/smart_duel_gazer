@@ -502,7 +502,7 @@ GameObject:
   - component: {fileID: 2403446047081808881}
   - component: {fileID: 9190373681469113850}
   - component: {fileID: 2687888267562058204}
-  - component: {fileID: 2068692173360405993}
+  - component: {fileID: 8286923520192610738}
   m_Layer: 0
   m_Name: Blue-Eyes White Dragon
   m_TagString: Untagged
@@ -548,8 +548,6 @@ Animator:
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!135 &2687888267562058204
 SphereCollider:
---- !u!114 &2068692173360405993
-MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -561,6 +559,13 @@ MonoBehaviour:
   serializedVersion: 2
   m_Radius: 12.102214
   m_Center: {x: -1.4220879, y: 9.816427, z: 4.3999987}
+--- !u!114 &8286923520192610738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2272135872503572214}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}

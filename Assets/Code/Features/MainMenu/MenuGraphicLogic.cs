@@ -1,5 +1,6 @@
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.General.Statics;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace AssemblyCSharp.Assets.Code.Features.MainMenu
         private void ModelViewerPressed()
         {
             var particles = Instantiate(_particles, transform.position, transform.rotation, transform);
-            particles.GetComponent<ISetMeshCharacter>().GetCharacterMesh(_currentModel.GetComponentInChildren<SkinnedMeshRenderer>());
+            particles.GetComponent<ISetToMeshShape>().GetMeshShape(_currentModel.GetComponentInChildren<SkinnedMeshRenderer>());
             _dataManager.RecycleModel(_currentModel.name, _currentModel);
         }
     }

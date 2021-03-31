@@ -64,7 +64,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         {
             return _modelRecycler.UseFromQueue(key, position, rotation);
         }
-        public GameObject UseFromQueue(int key, Transform parent)
+        public GameObject UseFromQueue(int key)
         {
             return _modelRecycler.UseFromQueue(key);
         }
@@ -89,7 +89,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _modelRecycler.RecycleModel(key, model);
         }
 
-        public void CacheImage(string key, Texture texture)
+        public void CacheImage(string key, Texture2D texture)
         {
             _modelRecycler.CacheImage(key, texture);
         }
