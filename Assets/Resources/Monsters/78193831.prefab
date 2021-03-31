@@ -32,6 +32,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
+--- !u!65 &5889604161573641470
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3788011267198208183}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.006382904, y: 0.010819358, z: 0.005019985}
+  m_Center: {x: -0.00066362857, y: 0.004294357, z: 0.00032288686}
 --- !u!1 &7224916136937916771
 GameObject:
   m_ObjectHideFlags: 0
