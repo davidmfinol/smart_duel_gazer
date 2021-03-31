@@ -13,14 +13,6 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
         {
             return int.Parse(value.Split(splitCharacter)[index]);
         }
-
-        public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
-        {
-            foreach (SkinnedMeshRenderer item in renderers)
-            {
-                item.enabled = visibility;
-            }
-        }
     }
 
 }

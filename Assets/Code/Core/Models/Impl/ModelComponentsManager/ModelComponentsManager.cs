@@ -1,12 +1,12 @@
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.General;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
+    [RequireComponent(typeof(Animator))]
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
         [SerializeField]
@@ -78,6 +78,17 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.RaiseEvent(EventNames.OnMonsterDestruction, _renderers);
             _renderers.SetRendererVisibility(false);
             _eventHandler.OnDestroyMonster -= DestroyMonster;
+        }
+    }
+
+    public static class ModelComponentUtilities
+    {
+        public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
+        {
+            foreach (SkinnedMeshRenderer item in renderers)
+            {
+                item.enabled = visibility;
+            }
         }
     }
 }

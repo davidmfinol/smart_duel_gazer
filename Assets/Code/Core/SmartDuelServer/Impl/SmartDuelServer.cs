@@ -96,12 +96,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         private bool CheckIfTrue(string mode)
         {
-            if (mode == "0")
-            {
-                return true;
-            }
-
-            return false;
+            return mode == "0";
         }
     }
 }

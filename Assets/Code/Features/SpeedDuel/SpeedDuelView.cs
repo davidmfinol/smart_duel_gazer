@@ -45,7 +45,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private GameObject SpeedDuelField { get; set; }
         private Dictionary<string, GameObject> InstantiatedModels { get; } = new Dictionary<string, GameObject>();
-        private Dictionary<string, GameObject> InactiveModels { get; } = new Dictionary<string, GameObject>();
 
         #endregion
 
@@ -100,6 +99,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
         }
 
+        //This function has been refactored for the next update
         private void InstantiateObjectPool(string parentName, int key, GameObject prefab, int amount)
         {
             var parent = new GameObject(parentName + " Pool");
@@ -204,7 +204,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private float GetCameraOrientation(ARPlane plane)
         {
-            float scaleAmount;
             var cameraOriantation = Camera.current.transform.rotation.y;
 
             if (cameraOriantation.IsWithinRange(45, 135)   || 
@@ -212,14 +211,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 cameraOriantation.IsWithinRange(-45, -135) || 
                 cameraOriantation.IsWithinRange(-225, -315))
             {
-                scaleAmount = plane.size.y;
+                return plane.size.y;
             }
-            else
-            {
-                scaleAmount = plane.size.x;
-            }
-
-            return scaleAmount;
+            
+            return plane.size.x;
         }
 
         private void OnPlaymatDestroyed()
@@ -282,19 +277,19 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
             InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
 
-            //if (summonEvent.IsSet)
-            //{
-            //    var setCardImage = _dataManager.GetCardModel(SET_CARD);
-            //    if (setCardImage == null)
-            //    {
-            //        return;
-            //    }
+            if (summonEvent.IsSet)
+            {
+                var setCardImage = _dataManager.GetCardModel(SET_CARD);
+                if (setCardImage == null)
+                {
+                    return;
+                }
 
-            //    _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
-            //    var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-            //    InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
-            //}
+                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
+            }
         }        
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
