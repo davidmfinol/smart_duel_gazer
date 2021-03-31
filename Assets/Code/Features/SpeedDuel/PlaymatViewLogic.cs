@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.General;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
@@ -32,8 +31,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void ScalePlaymat(float scale) 
         {
-            var mappedScale = scale.Map(_scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
+            var mappedScale = MapScaleValueToSliderValue(scale, _scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
             _playmatShell.transform.localScale = new Vector3(mappedScale, mappedScale, mappedScale);
+        }
+
+        private float MapScaleValueToSliderValue(float value,
+                                                 float originalMin,
+                                                 float originalMax,
+                                                 float newMin,
+                                                 float newMax)
+        {
+            return (value - originalMin) / (originalMax - originalMin) * (newMax - newMin) + newMin;
         }
 
         public void RotatePlaymat(float rotation) => _playmatShell.transform.rotation = Quaternion.Euler(0, rotation, 0);
