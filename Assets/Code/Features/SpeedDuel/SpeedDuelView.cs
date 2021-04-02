@@ -12,6 +12,7 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -26,11 +27,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private GameObject _placementIndicator;
         [SerializeField]
         private GameObject _particles;
-        [SerializeField]
-        private ModelEventHandler _eventHandler;
+        
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
+        private ModelEventHandler _eventHandler;
+        private ModelFactory _modelFactory;
+        private ParticleFactory _particleFactory;
 
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
@@ -54,10 +57,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         public void Construct(
             ISmartDuelServer smartDuelServer,
             IDataManager dataManager,
-            IScreenService screenService)
+            IScreenService screenService,
+            ModelEventHandler modelEventHandler,
+            ModelFactory modelFactory,
+            ParticleFactory particleFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
+            _eventHandler = modelEventHandler;
+            _modelFactory = modelFactory;
+            _particleFactory = particleFactory;
 
             screenService.UseAutoOrientation();
             ConnectToServer();
@@ -75,7 +84,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void Start()
         {
             _dataManager.CreateRecycler();
-            InstantiateObjectPool("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
+            BuildPrefabFromFactory("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
             InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
         }
 
@@ -107,6 +116,18 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             for (int i = 0; i < amount; i++)
             {
                 var obj = Instantiate(prefab, parent.transform);
+                _dataManager.AddToQueue(key, obj);
+            }
+        }
+
+        private void BuildPrefabFromFactory(string parentName, int key, GameObject prefab, int amount)
+        {
+            var parent = new GameObject(parentName + " Pool");
+
+            for (int i = 0; i < amount; i++)
+            {
+                var obj = _particleFactory.Create(prefab).gameObject;
+                obj.transform.SetParent(parent.transform);
                 _dataManager.AddToQueue(key, obj);
             }
         }
@@ -271,7 +292,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
             else
             {
-                instantiatedModel = Instantiate(cardModel, zone.transform.position, zone.transform.rotation, SpeedDuelField.transform);
+                //Fix model scale
+                instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
+                instantiatedModel.transform.SetParent(SpeedDuelField.transform);
+                instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
             }
 
             _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);

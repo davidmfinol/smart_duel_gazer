@@ -4,8 +4,7 @@ using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entiti
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
 {
-    [CreateAssetMenu]
-    public class ModelEventHandler : ScriptableObject, IModelEventHandler
+    public class ModelEventHandler : IModelEventHandler
     {
         public event Action<string> OnSummonMonster;
         public event Action<string, bool> OnChangeMonsterVisibility;
@@ -37,7 +36,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
         {
             if (eventName != EventNames.OnMonsterDestruction)
             {
-                Debug.LogWarning($"{eventName} does not exist in this context", this);
+                Debug.LogWarning($"{eventName} does not exist in this context");
                 return;
             }
             OnMonsterDestruction?.Invoke(renderers);

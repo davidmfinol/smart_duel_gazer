@@ -1,3 +1,4 @@
+using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.General;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
@@ -9,12 +10,17 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
     [RequireComponent(typeof(Animator))]
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
-        [SerializeField]
         private ModelEventHandler _eventHandler;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
         private string _zone;
+
+        [Inject]
+        public void Construct(ModelEventHandler modelEventHandler)
+        {
+            _eventHandler = modelEventHandler;
+        }
 
         #region Lifecycle
 
@@ -90,5 +96,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
                 item.enabled = visibility;
             }
         }
+    }
+
+    public class ModelFactory : PlaceholderFactory<GameObject, ModelComponentsManager>
+    {
     }
 }
