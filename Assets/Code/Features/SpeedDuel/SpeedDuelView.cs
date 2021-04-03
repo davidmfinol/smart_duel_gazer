@@ -256,7 +256,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void onSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
-            if (smartDuelEvent is SummonEvent summonEvent)
+            if (smartDuelEvent is SummonCardEvent summonEvent)
             {
                 OnSummonEventReceived(summonEvent);
             }
@@ -264,13 +264,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 OnRemovecardEventReceived(removeCardEvent);
             }
-            else if (smartDuelEvent is PositionChangeEvent positionChangeEvent)
-            {
-                OnPositionChangeEventRecieved(positionChangeEvent);
-            }
         }
 
-        private void OnSummonEventReceived(SummonEvent summonEvent)
+        private void OnSummonEventReceived(SummonCardEvent summonEvent)
         {
             var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
             if (zone == null)
@@ -278,31 +274,35 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var cardModel = _dataManager.GetCardModel(summonEvent.CardId);
-            if (cardModel == null)
+            if (!InstantiatedModels.ContainsKey(summonEvent.ZoneName))
             {
-                return;
+                var cardModel = _dataManager.GetCardModel(summonEvent.CardId);
+                if (cardModel == null)
+                {
+                    return;
+                }
+
+                GameObject instantiatedModel;
+                if (_dataManager.CheckForExistingModel(cardModel.name))
+                {
+                    instantiatedModel = _dataManager.UseFromQueue(cardModel.name, SpeedDuelField.transform);
+                    instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
+                }
+                else
+                {
+                    instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
+                    instantiatedModel.transform.SetParent(SpeedDuelField.transform);
+                    instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
+                }
+
+                _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
+                InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
             }
 
-            GameObject instantiatedModel;
-            if (_dataManager.CheckForExistingModel(cardModel.name))
+            if (summonEvent.CardPosition == "faceDownDefence")
             {
-                instantiatedModel = _dataManager.UseFromQueue(cardModel.name, SpeedDuelField.transform);
-                instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
-            }
-            else
-            {
-                //Fix model scale
-                instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
-                instantiatedModel.transform.SetParent(SpeedDuelField.transform);
-                instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
-            }
+                Debug.Log(summonEvent.CardPosition, this);
 
-            _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
-            InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
-
-            if (summonEvent.IsSet)
-            {
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
                 {
@@ -312,8 +312,26 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
                 var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardBack);
+                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
             }
+            else if (summonEvent.CardPosition == "faceUpDefence")
+            {
+                //Add animations & events for set cards with API update
+                Debug.Log(summonEvent.CardPosition, this);
+
+                var setCardImage = _dataManager.GetCardModel(SET_CARD);
+                if (setCardImage == null)
+                {
+                    return;
+                }
+
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, true);
+
+                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
+            }
+
+            //Add spell/trap faceUp, faceDown logic with API update
         }        
 
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
@@ -334,48 +352,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCard);
+            var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + SET_CARD, out var setCard);
             if (!modelIsSet)
             {
                 return;
             }
-            InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
+            InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
             _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCard);
-        }
-
-        private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
-        {
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + positionChangeEvent.ZoneName);
-
-            var modelExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName, out var model);
-            if (!modelExists)
-            {
-                return;
-            }
-
-            if (!positionChangeEvent.IsSet)
-            {
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, zone.name, true);
-                return;
-            }
-
-            var cardBackExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + "SetCard", out var _);
-            if (!cardBackExists)
-            {
-                var cardBack = _dataManager.GetCardModel(SET_CARD);
-                if (cardBack == null)
-                {
-                    return;
-                }
-
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, zone.name, false);
-
-                var setCardBackModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(positionChangeEvent.ZoneName + "SetCard", setCardBackModel);
-                return;
-            }
-            
-            _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, zone.name, false);
         }
 
         #endregion

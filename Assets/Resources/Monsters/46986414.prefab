@@ -3627,6 +3627,7 @@ GameObject:
   - component: {fileID: 3225065043847107340}
   - component: {fileID: 5777822696208161478}
   - component: {fileID: 412925167397412315}
+  - component: {fileID: 6935760779687258986}
   m_Layer: 0
   m_Name: Dark Magician
   m_TagString: Untagged
@@ -3686,6 +3687,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6935760779687258986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8623113560813700676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f014f8981154047817a1931e9241b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _modelScale: {x: 0.02, y: 0.02, z: 0.02}
 --- !u!1 &8710887304470044332
 GameObject:
   m_ObjectHideFlags: 0

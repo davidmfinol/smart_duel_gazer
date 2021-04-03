@@ -2,18 +2,20 @@ using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.General;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
-    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Animator)), RequireComponent(typeof(ModelSettings))]
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
         private ModelEventHandler _eventHandler;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
+        private ModelSettings _settings;
         private string _zone;
 
         [Inject]
@@ -28,6 +30,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         {
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+            _settings = GetComponent<ModelSettings>();            
         }
 
         private void OnEnable()
@@ -50,11 +53,19 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnDestroyMonster += DestroyMonster;
         }
 
+        public void ScaleModel()
+        {
+            transform.parent.transform.localScale = _settings.ModelScale;
+        }
+
         public void SummonMonster(string zone)
         {
             _zone = zone;
+
+            ScaleModel();
             _renderers.SetRendererVisibility(true);
             _animator.SetTrigger(AnimatorIDSetter.Animator_Summoning_Trigger);
+
             _eventHandler.OnSummonMonster -= SummonMonster;
         }
 
