@@ -1,14 +1,19 @@
+using Zenject;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
-    public class DestructionParticles : MonoBehaviour, ISetToMeshShape
+    public class DestructionParticles : MonoBehaviour
     {
-        [SerializeField]
         private ModelEventHandler _eventHandler;
         private ParticleSystem _particles;
+
+        [Inject]
+        public void Construct(ModelEventHandler modelEventHandler)
+        {
+            _eventHandler = modelEventHandler;
+        }
 
         #region LifeCycle
 
@@ -37,5 +42,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             shape.shapeType = ParticleSystemShapeType.SkinnedMeshRenderer;
             shape.skinnedMeshRenderer = _skinnedMesh;
         }
+    }
+
+    public class ParticleFactory : PlaceholderFactory<GameObject, DestructionParticles>
+    {
     }
 }

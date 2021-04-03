@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 
 namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 {
     public class ModelRecycler : IModelRecycler
     {
         private readonly Dictionary<int, Queue<GameObject>> _generalRecycler = new Dictionary<int, Queue<GameObject>>();
-        private readonly Dictionary<string, Queue<GameObject>> _modelRecycler = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, Texture> _images = new Dictionary<string, Texture>();
 
         public void CreateRecycler()
@@ -18,11 +17,29 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             _generalRecycler.Add((int)RecyclerKeys.SetCard, new Queue<GameObject>());
         }
 
+        #region AddToQueue Overloads
+
         public void AddToQueue(int key, GameObject model)
         {
             _generalRecycler[key].Enqueue(model);
             model.SetActive(false);
         }
+        public void AddToQueue(string stringKey, GameObject model)
+        {
+            int key = stringKey.StringToInt();
+            
+            if (!_generalRecycler.ContainsKey(key))
+            {
+                _generalRecycler.Add(key, new Queue<GameObject>());
+            }
+
+            _generalRecycler[key].Enqueue(model);
+            model.SetActive(false);
+        }
+
+        #endregion
+
+        #region UseFromQueue Overloads
 
         public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
         {
@@ -39,36 +56,15 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             model.SetActive(true);
             return model;
         }
-
-        public bool CheckForExistingModel(string key)
-        {
-            bool modelExists = _modelRecycler.TryGetValue(key, out _);
-            if (!modelExists) 
-            {
-                return false;
-            }
-
-            return _modelRecycler.ContainsKey(key);
-        }
-
-        public GameObject GetExistingModel(string key, Transform parent)
-        {
-            var model = _modelRecycler[key].Dequeue();
+        public GameObject UseFromQueue(string key, Transform parent)
+        {            
+            var model = _generalRecycler[key.StringToInt()].Dequeue();
             model.transform.SetParent(parent);
             model.SetActive(true);
             return model;
         }
-        
-        public void RecycleModel(string key, GameObject model)
-        {
-            if(!_modelRecycler.ContainsKey(key))
-            {
-                _modelRecycler.Add(key, new Queue<GameObject>());
-            }
 
-            _modelRecycler[key].Enqueue(model);
-            model.SetActive(false);
-        }
+        #endregion
 
         public void CacheImage(string key, Texture texture)
         {
@@ -91,5 +87,10 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
             return texture;
         }
+
+        public bool CheckForExistingModel(string key)
+        {
+            return _generalRecycler.TryGetValue(key.StringToInt(), out _);
+        }       
     }
 }

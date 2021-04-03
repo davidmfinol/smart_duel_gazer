@@ -21,6 +21,10 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
 using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using UnityEngine;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -44,11 +48,17 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
 
+            Container.Bind<ModelEventHandler>().AsSingle();
+            Container.BindFactory<GameObject, ModelComponentsManager, ModelFactory>()
+                .FromFactory<PrefabFactory<ModelComponentsManager>>();
+
             #endregion
 
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
+            Container.BindFactory<GameObject, DestructionParticles, ParticleFactory>()
+                .FromFactory<PrefabFactory<DestructionParticles>>();
 
             #endregion
         }

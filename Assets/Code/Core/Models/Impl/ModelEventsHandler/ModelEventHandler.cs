@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
+namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
 {
-    [CreateAssetMenu]
-    public class ModelEventHandler : ScriptableObject, IModelEventHandler
+    public class ModelEventHandler : IModelEventHandler
     {
         public event Action<string> OnSummonMonster;
         public event Action<string, bool> OnChangeMonsterVisibility;
@@ -37,6 +36,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
         {
             if (eventName != EventNames.OnMonsterDestruction)
             {
+                Debug.LogWarning($"{eventName} does not exist in this context");
                 return;
             }
             OnMonsterDestruction?.Invoke(renderers);

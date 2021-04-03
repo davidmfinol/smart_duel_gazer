@@ -1,4 +1,4 @@
-namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities
+namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities
 {
     public enum EventNames
     {

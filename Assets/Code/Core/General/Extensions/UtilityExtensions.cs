@@ -8,13 +8,10 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
         {
             return value >= min && value <= max;
         }
-
-        public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
+        
+        public static int StringToInt(this string value, char splitCharacter = '(', int index = 0)
         {
-            foreach (SkinnedMeshRenderer item in renderers)
-            {
-                item.enabled = visibility;
-            }
+            return int.Parse(value.Split(splitCharacter)[index]);
         }
     }
 

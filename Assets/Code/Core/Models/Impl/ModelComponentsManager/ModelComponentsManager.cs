@@ -1,19 +1,28 @@
+using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.General;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager.Entities;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
+namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
+    [RequireComponent(typeof(Animator)), RequireComponent(typeof(ModelSettings))]
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
-        [SerializeField]
         private ModelEventHandler _eventHandler;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
+        private ModelSettings _settings;
         private string _zone;
+
+        [Inject]
+        public void Construct(ModelEventHandler modelEventHandler)
+        {
+            _eventHandler = modelEventHandler;
+        }
 
         #region Lifecycle
 
@@ -21,13 +30,18 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
         {
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-
-            SubscribeToEvents();
+            _settings = GetComponent<ModelSettings>();            
         }
 
         private void OnEnable()
         {
-            _eventHandler.OnSummonMonster += SummonMonster;
+            SubscribeToEvents();
+        }
+
+        private void OnDisable()
+        {
+            _zone = null;
+            _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
         }
 
         #endregion
@@ -39,11 +53,19 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
             _eventHandler.OnDestroyMonster += DestroyMonster;
         }
 
+        public void ScaleModel()
+        {
+            transform.parent.transform.localScale = _settings.ModelScale;
+        }
+
         public void SummonMonster(string zone)
         {
             _zone = zone;
+
+            ScaleModel();
             _renderers.SetRendererVisibility(true);
             _animator.SetTrigger(AnimatorIDSetter.Animator_Summoning_Trigger);
+
             _eventHandler.OnSummonMonster -= SummonMonster;
         }
 
@@ -64,14 +86,30 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl
                     _animator.SetTrigger(AnimatorIDSetter.Death_Trigger);
                     return;
                 }
-                BlowUpMonster();
+                ActivateParticlesAndRemoveModel();
             }
         }
 
-        public void BlowUpMonster()
+        public void ActivateParticlesAndRemoveModel()
         {
             _eventHandler.RaiseEvent(EventNames.OnMonsterDestruction, _renderers);
             _renderers.SetRendererVisibility(false);
+            _eventHandler.OnDestroyMonster -= DestroyMonster;
         }
+    }
+
+    public static class ModelComponentUtilities
+    {
+        public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
+        {
+            foreach (SkinnedMeshRenderer item in renderers)
+            {
+                item.enabled = visibility;
+            }
+        }
+    }
+
+    public class ModelFactory : PlaceholderFactory<GameObject, ModelComponentsManager>
+    {
     }
 }
