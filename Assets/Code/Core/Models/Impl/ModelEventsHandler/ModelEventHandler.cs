@@ -7,8 +7,14 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
     public class ModelEventHandler : IModelEventHandler
     {
         public event Action<string> OnSummonMonster;
+        public event Action<string> OnDestroyMonster;
+        public event Action<string> OnDestroySetMonster;
+
+        public event Action<string, string> OnSummonSpellTrap;
+        public event Action<string> OnSpellTrapActivate;
+        public event Action<string> OnSpellTrapRemove;
+
         public event Action<string, bool> OnChangeMonsterVisibility;
-        public event Action<string, bool> OnDestroyMonster;
         public event Action<SkinnedMeshRenderer[]> OnMonsterDestruction;
 
         public void RaiseEvent(EventNames eventName, string zone)
@@ -18,23 +24,39 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
                 case EventNames.SummonMonster:
                     OnSummonMonster?.Invoke(zone);
                     break;
+                case EventNames.DestroyMonster:
+                    OnDestroyMonster?.Invoke(zone);
+                    break;
+                case EventNames.DestroySetMonster:
+                    OnDestroySetMonster?.Invoke(zone);
+                    break;
+                case EventNames.SpellTrapActivate:
+                    OnSpellTrapActivate?.Invoke(zone);
+                    break;
+                case EventNames.SpellTrapRemove:
+                    OnSpellTrapRemove?.Invoke(zone);
+                    break;
             }
+        }
+        public void RaiseEvent(EventNames eventName, string zone, string modelName)
+        {
+            if (eventName != EventNames.SummonSpellTrap)
+            {
+                return;
+            }
+            OnSummonSpellTrap?.Invoke(zone, modelName);
         }
         public void RaiseEvent(EventNames eventName, string zone, bool state)
         {
-            switch (eventName)
+            if(eventName != EventNames.ChangeMonsterVisibility)
             {
-                case EventNames.ChangeMonsterVisibility:
-                    OnChangeMonsterVisibility?.Invoke(zone, state);
-                    break;
-                case EventNames.DestroyMonster:
-                    OnDestroyMonster?.Invoke(zone, state);
-                    break;
+                return;
             }
+            OnChangeMonsterVisibility?.Invoke(zone, state);
         }
         public void RaiseEvent(EventNames eventName, SkinnedMeshRenderer[] renderers)
         {
-            if (eventName != EventNames.OnMonsterDestruction)
+            if (eventName != EventNames.MonsterDestruction)
             {
                 Debug.LogWarning($"{eventName} does not exist in this context");
                 return;

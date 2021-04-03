@@ -76,22 +76,26 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
         }
 
-        public void DestroyMonster(string zone, bool state)
+        public void DestroyMonster(string zone)
         {
             if (zone == _zone)
             {
+<<<<<<< Updated upstream:Assets/Code/Core/Models/Impl/ModelComponentsManager/ModelComponentsManager.cs
                 if (_animator.HasState(0, AnimatorParams.Death_Trigger))
                 {
                     _animator.SetTrigger(AnimatorParams.Death_Trigger);
                     return;
                 }
                 ActivateParticlesAndRemoveModel();
+=======
+                _animator.SetTrigger(AnimatorParams.Death_Trigger);
+>>>>>>> Stashed changes:Assets/Code/Core/Models/Impl/ModelComponentsManager.cs
             }
         }
 
         public void ActivateParticlesAndRemoveModel()
         {
-            _eventHandler.RaiseEvent(EventNames.OnMonsterDestruction, _renderers);
+            _eventHandler.RaiseEvent(EventNames.MonsterDestruction, _renderers);
             _renderers.SetRendererVisibility(false);
             _eventHandler.OnDestroyMonster -= DestroyMonster;
         }

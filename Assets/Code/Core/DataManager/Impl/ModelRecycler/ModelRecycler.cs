@@ -9,6 +9,10 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
     public class ModelRecycler : IModelRecycler
     {
         private readonly Dictionary<int, Queue<GameObject>> _generalRecycler = new Dictionary<int, Queue<GameObject>>();
+<<<<<<< Updated upstream
+=======
+        private readonly Dictionary<string, Queue<GameObject>> _modelRecycler = new Dictionary<string, Queue<GameObject>>();
+>>>>>>> Stashed changes
         private readonly Dictionary<string, Texture> _images = new Dictionary<string, Texture>();
 
         public void CreateRecycler()
@@ -64,7 +68,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         #endregion
 
-        public void CacheImage(string key, Texture2D texture)
+        public void CacheImage(string key, Texture texture)
         {
             _images.Add(key, texture);
         }
@@ -76,7 +80,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         public Texture GetCachedImage(string key)
         {
-            if (_images.TryGetValue(key, out var texture))
+            if (!_images.TryGetValue(key, out var texture))
             {
                 Debug.LogWarning("Texture Doesn't Exist");
                 return null;

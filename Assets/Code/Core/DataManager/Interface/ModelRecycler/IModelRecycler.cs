@@ -11,6 +11,12 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler
         public GameObject UseFromQueue(int key, Transform parent);
         public GameObject UseFromQueue(string key, Transform parent);
         public bool CheckForExistingModel(string key);
+<<<<<<< Updated upstream
+=======
+        public GameObject GetExistingModel(string key);
+        public GameObject GetExistingModel(string key, Transform parent);
+        public void RecycleModel(string key, GameObject model);
+>>>>>>> Stashed changes
         public void CacheImage(string key, Texture texture);
         public bool CheckForCachedImage(string key);
         public Texture GetCachedImage(string key);

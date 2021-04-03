@@ -41,7 +41,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
                 _dataManager.CacheImage(cardID, handlerTexture.texture);
             }
 
-            yield break;
+            yield return null;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Statics
         public static readonly int Remove_Spell_Or_Trap_Trigger = Animator.StringToHash("RemoveSpellTrap");
         public static readonly int Show_Set_Monster_Trigger = Animator.StringToHash("ShowSetMonster");
         public static readonly int Play_Monster_Attack_1_Trigger = Animator.StringToHash("Attack1");
-        public static readonly int Death_Trigger = Animator.StringToHash("DeathTrigger");
+        public static readonly int Death_Trigger = Animator.StringToHash("Death");
         public static readonly int Rotate_Platform_Bool = Animator.StringToHash("Rotate");
         public static readonly int Main_Menu_Rotate_Bool = Animator.StringToHash("MainMenuRotate");
         public static readonly int Platform_Double_Speed_Float = Animator.StringToHash("DoubleSpeed");

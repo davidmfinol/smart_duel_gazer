@@ -82,7 +82,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.CheckForExistingModel(key);
         }
 
-        public void CacheImage(string key, Texture2D texture)
+        public void CacheImage(string key, Texture texture)
         {
             _modelRecycler.CacheImage(key, texture);
         }

@@ -26,11 +26,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             if (_dataManager.CheckForCachedImage(cardID))
             {
-                _image.material.SetTexture("_MainTex", _dataManager.GetCachedImage(cardID));
-                return;
+                var image = _dataManager.GetCachedImage(cardID);
+                if (image != null)
+                {
+                    _image.material.SetTexture("_MainTex", image);
+                    return;
+                }
             }
             SetRandomErrorImage();
-            print("setting error image");
         }
 
         private void SetRandomErrorImage()
