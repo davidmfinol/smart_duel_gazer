@@ -34,6 +34,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
         {           
             using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
             yield return webRequest.SendWebRequest();
+            print(webRequest.result);
             DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
 
             _dataManager.CacheImage(cardID, handlerTexture.texture);
