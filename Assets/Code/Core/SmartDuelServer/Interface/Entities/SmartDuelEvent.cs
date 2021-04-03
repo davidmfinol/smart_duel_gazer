@@ -27,11 +27,4 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities
         {
         }
     }
-
-    public class SpellTrapSetEvent : SmartDuelEvent
-    {
-        public SpellTrapSetEvent(string cardId, string zoneName, bool inDefMode, bool isSet) : base(cardId, zoneName, inDefMode, isSet)
-        {
-        }
-    }
 }

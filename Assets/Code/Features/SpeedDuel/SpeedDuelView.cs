@@ -13,6 +13,8 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
+using AssemblyCSharp.Assets.Code.Core.General;
 //Add in API using statements
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
@@ -331,27 +333,28 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, true);
 
                 var setCardModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                if (!_dataManager.CheckForCachedImage(cardModel.name))
+                if (!_dataManager.CheckForCachedImage(summonEvent.CardId))
                 {
                     Debug.LogError("No Cached Image");
                     return;
                 }
                 var imageSetter = setCardModel.GetComponentInChildren<IImageSetter>();
-                imageSetter.ChangeImageFromAPI(cardModel.name);
+                imageSetter.ChangeImageFromAPI(summonEvent.CardId);
 
-                InstantiatedModels.Add(summonEvent.ZoneName + "SetCard", setCardModel);
+                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardModel);
             }
 
             //Add spell/trap faceUp, faceDown logic with API update
         }
 
+        //Ensure the steps aren't duplicated
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (!modelExists)
             {
-                var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
-                if (!modelIsSet)
+                var modelSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
+                if (!modelSet)
                 {
                     return;
                 }
