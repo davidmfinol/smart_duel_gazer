@@ -2,8 +2,8 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.En
 {
     public enum RecyclerKeys
     {
-        Deck = 0,
-        DestructionParticles = 1,
-        SetCard = 2,
+        SpeedDuelPlayfield,
+        DestructionParticles,
+        SetCard,
     }
 }

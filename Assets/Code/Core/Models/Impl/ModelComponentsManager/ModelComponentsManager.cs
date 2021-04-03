@@ -1,6 +1,6 @@
 using Zenject;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.General;
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;

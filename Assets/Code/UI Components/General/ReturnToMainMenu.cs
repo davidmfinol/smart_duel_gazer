@@ -30,7 +30,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
 
         public void OnBackButtonPressed()
         {
-            _navigationService.ShowMainMenuScene();
+            _navigationService.ShowConnectionScene();
         }
     }
 }

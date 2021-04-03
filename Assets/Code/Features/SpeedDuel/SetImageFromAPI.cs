@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using Zenject;
+using UnityEngine;
+using System.Collections.Generic;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {

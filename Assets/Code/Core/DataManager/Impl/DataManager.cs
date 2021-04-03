@@ -82,6 +82,14 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.CheckForExistingModel(key);
         }
 
+<<<<<<< Updated upstream
+=======
+        public bool CheckForPlayfield()
+        {
+            return _modelRecycler.CheckForPlayfield();
+        }
+
+>>>>>>> Stashed changes
         public void CacheImage(string key, Texture texture)
         {
             _modelRecycler.CacheImage(key, texture);

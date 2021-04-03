@@ -14,8 +14,7 @@ using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
-using AssemblyCSharp.Assets.Code.Core.General;
-//Add in API using statements
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -24,7 +23,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private const string SET_CARD = "SetCard";
         private const string PLAYMAT_ZONES = "Playmat/Zones/";
         private const string CLONE = "(Clone)";
-        private const string SPEED_DUEL_FIELD_NAME = "SpeedDuelField";
+        private const int _keyPlayfield = (int)RecyclerKeys.SpeedDuelPlayfield;
         private const int _keySetCard = (int)RecyclerKeys.SetCard;
         private const int _keyParticles = (int)RecyclerKeys.DestructionParticles;
 
@@ -34,10 +33,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private GameObject _placementIndicator;
         [SerializeField]
         private GameObject _particles;
+        [SerializeField]
+        private GameObject _prefabManager;
         
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
+        private SetImageFromAPIFactory _apiFactory;
         private ModelEventHandler _eventHandler;
         private ModelFactory _modelFactory;
         private ParticleFactory _particleFactory;
@@ -93,12 +95,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void Start()
         {
             _dataManager.CreateRecycler();
-            BuildPrefabFromFactory("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
-            InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
-            
-            //Ensure proper function names. Both need to be on factories
-            //InstantiateObjectPool(_keyParticles, _particles, 6);
-            //BuildObjectInFactory(_keySetCard, _dataManager.GetCardModel(SET_CARD), 6);
+            InstantiateParticles(6);
+            InstantiateSetCards(6);
         }
 
         private void Update()
@@ -122,34 +120,22 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _webRequest = GetComponent<ApiWebRequest>();
         }
 
-        private void InstantiateObjectPool(int key, GameObject prefab, int amount)
+        private void InstantiateSetCards(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
-                var obj = Instantiate(prefab, _prefabManager.transform);
-                _dataManager.AddToQueue(key, obj);
-            }
-        }
-
-        private void BuildObjectInFactory(int key, GameObject prefab, int amount)
-        {
-            for (int i = 0; i < amount; i++)
-            {
-                var obj = _apiFactory.Create(prefab).transform.gameObject;
+                var obj = _apiFactory.Create(_dataManager.GetCardModel(SET_CARD)).transform.gameObject;
                 obj.transform.SetParent(_prefabManager.transform);
-                _dataManager.AddToQueue(key, obj);
+                _dataManager.AddToQueue(_keySetCard, obj);
             }
         }
-
-        private void BuildPrefabFromFactory(string parentName, int key, GameObject prefab, int amount)
+        private void InstantiateParticles(int amount)
         {
-            var parent = new GameObject(parentName + " Pool");
-
             for (int i = 0; i < amount; i++)
             {
-                var obj = _particleFactory.Create(prefab).gameObject;
-                obj.transform.SetParent(parent.transform);
-                _dataManager.AddToQueue(key, obj);
+                var obj = _particleFactory.Create(_particles).transform.gameObject;
+                obj.transform.SetParent(_prefabManager.transform);
+                _dataManager.AddToQueue(_keyParticles, obj);
             }
         }
 
@@ -207,11 +193,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _placementIndicator.SetActive(true);
                 _placementIndicator.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+                return;
             }
-            else
-            {
-                _placementIndicator.SetActive(false);
-            }
+            _placementIndicator.SetActive(false);
         }
 
         private void PlaceObject()
@@ -219,7 +203,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectPlaced = true;
             _placementIndicator.SetActive(false);
             
-            if(!_dataManager.CheckForExistingModel(SPEED_DUEL_FIELD_NAME))
+            if(!_dataManager.CheckForPlayfield())
             {
                 SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
                 _prefabManager.transform.SetParent(SpeedDuelField.transform);
@@ -227,9 +211,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            _dataManager.GetExistingModel(SPEED_DUEL_FIELD_NAME).transform
+            _dataManager.UseFromQueue(_keyPlayfield).transform
                 .SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
@@ -275,7 +258,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
 
-            _dataManager.RecycleModel(SPEED_DUEL_FIELD_NAME, SpeedDuelField);
+            _dataManager.AddToQueue(_keyPlayfield, SpeedDuelField);
         }
 
         #endregion
@@ -350,7 +333,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
 
-                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                var setCardBack = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
                 InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
             }
             else if (summonEvent.CardPosition == "faceUpDefence")
@@ -367,7 +350,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, true);
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 var setCardModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+=======
+                var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
+>>>>>>> Stashed changes
                 if (!_dataManager.CheckForCachedImage(summonEvent.CardId))
                 {
                     Debug.LogError("No Cached Image");
@@ -405,21 +392,20 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 {
                     return;
                 }
-                var animator = setCardBack.GetComponent<Animator>();
-                animator.SetTrigger(AnimatorIDSetter.Animator_Remove_Spell_Or_Trap);
+                var animator1 = setCardBack.GetComponent<Animator>();
+                animator1.SetTrigger(AnimatorParams.Remove_Spell_Or_Trap_Trigger);
 
                 InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
                 StartCoroutine(WaitToProceed((int)RecyclerKeys.SetCard, setCardBack));
-                var destructionParticles = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles);
+                var destructionParticles1 = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles);
                 _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
-                StartCoroutine(WaitToProceed(_keyParticles, destructionParticles));
+                StartCoroutine(WaitToProceed(_keyParticles, destructionParticles1));
                 StartCoroutine(WaitToProceed(model.name, model));
                 InstantiatedModels.Remove(removeCardEvent.ZoneName);
             }
 
-            var destructionParticles = _dataManager.UseFromQueue(
-                (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
+            var destructionParticles = _dataManager.UseFromQueue(_keyParticles);
             
             _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
@@ -446,6 +432,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
             _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCard);
 
+<<<<<<< Updated upstream
             var destructionParticles = _dataManager.UseFromQueue(_keyParticles);
             _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
@@ -454,11 +441,22 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
             if (InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + SET_CARD, out var setMonster))
+=======
+            //TODO: Modify to new eventHandler
+            var animator = setCard.GetComponent<Animator>();
+            if (animator != null)
+>>>>>>> Stashed changes
             {
                 _eventHandler.RaiseEvent(EventNames.DestroySetMonster, removeCardEvent.ZoneName + SET_CARD);
                 StartCoroutine(WaitToProceed(_keySetCard, setMonster));
                 InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
             }
+<<<<<<< Updated upstream
+=======
+
+            InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
+            StartCoroutine(WaitToProceed(_keySetCard, setCard));
+>>>>>>> Stashed changes
         }
 
 <<<<<<< Updated upstream

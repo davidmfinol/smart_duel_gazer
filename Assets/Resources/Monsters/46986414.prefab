@@ -3628,6 +3628,7 @@ GameObject:
   - component: {fileID: 5777822696208161478}
   - component: {fileID: 9187366373509859001}
   - component: {fileID: 4888759424403532943}
+  - component: {fileID: 6935760779687258986}
   m_Layer: 0
   m_Name: Dark Magician
   m_TagString: Untagged

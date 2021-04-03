@@ -25,6 +25,11 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         public void AddToQueue(int key, GameObject model)
         {
+            if (!_generalRecycler.ContainsKey(key))
+            {
+                _generalRecycler.Add(key, new Queue<GameObject>());
+            }
+
             _generalRecycler[key].Enqueue(model);
             model.SetActive(false);
         }
@@ -91,7 +96,12 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         public bool CheckForExistingModel(string key)
         {
-            return _generalRecycler.TryGetValue(key.StringToInt(), out _);
-        }       
+            return _generalRecycler.TryGetValue(key.StringToInt(), out var _);
+        }
+
+        public bool CheckForPlayfield()
+        {
+            return _generalRecycler.TryGetValue((int)RecyclerKeys.SpeedDuelPlayfield, out var _);
+        }
     }
 }

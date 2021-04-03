@@ -503,6 +503,7 @@ GameObject:
   - component: {fileID: 9190373681469113850}
   - component: {fileID: 2687888267562058204}
   - component: {fileID: 8286923520192610738}
+  - component: {fileID: 3740120050390067642}
   m_Layer: 0
   m_Name: Blue-Eyes White Dragon
   m_TagString: Untagged
