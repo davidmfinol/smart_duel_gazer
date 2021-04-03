@@ -21,8 +21,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
-        private static readonly string SET_CARD = "SetCard";
-        private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
+        private const string SET_CARD = "SetCard";
+        private const string PLAYMAT_ZONES = "Playmat/Zones/";
+        private const string CLONE = "(Clone)";
+        private const string SPEED_DUEL_FIELD_NAME = "SpeedDuelField";
+        private const int _keySetCard = (int)RecyclerKeys.SetCard;
+        private const int _keyParticles = (int)RecyclerKeys.DestructionParticles;
 
         [SerializeField]
         private GameObject _objectToPlace;
@@ -63,13 +67,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             IScreenService screenService,
             ModelEventHandler modelEventHandler,
             ModelFactory modelFactory,
-            ParticleFactory particleFactory)
+            ParticleFactory particleFactory,
+            SetImageFromAPIFactory apiFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _eventHandler = modelEventHandler;
             _modelFactory = modelFactory;
             _particleFactory = particleFactory;
+            _apiFactory = apiFactory;
 
             screenService.UseAutoOrientation();
             ConnectToServer();
@@ -89,6 +95,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _dataManager.CreateRecycler();
             BuildPrefabFromFactory("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
             InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
+            
+            //Ensure proper function names. Both need to be on factories
+            //InstantiateObjectPool(_keyParticles, _particles, 6);
+            //BuildObjectInFactory(_keySetCard, _dataManager.GetCardModel(SET_CARD), 6);
         }
 
         private void Update()
@@ -112,14 +122,21 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _webRequest = GetComponent<ApiWebRequest>();
         }
 
-        //This function has been refactored for the next update
-        private void InstantiateObjectPool(string parentName, int key, GameObject prefab, int amount)
+        private void InstantiateObjectPool(int key, GameObject prefab, int amount)
         {
-            var parent = new GameObject(parentName + " Pool");
-
             for (int i = 0; i < amount; i++)
             {
-                var obj = Instantiate(prefab, parent.transform);
+                var obj = Instantiate(prefab, _prefabManager.transform);
+                _dataManager.AddToQueue(key, obj);
+            }
+        }
+
+        private void BuildObjectInFactory(int key, GameObject prefab, int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                var obj = _apiFactory.Create(prefab).transform.gameObject;
+                obj.transform.SetParent(_prefabManager.transform);
                 _dataManager.AddToQueue(key, obj);
             }
         }
@@ -201,7 +218,18 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             _objectPlaced = true;
             _placementIndicator.SetActive(false);
-            SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
+            
+            if(!_dataManager.CheckForExistingModel(SPEED_DUEL_FIELD_NAME))
+            {
+                SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
+                _prefabManager.transform.SetParent(SpeedDuelField.transform);
+
+                return;
+            }
+
+            _dataManager.GetExistingModel(SPEED_DUEL_FIELD_NAME).transform
+                .SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
@@ -215,7 +243,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count].trackableId));
-
             if (scalePlane <= 0)
             {
                 return;
@@ -227,6 +254,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _arPlaneManager.enabled = false;
         }
 
+        //Check to ensure playmat is still scaling
         private float GetCameraOrientation(ARPlane plane)
         {
             var cameraOriantation = Camera.current.transform.rotation.y;
@@ -238,7 +266,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 return plane.size.y;
             }
-            
             return plane.size.x;
         }
 
@@ -247,6 +274,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectPlaced = false;
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
+
+            _dataManager.RecycleModel(SPEED_DUEL_FIELD_NAME, SpeedDuelField);
         }
 
         #endregion
@@ -271,6 +300,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         }
 
         //Add logic for spell/trap events
+        //Add API stuff
         private void OnSummonEventReceived(SummonCardEvent summonEvent)
         {
             var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
@@ -348,10 +378,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         }
 
         //Ensure the steps aren't duplicated
+        //May have added double particles
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
-            if (!modelExists)
+            if (modelExists)
             {
                 var modelSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
                 if (!modelSet)
@@ -363,8 +394,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
                 InstantiatedModels.Remove(removeCardEvent.ZoneName + "SetCard");
                 StartCoroutine(WaitToProceed((int)RecyclerKeys.SetCard, setCardBack));
+                var destructionParticles = _dataManager.UseFromQueue((int)RecyclerKeys.DestructionParticles);
+                _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
-                return;
+                StartCoroutine(WaitToProceed(_keyParticles, destructionParticles));
+                StartCoroutine(WaitToProceed(model.name, model));
+                InstantiatedModels.Remove(removeCardEvent.ZoneName);
             }
 
             var destructionParticles = _dataManager.UseFromQueue(
@@ -384,7 +419,19 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
             _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCard);
+
+            //TODO: Modify to new eventHandler
+            var animator = setCardBack.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.SetTrigger(AnimatorParams.Remove_Spell_Or_Trap_Trigger);
+            }
+
+            InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
+            StartCoroutine(WaitToProceed(_keySetCard, setCardBack));
         }
+
+        //Removed Position Change and Spell/Trap
 
         #endregion
 
@@ -403,11 +450,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private IEnumerator AwaitImage(GameObject model, string cardID)
         {
-            yield return new WaitForSeconds(0.75f);
+            yield return _webRequest.GetRequest(cardID);
 
-            var imageSetter = model.GetComponentInChildren<IImageSetter>();
-            var texture = _dataManager.GetCachedImage(cardID);
-            imageSetter.ChangeImage(texture);
+            model.GetComponentInChildren<IImageSetter>().ChangeImageFromAPI(cardID);
+            model.GetComponent<Animator>()
+                .SetTrigger(AnimatorParams.Activate_Spell_Or_Trap_Trigger);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using Zenject;
+using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Impl;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
@@ -23,13 +24,12 @@ using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using UnityEngine;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
     public class GameInstaller : MonoInstaller
-    {
+    {        
         public override void InstallBindings()
         {
             #region Core
@@ -59,6 +59,8 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<ConnectionFormValidators>().AsSingle();
             Container.BindFactory<GameObject, DestructionParticles, ParticleFactory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
+            Container.BindFactory<GameObject, SetImageFromAPI, SetImageFromAPIFactory>()
+                .FromFactory<PrefabFactory<SetImageFromAPI>>();
 
             #endregion
         }

@@ -63,11 +63,10 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
                 _portInputField.text = connectionInfo.Port;
             }
 
-            _speedDuelButton.onClick.AsObservable().Subscribe(_ => OnSpeedDuelPressed());
-            _modelViewButton.onClick.AsObservable().Subscribe(_ => OnModelViewPressed());
+            _speedDuelButton.onClick.AsObservable().Subscribe(_ => OnConnectButtonPressed());
         }
 
-        public void OnSpeedDuelPressed()
+        public void OnConnectButtonPressed()
         {
             var isFormValid = ValidateForm();
             if (!isFormValid)
@@ -76,19 +75,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             }
 
             SaveConnectionInfo();
-            ShowMainScene();
-        }
-
-        public void OnModelViewPressed()
-        {
-            var isFormValid = ValidateForm();
-            if (!isFormValid)
-            {
-                return;
-            }
-
-            SaveConnectionInfo();
-            ShowModelViewScene();
+            ShowMenuScene();
         }
 
         private bool ValidateForm()
@@ -126,14 +113,9 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             _dataManager.SaveConnectionInfo(connectionInfo);
         }
 
-        private void ShowMainScene()
+        private void ShowMenuScene()
         {
-            _navigationService.ShowSpeedDuelScene();
-        }
-
-        private void ShowModelViewScene()
-        {
-            _navigationService.ShowModelViewScene();
+            _navigationService.ShowMainMenuScene();
         }
 
         #endregion

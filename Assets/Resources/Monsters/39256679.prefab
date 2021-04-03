@@ -31,6 +31,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &7879997719561178324
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8413226598022597838}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.0033070303
+  m_Center: {x: 0, y: 0.0021767092, z: 0.000091057416}
 --- !u!95 &5986792993131674674
 Animator:
   serializedVersion: 3
@@ -127,8 +140,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8396670001580682531, guid: c55bceeca91ef400ea0b0d245df72651, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -79.609184
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8396670001580682531, guid: c55bceeca91ef400ea0b0d245df72651, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8396670001580682531, guid: c55bceeca91ef400ea0b0d245df72651, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

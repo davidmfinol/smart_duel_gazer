@@ -31,6 +31,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4111715046070045686
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8674928586585199631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.008462275, y: 0.004128101, z: 0.0049916976}
+  m_Center: {x: 0.0003170242, y: 0.009351441, z: -0.0038540787}
 --- !u!95 &4426260917907347955
 Animator:
   serializedVersion: 3
@@ -75,6 +88,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 60, y: 60, z: 60}
+BoxCollider:
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0030627197, y: 0.0088305, z: 0.0041310815}
+  m_Center: {x: -0.00023649087, y: 0.0063703083, z: -0.00007669535}
 --- !u!1001 &8404526452645030238
 PrefabInstance:
   m_ObjectHideFlags: 0

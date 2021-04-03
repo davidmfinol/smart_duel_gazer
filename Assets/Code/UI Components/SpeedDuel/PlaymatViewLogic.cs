@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.General;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
 
 namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
-        private static readonly string Indicator_Tag = "Indicator";
-
         [SerializeField]
         private GameObject _playmatShell;
         [SerializeField]
-        private GameObject _menu;
+        private GameObject _bottomMenu;
         [SerializeField]
         private Slider _scaleSlider;
+        [SerializeField]
+        private Toggle _menuToggle;
 
         private MeshRenderer[] _renderers;
         private Animator[] _animators;
@@ -23,8 +24,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             _renderers = GetComponentsInChildren<MeshRenderer>();
             _animators = GetComponentsInChildren<Animator>();
-            //TODO Create a more solid connection to Indicator object
-            _interaction = GameObject.FindGameObjectWithTag(Indicator_Tag);
+            _interaction = GameObject.FindGameObjectWithTag(Tags.Indicator);
         }
 
         public void SetScaleStartPosition(float startPosition) => _scaleSlider.value = startPosition;
@@ -56,7 +56,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetBool(AnimatorIDSetter.Animator_Open_Playfield_Menu, state);
+                animator.SetBool(AnimatorParams.Open_Playfield_Menu_Trigger, state);
             }
         }
 
@@ -72,14 +72,14 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetTrigger(AnimatorIDSetter.Animator_Remove_Playfield);
+                animator.SetTrigger(AnimatorParams.Remove_Playfield_Trigger);
             }
+            _menuToggle.isOn = false;
         }
 
         private void DestroyPlaymat()
         {
             _interaction.BroadcastMessage("OnPlaymatDestroyed");
-            Destroy(_playmatShell);
         }
     }
 }

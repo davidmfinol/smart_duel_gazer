@@ -64,13 +64,13 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _modelRecycler.AddToQueue(key, model);
         }
 
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation)
         {
-            return _modelRecycler.UseFromQueue(key, position, rotation, parent);
+            return _modelRecycler.UseFromQueue(key, position, rotation);
         }
-        public GameObject UseFromQueue(int key, Transform parent)
+        public GameObject UseFromQueue(int key)
         {
-            return _modelRecycler.UseFromQueue(key, parent);
+            return _modelRecycler.UseFromQueue(key);
         }
         public GameObject UseFromQueue(string key, Transform parent)
         {
@@ -82,7 +82,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.CheckForExistingModel(key);
         }
 
-        public void CacheImage(string key, Texture texture)
+        public void CacheImage(string key, Texture2D texture)
         {
             _modelRecycler.CacheImage(key, texture);
         }

@@ -64,8 +64,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
             ScaleModel();
             _renderers.SetRendererVisibility(true);
-            _animator.SetTrigger(AnimatorIDSetter.Animator_Summoning_Trigger);
-
+            _animator.SetTrigger(AnimatorParams.Summoning_Trigger);
             _eventHandler.OnSummonMonster -= SummonMonster;
         }
 
@@ -81,9 +80,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         {
             if (zone == _zone)
             {
-                if (_animator.HasState(0, AnimatorIDSetter.Death_Trigger))
+                if (_animator.HasState(0, AnimatorParams.Death_Trigger))
                 {
-                    _animator.SetTrigger(AnimatorIDSetter.Death_Trigger);
+                    _animator.SetTrigger(AnimatorParams.Death_Trigger);
                     return;
                 }
                 ActivateParticlesAndRemoveModel();

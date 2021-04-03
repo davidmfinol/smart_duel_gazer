@@ -1,4 +1,5 @@
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,11 +9,10 @@ using Zenject;
 namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
 {
     public class ApiWebRequest : MonoBehaviour
-    {
-        private const string API_URL = "https://db.ygoprodeck.com/api/v7/cardinfo.php?id=";
-        private const string API_IMAGE_URL = "https://storage.googleapis.com/ygoprodeck.com/pics/";
-        private const string IMAGE_FILE_EXT = ".jpg";
-
+    {        
+        private const string API_URL = "https://db.ygoprodeck.com/api/v7/cardinfo.php?id={0}";
+        private const string API_IMAGE_URL = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
+        
         private IDataManager _dataManager;
 
         [Inject]
@@ -21,23 +21,27 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
             _dataManager = dataManager;
         }
 
-        public void GetImageFromAPI(string cardID)
+        public IEnumerator GetRequest(string cardID)
         {
             if (!_dataManager.CheckForCachedImage(cardID))
             {
-                string url = API_IMAGE_URL + cardID + IMAGE_FILE_EXT;
-                StartCoroutine(GetRequest(url, cardID));
+                string URL = string.Format(API_IMAGE_URL, cardID.RemoveStartingZero());
+
+                using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
+                yield return webRequest.SendWebRequest();
+
+                if(webRequest.result == UnityWebRequest.Result.ProtocolError)
+                {
+                    Debug.LogWarning($"Error {webRequest.error} on cardID: {cardID}");
+                    yield return null;
+                }
+                    
+                DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
+
+                _dataManager.CacheImage(cardID, handlerTexture.texture);
             }
-        }
 
-        private IEnumerator GetRequest(string URL, string cardID)
-        {           
-            using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
-            yield return webRequest.SendWebRequest();
-            print(webRequest.result);
-            DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
-
-            _dataManager.CacheImage(cardID, handlerTexture.texture);
+            yield break;
         }
     }
 }
