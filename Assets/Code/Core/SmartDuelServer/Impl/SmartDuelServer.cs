@@ -11,8 +11,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
     public class SmartDuelServer : ISmartDuelServer
     {
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
-        private const string SUMMON_EVENT_NAME = "summonEvent";
-        private const string REMOVE_CARD_EVENT = "removeCardEvent";
+        private const string PLAY_CARD_EVENT = "card:play";
+        private const string REMOVE_CARD_EVENT = "card:remove";
         private const string POSITION_CHANGE_EVENT = "positionChangeEvent";
 
         private IDataManager _dataManager;
@@ -43,7 +43,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
             _socket.OnClose += () => Debug.Log("Socket closed!");
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(SUMMON_EVENT_NAME, OnSummonEventReceived);
+            _socket.On(PLAY_CARD_EVENT, OnPlayCardEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
 
             _socket.Connect();
@@ -56,12 +56,12 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _listener = null;
         }
 
-        private void OnSummonEventReceived(SocketIOEvent e)
+        private void OnPlayCardEventReceived(SocketIOEvent e)
         {
-            Debug.Log($"OnSummonEventReceived(SocketIOEvent: {e})");
+            Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
 
             var data = e.Data[0];
-            var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
+            var cardId = data["cardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
 
             _listener.onSmartDuelEventReceived(new SummonEvent(cardId, zoneName));
