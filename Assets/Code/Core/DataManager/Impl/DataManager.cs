@@ -1,7 +1,7 @@
 ﻿using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
-using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using UnityEngine;
 using Zenject;
@@ -50,11 +50,6 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         #region ModelRecycler
 
-        public void CreateRecycler()
-        {
-            _modelRecycler.CreateRecycler();
-        }
-
         public void AddToQueue(int key, GameObject model)
         {
             _modelRecycler.AddToQueue(key, model);
@@ -64,22 +59,22 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _modelRecycler.AddToQueue(key, model);
         }
 
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject GetFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
         {
-            return _modelRecycler.UseFromQueue(key, position, rotation, parent);
+            return _modelRecycler.GetFromQueue(key, position, rotation, parent);
         }
-        public GameObject UseFromQueue(int key, Transform parent)
+        public GameObject GetFromQueue(int key, Transform parent)
         {
-            return _modelRecycler.UseFromQueue(key, parent);
+            return _modelRecycler.GetFromQueue(key, parent);
         }
-        public GameObject UseFromQueue(string key, Transform parent)
+        public GameObject GetFromQueue(string key, Transform parent)
         {
-            return _modelRecycler.UseFromQueue(key, parent);
+            return _modelRecycler.GetFromQueue(key, parent);
         }
 
-        public bool CheckForExistingModel(string key)
+        public bool DoesModelExist(string key)
         {
-            return _modelRecycler.CheckForExistingModel(key);
+            return _modelRecycler.DoesModelExist(key);
         }
 
         #endregion

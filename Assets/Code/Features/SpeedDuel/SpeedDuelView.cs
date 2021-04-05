@@ -83,7 +83,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Start()
         {
-            _dataManager.CreateRecycler();
             BuildPrefabFromFactory("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
             InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
         }
@@ -256,9 +255,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void onSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
-            if (smartDuelEvent is SummonCardEvent summonEvent)
+            if (smartDuelEvent is PlayCardEvent playCardEvent)
             {
-                OnSummonEventReceived(summonEvent);
+                OnPlayCardEventReceived(playCardEvent);
             }
             else if (smartDuelEvent is RemoveCardEvent removeCardEvent)
             {
@@ -266,26 +265,26 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
         }
 
-        private void OnSummonEventReceived(SummonCardEvent summonEvent)
+        private void OnPlayCardEventReceived(PlayCardEvent playCardEvent)
         {
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + playCardEvent.ZoneName);
             if (zone == null)
             {
                 return;
             }
 
-            if (!InstantiatedModels.ContainsKey(summonEvent.ZoneName))
+            if (!InstantiatedModels.ContainsKey(playCardEvent.ZoneName))
             {
-                var cardModel = _dataManager.GetCardModel(summonEvent.CardId);
+                var cardModel = _dataManager.GetCardModel(playCardEvent.CardId);
                 if (cardModel == null)
                 {
                     return;
                 }
 
                 GameObject instantiatedModel;
-                if (_dataManager.CheckForExistingModel(cardModel.name))
+                if (_dataManager.DoesModelExist(cardModel.name))
                 {
-                    instantiatedModel = _dataManager.UseFromQueue(cardModel.name, SpeedDuelField.transform);
+                    instantiatedModel = _dataManager.GetFromQueue(cardModel.name, SpeedDuelField.transform);
                     instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
                 }
                 else
@@ -295,13 +294,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
                 }
 
-                _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
-                InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
+                _eventHandler.RaiseEvent(EventNames.SummonMonster, playCardEvent.ZoneName);
+                InstantiatedModels.Add(playCardEvent.ZoneName, instantiatedModel);
             }
 
-            if (summonEvent.CardPosition == "faceDownDefence")
+            if (playCardEvent.CardPosition == "faceDownDefence")
             {
-                Debug.Log(summonEvent.CardPosition, this);
+                Debug.Log(playCardEvent.CardPosition, this);
 
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
@@ -309,15 +308,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     return;
                 }
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, false);
 
-                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
+                var setCardBack = _dataManager.GetFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
             }
-            else if (summonEvent.CardPosition == "faceUpDefence")
+            else if (playCardEvent.CardPosition == "faceUpDefence")
             {
                 //Add animations & events for set cards with API update
-                Debug.Log(summonEvent.CardPosition, this);
+                Debug.Log(playCardEvent.CardPosition, this);
 
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
@@ -325,10 +324,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     return;
                 }
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, true);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, true);
 
-                var setCardBack = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
+                var setCardBack = _dataManager.GetFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
             }
 
             //Add spell/trap faceUp, faceDown logic with API update
@@ -342,10 +341,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var destructionParticles = _dataManager.UseFromQueue(
+            var destructionParticles = _dataManager.GetFromQueue(
                 (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
             
-            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
+            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName);
 
             StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
             StartCoroutine(WaitToProceed(model.name, model));

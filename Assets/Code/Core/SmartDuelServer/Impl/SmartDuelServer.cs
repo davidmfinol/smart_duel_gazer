@@ -42,7 +42,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
             _socket.OnClose += () => Debug.Log("Socket closed!");
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(SUMMON_CARD_EVENT, OnSummonEventReceived);
+            _socket.On(SUMMON_CARD_EVENT, OnPlayCardEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
 
             _socket.Connect();
@@ -55,16 +55,16 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _listener = null;
         }
 
-        private void OnSummonEventReceived(SocketIOEvent e)
+        private void OnPlayCardEventReceived(SocketIOEvent e)
         {
             Debug.Log($"OnSummonEventReceived(SocketIOEvent: {e})");
 
             var data = e.Data[0];
-            var cardId = data["yugiohCardId"].ToString().RemoveQuotes();
+            var cardId = data["cardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
             var cardPosition = data["cardPosition"].ToString().RemoveQuotes();
 
-            _listener.onSmartDuelEventReceived(new SummonCardEvent(cardId, zoneName, cardPosition));
+            _listener.onSmartDuelEventReceived(new PlayCardEvent(cardId, zoneName, cardPosition));
         }
 
         private void OnRemoveCardEventReceived(SocketIOEvent e)

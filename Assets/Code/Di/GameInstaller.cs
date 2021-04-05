@@ -18,7 +18,7 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
-using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;

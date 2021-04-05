@@ -77,7 +77,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
         }
 
-        public void DestroyMonster(string zone, bool state)
+        public void DestroyMonster(string zone)
         {
             if (zone == _zone)
             {

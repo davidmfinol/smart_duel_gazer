@@ -24,7 +24,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnEnable()
         {
-            _eventHandler.OnMonsterDestruction += OnMonsterDestruction;
+            _eventHandler.OnMonsterRemoval += OnMonsterDestruction;
         }
 
         #endregion
@@ -33,7 +33,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             GetMeshShape(renderers[0]);
             _particles.Play();
-            _eventHandler.OnMonsterDestruction -= OnMonsterDestruction;
+            _eventHandler.OnMonsterRemoval -= OnMonsterDestruction;
         }
 
         public void GetMeshShape(SkinnedMeshRenderer _skinnedMesh)
