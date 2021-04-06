@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
@@ -20,6 +19,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
     {
         private static readonly string SET_CARD = "SetCard";
         private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
+        
+        private const string _keyParticles = "Particles";
+        private const string _keySetCard = "SetCards";
 
         [SerializeField]
         private GameObject _objectToPlace;
@@ -83,8 +85,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Start()
         {
-            BuildPrefabFromFactory("Particles", (int)RecyclerKeys.DestructionParticles, _particles, 6);
-            InstantiateObjectPool("SetCards", (int)RecyclerKeys.SetCard, _dataManager.GetCardModel(SET_CARD), 6);
+            BuildPrefabFromFactory("Particles", _keyParticles, _particles, 6);
+            InstantiateObjectPool("SetCards", _keySetCard, _dataManager.GetCardModel(SET_CARD), 6);
         }
 
         private void Update()
@@ -108,7 +110,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         }
 
         //This function has been refactored for the next update
-        private void InstantiateObjectPool(string parentName, int key, GameObject prefab, int amount)
+        private void InstantiateObjectPool(string parentName, string key, GameObject prefab, int amount)
         {
             var parent = new GameObject(parentName + " Pool");
             
@@ -119,7 +121,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
         }
 
-        private void BuildPrefabFromFactory(string parentName, int key, GameObject prefab, int amount)
+        private void BuildPrefabFromFactory(string parentName, string key, GameObject prefab, int amount)
         {
             var parent = new GameObject(parentName + " Pool");
 
@@ -284,8 +286,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 GameObject instantiatedModel;
                 if (_dataManager.DoesModelExist(cardModel.name))
                 {
-                    instantiatedModel = _dataManager.GetFromQueue(cardModel.name, SpeedDuelField.transform);
-                    instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
+                    instantiatedModel = _dataManager.GetFromQueue(
+                        cardModel.name, zone.position, zone.rotation, SpeedDuelField.transform);
                 }
                 else
                 {
@@ -310,7 +312,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, false);
 
-                var setCardBack = _dataManager.GetFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                var setCardBack = _dataManager.GetFromQueue(_keySetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
             }
             else if (playCardEvent.CardPosition == "faceUpDefence")
@@ -326,7 +328,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
                 _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, true);
 
-                var setCardBack = _dataManager.GetFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                var setCardBack = _dataManager.GetFromQueue(_keySetCard, zone.position, zone.rotation, SpeedDuelField.transform);
                 InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
             }
 
@@ -342,11 +344,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             var destructionParticles = _dataManager.GetFromQueue(
-                (int)RecyclerKeys.DestructionParticles, SpeedDuelField.transform);
+                _keyParticles, model.transform.position, model.transform.rotation, SpeedDuelField.transform);
             
             _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName);
 
-            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
+            StartCoroutine(WaitToProceed(_keyParticles, destructionParticles));
             StartCoroutine(WaitToProceed(model.name, model));
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
@@ -357,22 +359,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
-            _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCard);
+            _dataManager.AddToQueue(_keySetCard, setCard);
         }
 
         #endregion
 
         #region Coroutines
 
-        private IEnumerator WaitToProceed(int key, GameObject model)
-        {
-            yield return _waitTime;
-            _dataManager.AddToQueue(key, model);
-        }
         private IEnumerator WaitToProceed(string key, GameObject model)
         {
             yield return _waitTime;
-            _dataManager.AddToQueue(key, model);
+            _dataManager.AddToQueue(key.Split('(')[0], model);
         }
 
         #endregion

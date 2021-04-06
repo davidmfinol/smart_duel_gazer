@@ -50,26 +50,14 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         #region ModelRecycler
 
-        public void AddToQueue(int key, GameObject model)
-        {
-            _modelRecycler.AddToQueue(key, model);
-        }
         public void AddToQueue(string key, GameObject model)
         {
             _modelRecycler.AddToQueue(key, model);
         }
 
-        public GameObject GetFromQueue(int key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
         {
             return _modelRecycler.GetFromQueue(key, position, rotation, parent);
-        }
-        public GameObject GetFromQueue(int key, Transform parent)
-        {
-            return _modelRecycler.GetFromQueue(key, parent);
-        }
-        public GameObject GetFromQueue(string key, Transform parent)
-        {
-            return _modelRecycler.GetFromQueue(key, parent);
         }
 
         public bool DoesModelExist(string key)
