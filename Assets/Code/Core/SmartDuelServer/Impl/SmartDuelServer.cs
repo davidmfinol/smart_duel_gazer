@@ -42,7 +42,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
             _socket.OnClose += () => Debug.Log("Socket closed!");
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(SUMMON_CARD_EVENT, OnPlayCardEventReceived);
+            _socket.On(PLAY_CARD_EVENT, OnPlayCardEventReceived);
             _socket.On(REMOVE_CARD_EVENT, OnRemoveCardEventReceived);
 
             _socket.Connect();
@@ -57,7 +57,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         private void OnPlayCardEventReceived(SocketIOEvent e)
         {
-            Debug.Log($"OnSummonEventReceived(SocketIOEvent: {e})");
+            Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
 
             var data = e.Data[0];
             var cardId = data["cardId"].ToString().RemoveQuotes();
