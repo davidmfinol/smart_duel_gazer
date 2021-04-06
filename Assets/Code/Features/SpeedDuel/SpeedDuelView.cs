@@ -34,8 +34,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private ModelEventHandler _eventHandler;
-        private ModelFactory _modelFactory;
-        private ParticleFactory _particleFactory;
+        private ModelComponentsManager.Factory _modelFactory;
+        private DestructionParticles.Factory _particleFactory;
 
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
@@ -61,8 +61,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             IDataManager dataManager,
             IScreenService screenService,
             ModelEventHandler modelEventHandler,
-            ModelFactory modelFactory,
-            ParticleFactory particleFactory)
+            ModelComponentsManager.Factory modelFactory,
+            DestructionParticles.Factory particleFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;

@@ -96,6 +96,10 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _renderers.SetRendererVisibility(false);
             _eventHandler.OnDestroyMonster -= DestroyMonster;
         }
+
+        public class Factory : PlaceholderFactory<GameObject, ModelComponentsManager>
+        {
+        }
     }
 
     public static class ModelComponentUtilities
@@ -107,9 +111,5 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
                 item.enabled = visibility;
             }
         }
-    }
-
-    public class ModelFactory : PlaceholderFactory<GameObject, ModelComponentsManager>
-    {
     }
 }

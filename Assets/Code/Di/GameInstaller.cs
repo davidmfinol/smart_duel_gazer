@@ -49,7 +49,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
 
             Container.Bind<ModelEventHandler>().AsSingle();
-            Container.BindFactory<GameObject, ModelComponentsManager, ModelFactory>()
+            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<ModelComponentsManager>>();
 
             #endregion
@@ -57,7 +57,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
-            Container.BindFactory<GameObject, DestructionParticles, ParticleFactory>()
+            Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
 
             #endregion

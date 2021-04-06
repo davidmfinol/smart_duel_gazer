@@ -42,9 +42,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             shape.shapeType = ParticleSystemShapeType.SkinnedMeshRenderer;
             shape.skinnedMeshRenderer = _skinnedMesh;
         }
-    }
 
-    public class ParticleFactory : PlaceholderFactory<GameObject, DestructionParticles>
-    {
+        public class Factory : PlaceholderFactory<GameObject, DestructionParticles>
+        {
+        }
     }
 }
