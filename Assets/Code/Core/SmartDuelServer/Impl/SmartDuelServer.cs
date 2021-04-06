@@ -11,7 +11,7 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
     public class SmartDuelServer : ISmartDuelServer
     {
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
-        private const string SUMMON_CARD_EVENT = "card:play";
+        private const string PLAY_CARD_EVENT = "card:play";
         private const string REMOVE_CARD_EVENT = "card:remove";
 
         private IDataManager _dataManager;
