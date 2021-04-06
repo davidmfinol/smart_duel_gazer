@@ -4,24 +4,26 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities
     {
         public string CardId { get; private set; }
         public string ZoneName { get; private set; }
+        public string CardPosition { get; private set; }
 
-        protected SmartDuelEvent(string cardId, string zoneName)
+        protected SmartDuelEvent(string cardId, string zoneName, string cardPosition)
         {
             CardId = cardId;
             ZoneName = zoneName;
+            CardPosition = cardPosition;
         }
     }
 
-    public class SummonEvent : SmartDuelEvent
+    public class PlayCardEvent : SmartDuelEvent
     {
-        public SummonEvent(string cardId, string zoneName) : base(cardId, zoneName)
+        public PlayCardEvent(string cardId, string zoneName, string cardPosition) : base(cardId, zoneName, cardPosition)
         {
         }
     }
 
     public class RemoveCardEvent : SmartDuelEvent
     {
-        public RemoveCardEvent(string zoneName) : base(null, zoneName)
+        public RemoveCardEvent(string zoneName) : base(null, zoneName, null)
         {
         }
     }

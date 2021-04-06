@@ -1,6 +1,7 @@
 ﻿using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using UnityEngine;
 using Zenject;
@@ -11,14 +12,17 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
     {
         private readonly IConnectionDataManager _connectionDataManager;
         private readonly ICardModelDataManager _cardModelDataManager;
+        private readonly IModelRecycler _modelRecycler;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
-            ICardModelDataManager cardModelDataManager)
+            ICardModelDataManager cardModelDataManager,
+            IModelRecycler modelRecycler)
         {
             _connectionDataManager = connectionDataManager;
             _cardModelDataManager = cardModelDataManager;
+            _modelRecycler = modelRecycler;
         }
 
         #region Connection
@@ -40,6 +44,25 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         public GameObject GetCardModel(string cardId)
         {
             return _cardModelDataManager.GetCardModel(cardId);
+        }
+
+        #endregion
+
+        #region ModelRecycler
+
+        public void AddToQueue(string key, GameObject model)
+        {
+            _modelRecycler.AddToQueue(key, model);
+        }
+
+        public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            return _modelRecycler.GetFromQueue(key, position, rotation, parent);
+        }
+
+        public bool DoesModelExist(string key)
+        {
+            return _modelRecycler.DoesModelExist(key);
         }
 
         #endregion

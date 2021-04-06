@@ -1,10 +1,10 @@
 ﻿using System;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using UnityEngine;
+using Dpoch.SocketIO;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
-using Dpoch.SocketIO;
-using UnityEngine;
 
 namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 {
@@ -13,7 +13,6 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
         private const string CONNECTION_URL = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
         private const string PLAY_CARD_EVENT = "card:play";
         private const string REMOVE_CARD_EVENT = "card:remove";
-        private const string POSITION_CHANGE_EVENT = "positionChangeEvent";
 
         private IDataManager _dataManager;
 
@@ -63,8 +62,9 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             var data = e.Data[0];
             var cardId = data["cardId"].ToString().RemoveQuotes();
             var zoneName = data["zoneName"].ToString().RemoveQuotes();
+            var cardPosition = data["cardPosition"].ToString().RemoveQuotes();
 
-            _listener.onSmartDuelEventReceived(new SummonEvent(cardId, zoneName));
+            _listener.onSmartDuelEventReceived(new PlayCardEvent(cardId, zoneName, cardPosition));
         }
 
         private void OnRemoveCardEventReceived(SocketIOEvent e)

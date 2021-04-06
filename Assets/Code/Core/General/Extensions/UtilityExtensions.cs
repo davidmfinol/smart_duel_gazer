@@ -7,5 +7,4 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
             return value >= min && value <= max;
         }
     }
-
 }
