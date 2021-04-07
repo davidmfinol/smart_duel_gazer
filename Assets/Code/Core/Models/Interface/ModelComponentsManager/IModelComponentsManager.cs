@@ -4,7 +4,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManage
     {
         public void ScaleModel();
         public void SummonMonster(string zone);
+        public void DestroyMonster(string zone);
         public void SetMonsterVisibility(string zone, bool state);
-        public void DestroyMonster(string zone, bool state);
     }
 }

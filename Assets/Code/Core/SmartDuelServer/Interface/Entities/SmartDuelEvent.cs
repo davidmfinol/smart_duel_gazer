@@ -14,9 +14,9 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities
         }
     }
 
-    public class SummonCardEvent : SmartDuelEvent
+    public class PlayCardEvent : SmartDuelEvent
     {
-        public SummonCardEvent(string cardId, string zoneName, string cardPosition) : base(cardId, zoneName, cardPosition)
+        public PlayCardEvent(string cardId, string zoneName, string cardPosition) : base(cardId, zoneName, cardPosition)
         {
         }
     }

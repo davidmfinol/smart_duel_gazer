@@ -6,23 +6,51 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
 {
     public class ModelEventHandler : IModelEventHandler
     {
-        public event Action<string> OnSummonMonster;
-        public event Action<string> OnDestroyMonster;
+        //Set public events
         public event Action<string> OnDestroySetMonster;
-
         public event Action<string, string> OnSummonSpellTrap;
         public event Action<string> OnSpellTrapActivate;
         public event Action<string> OnSpellTrapRemove;
+        
+        private event Action<string> _OnSummonMonster;
+        private event Action<string> _OnDestroyMonster;
+        private event Action<string, bool> _OnChangeMonsterVisibility;
+        private event Action<SkinnedMeshRenderer[]> _OnMonsterRemoval;
 
-        public event Action<string, bool> OnChangeMonsterVisibility;
-        public event Action<SkinnedMeshRenderer[]> OnMonsterDestruction;
+        #region Event Accessors
+
+        public event Action<string> OnSummonMonster 
+        { 
+            add => _OnSummonMonster += value;
+            remove => _OnSummonMonster -= value;
+        }
+        public event Action<string> OnDestroyMonster 
+        { 
+            add => _OnDestroyMonster += value;
+            remove => _OnDestroyMonster -= value;
+        }
+        public event Action<string, bool> OnChangeMonsterVisibility 
+        {
+            add => _OnChangeMonsterVisibility += value;
+            remove => _OnChangeMonsterVisibility -= value;
+        }
+        public event Action<SkinnedMeshRenderer[]> OnMonsterRemoval 
+        { 
+            add => _OnMonsterRemoval += value;
+            remove => _OnMonsterRemoval -= value;
+        }
+
+        #endregion
 
         public void RaiseEvent(EventNames eventName, string zone)
         {
             switch (eventName)
             {
                 case EventNames.SummonMonster:
-                    OnSummonMonster?.Invoke(zone);
+                    _OnSummonMonster?.Invoke(zone);
+                    break;
+                case EventNames.DestroyMonster:
+                    _OnDestroyMonster?.Invoke(zone);
                     break;
                 case EventNames.DestroyMonster:
                     OnDestroyMonster?.Invoke(zone);
@@ -46,14 +74,17 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
             }
             OnSummonSpellTrap?.Invoke(zone, modelName);
         }
+        
         public void RaiseEvent(EventNames eventName, string zone, bool state)
         {
-            if(eventName != EventNames.ChangeMonsterVisibility)
+            if (eventName != EventNames.ChangeMonsterVisibility)
             {
+                Debug.LogWarning($"{eventName} does not exist in this context");
                 return;
             }
-            OnChangeMonsterVisibility?.Invoke(zone, state);
+            _OnChangeMonsterVisibility?.Invoke(zone, state);
         }
+
         public void RaiseEvent(EventNames eventName, SkinnedMeshRenderer[] renderers)
         {
             if (eventName != EventNames.MonsterDestruction)
@@ -61,7 +92,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
                 Debug.LogWarning($"{eventName} does not exist in this context");
                 return;
             }
-            OnMonsterDestruction?.Invoke(renderers);
+            _OnMonsterRemoval?.Invoke(renderers);
         }
     }
 }

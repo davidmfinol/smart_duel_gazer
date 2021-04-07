@@ -1,6 +1,7 @@
 ﻿using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
 using UnityEngine;
@@ -50,46 +51,26 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         #region ModelRecycler
 
-        public void CreateRecycler()
-        {
-            _modelRecycler.CreateRecycler();
-        }
-
-        public void AddToQueue(int key, GameObject model)
-        {
-            _modelRecycler.AddToQueue(key, model);
-        }
         public void AddToQueue(string key, GameObject model)
         {
             _modelRecycler.AddToQueue(key, model);
         }
 
-        public GameObject UseFromQueue(int key, Vector3 position, Quaternion rotation)
+        public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
         {
-            return _modelRecycler.UseFromQueue(key, position, rotation);
-        }
-        public GameObject UseFromQueue(int key)
-        {
-            return _modelRecycler.UseFromQueue(key);
-        }
-        public GameObject UseFromQueue(string key, Transform parent)
-        {
-            return _modelRecycler.UseFromQueue(key, parent);
+            return _modelRecycler.GetFromQueue(key, position, rotation, parent);
         }
 
-        public bool CheckForExistingModel(string key)
+        public bool DoesModelExist(string key)
         {
-            return _modelRecycler.CheckForExistingModel(key);
+            return _modelRecycler.DoesModelExist(key);
         }
 
-<<<<<<< Updated upstream
-=======
         public bool CheckForPlayfield()
         {
             return _modelRecycler.CheckForPlayfield();
         }
 
->>>>>>> Stashed changes
         public void CacheImage(string key, Texture texture)
         {
             _modelRecycler.CacheImage(key, texture);

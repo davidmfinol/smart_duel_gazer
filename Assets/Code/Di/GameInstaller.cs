@@ -19,7 +19,7 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
-using AssemblyCSharp.Assets.Core.DataManager.Interface.ModelRecycler;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
@@ -49,7 +49,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
 
             Container.Bind<ModelEventHandler>().AsSingle();
-            Container.BindFactory<GameObject, ModelComponentsManager, ModelFactory>()
+            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<ModelComponentsManager>>();
 
             #endregion
@@ -57,7 +57,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
-            Container.BindFactory<GameObject, DestructionParticles, ParticleFactory>()
+            Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
             Container.BindFactory<GameObject, SetImageFromAPI, SetImageFromAPIFactory>()
                 .FromFactory<PrefabFactory<SetImageFromAPI>>();

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler.Entities;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
@@ -20,12 +19,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour, ISmartDuelEventListener
     {
-        private const string SET_CARD = "SetCard";
-        private const string PLAYMAT_ZONES = "Playmat/Zones/";
-        private const string CLONE = "(Clone)";
-        private const int _keyPlayfield = (int)RecyclerKeys.SpeedDuelPlayfield;
-        private const int _keySetCard = (int)RecyclerKeys.SetCard;
-        private const int _keyParticles = (int)RecyclerKeys.DestructionParticles;
+        private static readonly string SET_CARD = "SetCard";
+        private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
+        
+        private const string _keyParticles = "Particles";
+        private const string _keySetCard = "SetCards";
 
         [SerializeField]
         private GameObject _objectToPlace;
@@ -41,8 +39,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private IDataManager _dataManager;
         private SetImageFromAPIFactory _apiFactory;
         private ModelEventHandler _eventHandler;
-        private ModelFactory _modelFactory;
-        private ParticleFactory _particleFactory;
+        private ModelComponentsManager.Factory _modelFactory;
+        private DestructionParticles.Factory _particleFactory;
 
         private ApiWebRequest _webRequest;
         private ARRaycastManager _arRaycastManager;
@@ -68,8 +66,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             IDataManager dataManager,
             IScreenService screenService,
             ModelEventHandler modelEventHandler,
-            ModelFactory modelFactory,
-            ParticleFactory particleFactory,
+            ModelComponentsManager.Factory modelFactory,
+            DestructionParticles.Factory particleFactory,
             SetImageFromAPIFactory apiFactory)
         {
             _smartDuelServer = smartDuelServer;
@@ -94,7 +92,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Start()
         {
-            _dataManager.CreateRecycler();
             InstantiateParticles(6);
             InstantiateSetCards(6);
         }
@@ -272,9 +269,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void onSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
-            if (smartDuelEvent is SummonCardEvent summonEvent)
+            if (smartDuelEvent is PlayCardEvent playCardEvent)
             {
-                OnSummonEventReceived(summonEvent);
+                OnPlayCardEventReceived(playCardEvent);
             }
             else if (smartDuelEvent is RemoveCardEvent removeCardEvent)
             {
@@ -284,28 +281,27 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         //Add logic for spell/trap events
         //Add API stuff
-        private void OnSummonEventReceived(SummonCardEvent summonEvent)
+        private void OnPlayCardEventReceived(PlayCardEvent playCardEvent)
         {
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + summonEvent.ZoneName);
+            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + playCardEvent.ZoneName);
             if (zone == null)
             {
                 return;
             }
 
-            if (!InstantiatedModels.ContainsKey(summonEvent.ZoneName))
+            if (!InstantiatedModels.ContainsKey(playCardEvent.ZoneName))
             {
-                var cardModel = _dataManager.GetCardModel(summonEvent.CardId);
+                var cardModel = _dataManager.GetCardModel(playCardEvent.CardId);
                 if (cardModel == null)
                 {
                     return;
                 }
 
-<<<<<<< Updated upstream
                 GameObject instantiatedModel;
-                if (_dataManager.CheckForExistingModel(cardModel.name))
+                if (_dataManager.DoesModelExist(cardModel.name))
                 {
-                    instantiatedModel = _dataManager.UseFromQueue(cardModel.name, SpeedDuelField.transform);
-                    instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
+                    instantiatedModel = _dataManager.GetFromQueue(
+                        cardModel.name, zone.position, zone.rotation, SpeedDuelField.transform);
                 }
                 else
                 {
@@ -313,17 +309,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     instantiatedModel.transform.SetParent(SpeedDuelField.transform);
                     instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
                 }
-=======
                 StartCoroutine(AwaitImage(summonEvent.ZoneName, summonEvent.CardId));
->>>>>>> Stashed changes
 
-                _eventHandler.RaiseEvent(EventNames.SummonMonster, summonEvent.ZoneName);
-                InstantiatedModels.Add(summonEvent.ZoneName, instantiatedModel);
+                _eventHandler.RaiseEvent(EventNames.SummonMonster, playCardEvent.ZoneName);
+                InstantiatedModels.Add(playCardEvent.ZoneName, instantiatedModel);
             }
 
-            if (summonEvent.CardPosition == "faceDownDefence")
+            if (playCardEvent.CardPosition == "faceDownDefence")
             {
-                Debug.Log(summonEvent.CardPosition, this);
+                Debug.Log(playCardEvent.CardPosition, this);
 
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
@@ -331,15 +325,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     return;
                 }
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, false);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, false);
 
-                var setCardBack = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
-                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardBack);
+                var setCardBack = _dataManager.GetFromQueue(_keySetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+                InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
             }
-            else if (summonEvent.CardPosition == "faceUpDefence")
+            else if (playCardEvent.CardPosition == "faceUpDefence")
             {
                 //Add animations & events for set cards with API update
-                Debug.Log(summonEvent.CardPosition, this);
+                Debug.Log(playCardEvent.CardPosition, this);
 
                 var setCardImage = _dataManager.GetCardModel(SET_CARD);
                 if (setCardImage == null)
@@ -347,14 +341,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     return;
                 }
 
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, summonEvent.ZoneName, true);
+                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, playCardEvent.ZoneName, true);
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                 var setCardModel = _dataManager.UseFromQueue((int)RecyclerKeys.SetCard, zone.position, zone.rotation, SpeedDuelField.transform);
-=======
-                var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
->>>>>>> Stashed changes
                 if (!_dataManager.CheckForCachedImage(summonEvent.CardId))
                 {
                     Debug.LogError("No Cached Image");
@@ -362,31 +351,27 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 }
                 var imageSetter = setCardModel.GetComponentInChildren<IImageSetter>();
                 imageSetter.ChangeImageFromAPI(summonEvent.CardId);
-=======
+
             //if (summonEvent.IsSet)
             //{
             //    //TODO: Add logic for Face Up Defence special summon
             //    var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
             //    StartCoroutine(AwaitImage(summonEvent.ZoneName, cardModel.name));
->>>>>>> Stashed changes
-
-                InstantiatedModels.Add(summonEvent.ZoneName + SET_CARD, setCardModel);
-            }
+            //
+            //    var setCardBack = _dataManager.GetFromQueue(_keySetCard, zone.position, zone.rotation, SpeedDuelField.transform);
+            //    InstantiatedModels.Add(playCardEvent.ZoneName + SET_CARD, setCardBack);
+            //}
 
             //Add spell/trap faceUp, faceDown logic with API update
         }
 
-<<<<<<< Updated upstream
         //Ensure the steps aren't duplicated
         //May have added double particles
-=======
->>>>>>> Stashed changes
         private void OnRemovecardEventReceived(RemoveCardEvent removeCardEvent)
         {
             var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
             if (!modelExists)
             {
-<<<<<<< Updated upstream
                 var modelSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + "SetCard", out var setCardBack);
                 if (!modelSet)
                 {
@@ -405,11 +390,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 InstantiatedModels.Remove(removeCardEvent.ZoneName);
             }
 
-            var destructionParticles = _dataManager.UseFromQueue(_keyParticles);
+            var destructionParticles = _dataManager.GetFromQueue(
+                _keyParticles, model.transform.position, model.transform.rotation, SpeedDuelField.transform);
             
-            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
+            _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName);
 
-            StartCoroutine(WaitToProceed((int)RecyclerKeys.DestructionParticles, destructionParticles));
+            StartCoroutine(WaitToProceed(_keyParticles, destructionParticles));
             StartCoroutine(WaitToProceed(model.name, model));
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
@@ -417,7 +403,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             var modelIsSet = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + SET_CARD, out var setCard);
             if (!modelIsSet)
             {
-=======
                 if (!InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + SET_CARD, out var setCard))
                 {
                     return;
@@ -426,13 +411,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 _eventHandler.RaiseEvent(EventNames.SpellTrapRemove, removeCardEvent.ZoneName);
                 InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
                 StartCoroutine(WaitToProceed(_keySetCard, setCard));
->>>>>>> Stashed changes
                 return;
             }
             InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
+
             _dataManager.AddToQueue((int)RecyclerKeys.SetCard, setCard);
 
-<<<<<<< Updated upstream
             var destructionParticles = _dataManager.UseFromQueue(_keyParticles);
             _eventHandler.RaiseEvent(EventNames.DestroyMonster, removeCardEvent.ZoneName, false);
 
@@ -440,130 +424,25 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             StartCoroutine(WaitToProceed(model.name, model));
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            if (InstantiatedModels.TryGetValue(removeCardEvent.ZoneName + SET_CARD, out var setMonster))
-=======
             //TODO: Modify to new eventHandler
             var animator = setCard.GetComponent<Animator>();
             if (animator != null)
->>>>>>> Stashed changes
             {
                 _eventHandler.RaiseEvent(EventNames.DestroySetMonster, removeCardEvent.ZoneName + SET_CARD);
                 StartCoroutine(WaitToProceed(_keySetCard, setMonster));
                 InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
             }
-<<<<<<< Updated upstream
-=======
-
-            InstantiatedModels.Remove(removeCardEvent.ZoneName + SET_CARD);
-            StartCoroutine(WaitToProceed(_keySetCard, setCard));
->>>>>>> Stashed changes
         }
 
-<<<<<<< Updated upstream
-        //Removed Position Change and Spell/Trap
-=======
-        private void OnPositionChangeEventRecieved(PositionChangeEvent positionChangeEvent)
-        {
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + positionChangeEvent.ZoneName);
-
-            var modelExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName, out var model);
-            var setCardExists = InstantiatedModels.TryGetValue(positionChangeEvent.ZoneName + SET_CARD, out var setCardModel);
-            if (!modelExists && !setCardExists)
-            {
-                return;
-            }
-
-            if (!positionChangeEvent.IsSet)
-            {
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, zone.name, true);
-                return;
-            }
-            
-            if (!setCardExists)
-            {
-                //Change to Face Down Defence position
-                if (_dataManager.GetCardModel(SET_CARD) == null)
-                {
-                    Debug.LogWarning("There are no Set Card Models. Adding a new one");
-                    var newModel = _apiFactory.Create(_dataManager.GetCardModel(SET_CARD)).transform.gameObject;
-                    newModel.transform.SetParent(zone);
-
-                    _dataManager.AddToQueue(_keySetCard, newModel);
-                }
-
-                _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, positionChangeEvent.ZoneName, false);
-
-                var setCard = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
-                InstantiatedModels.Add(positionChangeEvent.ZoneName + SET_CARD, setCard);
-                return;
-            }
-
-            _eventHandler.RaiseEvent(EventNames.ChangeMonsterVisibility, positionChangeEvent.ZoneName, true);
-            setCardModel.GetComponent<Animator>().SetTrigger(AnimatorParams.Show_Set_Monster_Trigger);
-        }
-
-        private void OnSpellTrapSetEventRecieved(SpellTrapSetEvent spellTrapSetEvent)
-        {
-            //TODO: Update to new eventHandler
-            var zone = SpeedDuelField.transform.Find(PLAYMAT_ZONES + spellTrapSetEvent.ZoneName);
-            if (zone == null)
-            {
-                return;
-            }
-            
-            var modelName = spellTrapSetEvent.CardId;
-            if (modelName == null)
-            {
-                return;
-            }
-
-            var setCardModel = _dataManager.UseFromQueue(_keySetCard, zone.position, zone.rotation);
-            
-            if (!_dataManager.CheckForCachedImage(modelName))
-            {
-                StartCoroutine(AwaitImage(spellTrapSetEvent.ZoneName, modelName));
-                if (InstantiatedModels.ContainsKey(spellTrapSetEvent.ZoneName + SET_CARD))
-                {
-                    //TODO: Add error handler
-                    Debug.LogWarning("Recycling Old Resources");
-                    InstantiatedModels.TryGetValue(spellTrapSetEvent.ZoneName + SET_CARD, out var model);
-                    _dataManager.AddToQueue(_keySetCard, model);
-                    InstantiatedModels.Remove(spellTrapSetEvent.ZoneName + SET_CARD);
-                }
-                InstantiatedModels.Add(spellTrapSetEvent.ZoneName + SET_CARD, setCardModel);
-                return;
-            }
-
-            _eventHandler.RaiseEvent(EventNames.SummonSpellTrap, spellTrapSetEvent.ZoneName, modelName);
-
-            //Temporary activation call for testing. Remove for gameplay
-            _eventHandler.RaiseEvent(EventNames.SpellTrapActivate, spellTrapSetEvent.ZoneName);
-
-            if (InstantiatedModels.ContainsKey(spellTrapSetEvent.ZoneName + SET_CARD))
-            {
-                //TODO: Add error handler
-                Debug.LogWarning("Recycling Old Resources");
-                InstantiatedModels.TryGetValue(spellTrapSetEvent.ZoneName + SET_CARD, out var model);
-                _dataManager.AddToQueue(_keySetCard, model);
-                InstantiatedModels.Remove(spellTrapSetEvent.ZoneName + SET_CARD);
-            }
-            InstantiatedModels.Add(spellTrapSetEvent.ZoneName + SET_CARD, setCardModel); 
-        }
->>>>>>> Stashed changes
 
         #endregion
 
         #region Coroutines
 
-        private IEnumerator WaitToProceed(int key, GameObject model)
-        {
-            yield return _waitTime;
-            _dataManager.AddToQueue(key, model);
-        }
         private IEnumerator WaitToProceed(string key, GameObject model)
         {
             yield return _waitTime;
-            _dataManager.AddToQueue(key, model);
+            _dataManager.AddToQueue(key.Split('(')[0], model);
         }
 
         private IEnumerator AwaitImage(string zone, string cardID)
