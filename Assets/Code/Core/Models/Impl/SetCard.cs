@@ -1,18 +1,21 @@
-using AssemblyCSharp.Assets.Code.Core.General.Statics;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Zenject;
 using UnityEngine;
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 
 public class SetCard : MonoBehaviour
 {
-    [SerializeField]
     private ModelEventHandler _eventHandler;
 
     private IImageSetter _imageSetter;
     private Animator _animator;
     private string _zone;
+
+    [Inject]
+    public void Construct(ModelEventHandler modelEventHandler)
+    {
+        _eventHandler = modelEventHandler;
+    }
 
     #region Lifecycle
 
@@ -36,6 +39,7 @@ public class SetCard : MonoBehaviour
         _eventHandler.OnSummonSpellTrap += OnSummonSpellTrap;
         _eventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
         _eventHandler.OnSpellTrapRemove += OnSpellTrapRemove;
+        _eventHandler.OnRevealSetMonster += RevealSetMonster;
         _eventHandler.OnDestroySetMonster += DestroySetMonster;
     }
 
@@ -62,11 +66,19 @@ public class SetCard : MonoBehaviour
         }
     }
 
+    public void RevealSetMonster(string zone)
+    {
+        if (_zone == zone)
+        {
+            _animator.SetTrigger(AnimatorParams.Reveal_Set_Monster_Trigger);
+        }
+    }
+
     public void DestroySetMonster(string zone)
     {
         if (_zone == zone)
         {
-            _animator.SetTrigger(AnimatorParams.Show_Set_Monster_Trigger);
+            _animator.SetTrigger(AnimatorParams.Reveal_Set_Monster_Trigger);
         }
     }
 }

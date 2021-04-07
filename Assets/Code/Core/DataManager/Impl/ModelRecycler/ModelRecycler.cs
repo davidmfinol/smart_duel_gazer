@@ -51,7 +51,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
 
         public bool CheckForPlayfield()
         {
-            return _generalRecycler.TryGetValue((int)RecyclerKeys.SpeedDuelPlayfield, out var _);
+            return _generalRecycler.TryGetValue("Playfield", out var _);
         }
 
         public bool DoesModelExist(string key)

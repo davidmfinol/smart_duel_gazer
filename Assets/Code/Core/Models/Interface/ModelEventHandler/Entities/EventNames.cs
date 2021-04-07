@@ -4,6 +4,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.En
     {
         SummonMonster,
         ChangeMonsterVisibility,
+        RevealSetMonster,
         DestroyMonster,
         DestroySetMonster,
         MonsterDestruction,

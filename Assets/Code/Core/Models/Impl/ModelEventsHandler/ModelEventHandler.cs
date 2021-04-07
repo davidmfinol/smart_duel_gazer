@@ -7,6 +7,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
     public class ModelEventHandler : IModelEventHandler
     {
         //Set public events
+        public event Action<string> OnRevealSetMonster;
         public event Action<string> OnDestroySetMonster;
         public event Action<string, string> OnSummonSpellTrap;
         public event Action<string> OnSpellTrapActivate;
@@ -52,8 +53,8 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
                 case EventNames.DestroyMonster:
                     _OnDestroyMonster?.Invoke(zone);
                     break;
-                case EventNames.DestroyMonster:
-                    OnDestroyMonster?.Invoke(zone);
+                case EventNames.RevealSetMonster:
+                    OnRevealSetMonster?.Invoke(zone);
                     break;
                 case EventNames.DestroySetMonster:
                     OnDestroySetMonster?.Invoke(zone);

@@ -80,16 +80,12 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         {
             if (zone == _zone)
             {
-<<<<<<< Updated upstream:Assets/Code/Core/Models/Impl/ModelComponentsManager/ModelComponentsManager.cs
                 if (_animator.HasState(0, AnimatorParams.Death_Trigger))
                 {
                     _animator.SetTrigger(AnimatorParams.Death_Trigger);
                     return;
                 }
                 ActivateParticlesAndRemoveModel();
-=======
-                _animator.SetTrigger(AnimatorParams.Death_Trigger);
->>>>>>> Stashed changes:Assets/Code/Core/Models/Impl/ModelComponentsManager.cs
             }
         }
 
