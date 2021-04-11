@@ -65,16 +65,12 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.DoesModelExist(key);
         }
 
-        public bool CheckForPlayfield()
-        {
-            return _modelRecycler.CheckForPlayfield();
-        }
-
         public void CacheImage(string key, Texture texture)
         {
             _modelRecycler.CacheImage(key, texture);
         }
 
+        //Change bool names
         public bool CheckForCachedImage(string key)
         {
             return _modelRecycler.CheckForCachedImage(key);
@@ -83,6 +79,11 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         public Texture GetCachedImage(string key)
         {
             return _modelRecycler.GetCachedImage(key);
+        }
+
+        public bool DoesPlayfieldExist()
+        {
+            return _modelRecycler.DoesPlayfieldExist();
         }
 
         #endregion

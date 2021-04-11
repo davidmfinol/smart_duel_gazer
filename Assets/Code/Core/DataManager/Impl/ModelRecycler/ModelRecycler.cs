@@ -57,6 +57,11 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         public bool DoesModelExist(string key)
         {
             return _generalRecycler.TryGetValue(key, out _);
-        }       
+        }
+
+        public bool DoesPlayfieldExist()
+        {
+            return _generalRecycler.TryGetValue("Playfield", out var _);
+        }
     }
 }

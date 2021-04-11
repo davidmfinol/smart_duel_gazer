@@ -14,7 +14,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         [SerializeField]
         private Slider _scaleSlider;
         [SerializeField]
-        private Toggle _menuToggle;
+        private Toggle _toggleView;
 
         private MeshRenderer[] _renderers;
         private Animator[] _animators;
@@ -74,7 +74,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
             {
                 animator.SetTrigger(AnimatorParams.Remove_Playfield_Trigger);
             }
-            _menuToggle.isOn = false;
+            _toggleView.isOn = false;
         }
 
         private void DestroyPlaymat()

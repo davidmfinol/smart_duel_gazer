@@ -202,7 +202,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectPlaced = true;
             _placementIndicator.SetActive(false);
             
-            if(!_dataManager.CheckForPlayfield())
+            if(!_dataManager.DoesPlayfieldExist())
             {
                 SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
                 _prefabManager.transform.SetParent(SpeedDuelField.transform);
