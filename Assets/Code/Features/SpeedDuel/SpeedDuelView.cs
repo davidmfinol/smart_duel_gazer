@@ -19,7 +19,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
     {
         private static readonly string SET_CARD = "SetCard";
         private static readonly string PLAYMAT_ZONES = "Playmat/Zones/";
-        
+
+        private const string _keyPlayfield = "Playfield";
         private const string _keyParticles = "Particles";
         private const string _keySetCard = "SetCards";
 
@@ -198,7 +199,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             _objectPlaced = true;
             _placementIndicator.SetActive(false);
-            SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
+
+            if (!_dataManager.DoesPlayfieldExist())
+            {
+                SpeedDuelField = Instantiate(_objectToPlace, _placementPose.position, _placementPose.rotation);
+
+                return;
+            }
+
+            _dataManager.GetFromQueue(_keyPlayfield, _placementPose.position, _placementPose.rotation, null).transform
+                .SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
@@ -244,6 +254,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectPlaced = false;
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
+
+            _dataManager.AddToQueue(_keyPlayfield, SpeedDuelField);
         }
 
         #endregion

@@ -126,9 +126,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7936024133847426488, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -6973762993748514644, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
       propertyPath: m_Name
       value: Vorse Raider
+      objectReference: {fileID: 0}
+    - target: {fileID: 2242003372874666201, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3552887946395573518, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4188531639213701860, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8970905545480104903, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6680ed6bd2659f43bad5a569c12802b, type: 3}
