@@ -65,6 +65,11 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.DoesModelExist(key);
         }
 
+        public bool CheckForPlayfield()
+        {
+            return _modelRecycler.CheckForPlayfield();
+        }
+
         #endregion
     }
 }

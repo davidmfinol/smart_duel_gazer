@@ -14,6 +14,8 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         private GameObject _menu;
         [SerializeField]
         private Slider _scaleSlider;
+        [SerializeField]
+        private Toggle _toggleView;
 
         private MeshRenderer[] _renderers;
         private Animator[] _animators;
@@ -74,12 +76,12 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
             {
                 animator.SetTrigger(AnimatorIDSetter.Animator_Remove_Playfield);
             }
+            _toggleView.isOn = false;
         }
 
         private void DestroyPlaymat()
         {
             _interaction.BroadcastMessage("OnPlaymatDestroyed");
-            Destroy(_playmatShell);
         }
     }
 }

@@ -82,6 +82,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3458600063002217027}
     m_Modifications:
+    - target: {fileID: -9090837434144007283, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -126,9 +130,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7936024133847426488, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -6973762993748514644, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_Name
       value: King's Knight
+      objectReference: {fileID: 0}
+    - target: {fileID: 3552887946395573518, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4188531639213701860, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5204141699344615910, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7720514002101898905, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8970905545480104903, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
