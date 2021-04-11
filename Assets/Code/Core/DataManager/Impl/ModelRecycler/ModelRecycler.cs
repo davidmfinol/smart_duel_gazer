@@ -33,7 +33,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             return _generalRecycler.TryGetValue(key, out _);
         }
 
-        public bool CheckForPlayfield()
+        public bool DoesPlayfieldExist()
         {
             return _generalRecycler.TryGetValue("Playfield", out var _);
         }
