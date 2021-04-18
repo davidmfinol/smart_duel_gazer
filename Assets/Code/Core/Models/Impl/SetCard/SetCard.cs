@@ -1,9 +1,9 @@
 using Zenject;
 using UnityEngine;
 using System.Collections.Generic;
-using AssemblyCSharp.Assets.Code.Core.General.Statics;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 {
@@ -48,7 +48,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
         private void OnDisable()
         {
             _zone = null;
-            _animator.SetTrigger(AnimatorParams.Hide_Set_Monster_Image_Trigger);
+            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
 
             UnsubscribeFromEvents();
         }
@@ -104,7 +104,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
                 return;
             }
 
-            _animator.SetTrigger(AnimatorParams.Activate_Spell_Or_Trap_Trigger);
+            _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
         }
 
         private void OnSpellTrapRemove(string zone)
@@ -114,7 +114,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
                 return;
             }
 
-            _animator.SetTrigger(AnimatorParams.Remove_Set_Card_Trigger);
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
         }
 
         #endregion
@@ -133,16 +133,15 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
                 return;
             }
 
-            _animator.SetTrigger(AnimatorParams.Reveal_Set_Monster_Trigger);
+            _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
         }
 
         private void HideSetCardImage(string zone, bool state)
         {
             if (_zone == zone && state == false)
             {
-                _animator.SetTrigger(AnimatorParams.Hide_Set_Monster_Image_Trigger);
+                _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
             }
-
         }
 
         private void DestroySetMonster(string zone)
@@ -152,7 +151,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
                 return;
             }
 
-            _animator.SetTrigger(AnimatorParams.Reveal_Set_Monster_Trigger);
+            _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
         }
 
         #endregion

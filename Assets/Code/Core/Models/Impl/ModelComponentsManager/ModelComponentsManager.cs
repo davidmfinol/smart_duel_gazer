@@ -1,9 +1,9 @@
 using Zenject;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.General.Statics;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
@@ -88,8 +88,8 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(true);
-            _animator.SetBool(AnimatorParams.Defence_Bool, false);
-            _animator.SetTrigger(AnimatorParams.Summoning_Trigger);
+            _animator.SetBool(AnimatorParameters.DefenceBool, false);
+            _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
 
         private void RevealSetMonster(string zone)
@@ -99,7 +99,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
                 return;
             }
 
-            _animator.SetBool(AnimatorParams.Defence_Bool, true);
+            _animator.SetBool(AnimatorParameters.DefenceBool, true);
         }
 
         private void SetMonsterVisibility(string zone, bool state)
@@ -119,9 +119,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
                 return;
             }
 
-            if (_animator.HasState(0, AnimatorParams.Death_Trigger))
+            if (_animator.HasState(0, AnimatorParameters.DeathTrigger))
             {
-                _animator.SetTrigger(AnimatorParams.Death_Trigger);
+                _animator.SetTrigger(AnimatorParameters.DeathTrigger);
                 return;
             }
             

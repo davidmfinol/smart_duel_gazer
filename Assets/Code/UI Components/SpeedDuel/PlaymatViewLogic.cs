@@ -1,8 +1,8 @@
 using Zenject;
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.General.Statics;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 
 namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
 {
@@ -92,7 +92,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetBool(AnimatorParams.Open_Playfield_Menu_Bool, state);
+                animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
             }
         }
 
@@ -108,7 +108,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetTrigger(AnimatorParams.Remove_Playfield_Trigger);
+                animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             }
             _toggleView.isOn = false;
         }
