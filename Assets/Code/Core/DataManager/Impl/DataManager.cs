@@ -60,6 +60,11 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.GetFromQueue(key, position, rotation, parent);
         }
 
+        public void Remove(string key)
+        {
+            _modelRecycler.Remove(key);
+        }
+
         public bool DoesModelExist(string key)
         {
             return _modelRecycler.DoesModelExist(key);
@@ -71,9 +76,9 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         }
 
         //Change bool names
-        public bool CheckForCachedImage(string key)
+        public bool DoesCachedImageExist(string key)
         {
-            return _modelRecycler.CheckForCachedImage(key);
+            return _modelRecycler.DoesCachedImageExist(key);
         }
 
         public Texture GetCachedImage(string key)

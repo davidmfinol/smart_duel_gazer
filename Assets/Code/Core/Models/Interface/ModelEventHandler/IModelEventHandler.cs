@@ -1,9 +1,17 @@
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
-public interface IModelEventHandler
+namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler
 {
-    public void RaiseEvent(EventNames eventNames, string zone);
-    public void RaiseEvent(EventNames eventNames, string zone, bool state);
-    public void RaiseEvent(EventNames eventNames, SkinnedMeshRenderer[] renderers);
+    public interface IModelEventHandler
+    {
+        public void ActivatePlayfield(GameObject playfield);
+        public void RemovePlayfield();
+        public void DestroyPlayfield();
+        public void ActivateModel(string zone);
+        public void RaiseEventByEventName(EventNames eventNames, string zone);
+        public void RaiseChangeVisibilityEvent(string zone, bool state);
+        public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
+        public void RaiseSummonSetCardEvent(string zone, string modelName, bool isMonster);
+    }
 }

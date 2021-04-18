@@ -5,16 +5,16 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: -3901190485717362917
-    second: Armature|a
+    second: Summoning
   - first:
       74: -7930680087073597714
     second: Armature|d
   - first:
       74: -8283358588155910047
-    second: Armature|m
+    second: Attack1
   - first:
       74: 5606776908955592232
-    second: Armature|w
+    second: Idle - Attack
   - first:
       74: -619990360343798126
     second: Armature|w (1)
@@ -76,7 +76,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|a
+      name: Summoning
       takeName: Armature|a
       internalID: 0
       firstFrame: 18
@@ -105,7 +105,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|m
+      name: Attack1
       takeName: Armature|m
       internalID: 0
       firstFrame: 0
@@ -134,7 +134,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|w
+      name: Idle - Attack
       takeName: Armature|w
       internalID: 0
       firstFrame: 0

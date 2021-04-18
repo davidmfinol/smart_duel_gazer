@@ -6,10 +6,11 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler
     {
         public void AddToQueue(string key, GameObject model);
         public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent);
-        public bool DoesModelExist(string key);
+        public void Remove(string key);
         public void CacheImage(string key, Texture texture);
-        public bool CheckForCachedImage(string key);
         public Texture GetCachedImage(string key);
         public bool DoesPlayfieldExist();
+        public bool DoesModelExist(string key);
+        public bool DoesCachedImageExist(string key);
     }
 }

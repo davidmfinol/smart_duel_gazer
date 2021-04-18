@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
+﻿namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
 {
     public static class StringExtensions
     {
@@ -9,7 +7,7 @@ namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
             return value.Replace("\"", "");
         }
 
-        public static string RemoveStartingZero(this string value)
+        public static string RemoveStartingZeroIfRequired(this string value)
         {
             if (value.StartsWith("0"))
             {

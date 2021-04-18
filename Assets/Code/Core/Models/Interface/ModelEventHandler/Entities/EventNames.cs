@@ -8,8 +8,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.En
         DestroyMonster,
         DestroySetMonster,
         MonsterDestruction,
-        SummonSpellTrap,
+        SummonSetCard,
         SpellTrapActivate,
-        SpellTrapRemove,
+        SetCardRemove,
+        ActivatePlayField,
     }
 }

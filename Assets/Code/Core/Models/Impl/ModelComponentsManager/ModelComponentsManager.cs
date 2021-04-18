@@ -4,7 +4,6 @@ using AssemblyCSharp.Assets.Code.Core.General.Statics;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 {
@@ -18,11 +17,15 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         private ModelSettings _settings;
         private string _zone;
 
+        #region Constructor
+
         [Inject]
         public void Construct(ModelEventHandler modelEventHandler)
         {
             _eventHandler = modelEventHandler;
         }
+
+        #endregion
 
         #region Lifecycle
 
@@ -41,57 +44,93 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         private void OnDisable()
         {
             _zone = null;
-            _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
+            UnsubscribeToEvents();
         }
 
         #endregion
 
-        private void SubscribeToEvents()
+        public void SubscribeToEvents()
         {
+            _eventHandler.OnActivateModel += ActivateModel;
             _eventHandler.OnSummonMonster += SummonMonster;
+            _eventHandler.OnRevealSetMonster += RevealSetMonster;
             _eventHandler.OnChangeMonsterVisibility += SetMonsterVisibility;
             _eventHandler.OnDestroyMonster += DestroyMonster;
         }
 
-        public void ScaleModel()
+        public void UnsubscribeToEvents()
+        {
+            _eventHandler.OnActivateModel -= ActivateModel;
+            _eventHandler.OnSummonMonster -= SummonMonster;
+            _eventHandler.OnRevealSetMonster -= RevealSetMonster;
+            _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
+            _eventHandler.OnDestroyMonster -= DestroyMonster;
+        }
+
+        private void ActivateModel(string zone)
+        {
+            _zone = zone;
+            ScaleModel();
+
+            _eventHandler.OnActivateModel -= ActivateModel;
+        }
+
+        private void ScaleModel()
         {
             transform.parent.transform.localScale = _settings.ModelScale;
         }
 
-        public void SummonMonster(string zone)
+        private void SummonMonster(string zone)
         {
-            _zone = zone;
+            if (_zone != zone)
+            {
+                return;
+            }
 
-            ScaleModel();
             _renderers.SetRendererVisibility(true);
+            _animator.SetBool(AnimatorParams.Defence_Bool, false);
             _animator.SetTrigger(AnimatorParams.Summoning_Trigger);
-            _eventHandler.OnSummonMonster -= SummonMonster;
         }
 
-        public void SetMonsterVisibility(string zone, bool state)
+        private void RevealSetMonster(string zone)
         {
-            if (zone == _zone)
+            if (_zone != zone)
             {
-                _renderers.SetRendererVisibility(state);
+                return;
             }
+
+            _animator.SetBool(AnimatorParams.Defence_Bool, true);
         }
 
-        public void DestroyMonster(string zone)
+        private void SetMonsterVisibility(string zone, bool state)
         {
-            if (zone == _zone)
+            if (zone != _zone)
             {
-                if (_animator.HasState(0, AnimatorParams.Death_Trigger))
-                {
-                    _animator.SetTrigger(AnimatorParams.Death_Trigger);
-                    return;
-                }
-                ActivateParticlesAndRemoveModel();
+                return;
             }
+
+            _renderers.SetRendererVisibility(state);
         }
 
-        public void ActivateParticlesAndRemoveModel()
+        private void DestroyMonster(string zone)
         {
-            _eventHandler.RaiseEvent(EventNames.MonsterDestruction, _renderers);
+            if (zone != _zone)
+            {
+                return;
+            }
+
+            if (_animator.HasState(0, AnimatorParams.Death_Trigger))
+            {
+                _animator.SetTrigger(AnimatorParams.Death_Trigger);
+                return;
+            }
+            
+            ActivateParticlesAndRemoveModel();
+        }
+
+        private void ActivateParticlesAndRemoveModel()
+        {
+            _eventHandler.RaiseMonsterRemovalEvent(_renderers);
             _renderers.SetRendererVisibility(false);
             _eventHandler.OnDestroyMonster -= DestroyMonster;
         }

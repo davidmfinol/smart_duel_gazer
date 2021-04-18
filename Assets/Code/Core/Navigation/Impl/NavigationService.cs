@@ -13,7 +13,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
         
         public void ShowSpeedDuelScene()
         {
-            SceneManager.LoadSceneAsync((int)Routes.SpeedDuel);
+            SceneManager.LoadScene((int)Routes.SpeedDuel);
         }
     }
 }

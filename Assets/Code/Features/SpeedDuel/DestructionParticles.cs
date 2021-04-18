@@ -9,11 +9,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private ModelEventHandler _eventHandler;
         private ParticleSystem _particles;
 
+        #region Constructor
+
         [Inject]
         public void Construct(ModelEventHandler modelEventHandler)
         {
             _eventHandler = modelEventHandler;
         }
+
+        #endregion
 
         #region LifeCycle
 

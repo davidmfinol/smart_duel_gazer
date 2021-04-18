@@ -1,47 +1,29 @@
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Networking;
 using Zenject;
+using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface;
+using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl.ApiTextureRequest;
+using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
 {
-    public class ApiWebRequest : MonoBehaviour
-    {        
-        private const string API_URL = "https://db.ygoprodeck.com/api/v7/cardinfo.php?id={0}";
-        private const string API_IMAGE_URL = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
-        
-        private IDataManager _dataManager;
+    public class ApiWebRequest : IApiWebRequest
+    {
+        private TextureRequest _textureRequest;
+        private TextureRequest.Factory _factory;
 
         [Inject]
-        public void Construct(IDataManager dataManager)
+        public void Construct(TextureRequest.Factory factory)
         {
-            _dataManager = dataManager;
-        }
+            _factory = factory;
+        }        
 
-        public IEnumerator GetRequest(string cardID)
+        public void RequestCardImageFromWeb(EventNames eventName, string zone, string cardID, bool isMonster)
         {
-            if (!_dataManager.CheckForCachedImage(cardID))
+            if (_textureRequest == null)
             {
-                string URL = string.Format(API_IMAGE_URL, cardID.RemoveStartingZero());
-
-                using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
-                yield return webRequest.SendWebRequest();
-
-                if(webRequest.result == UnityWebRequest.Result.ProtocolError)
-                {
-                    Debug.LogWarning($"Error {webRequest.error} on cardID: {cardID}");
-                    yield return null;
-                }
-                    
-                DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
-
-                _dataManager.CacheImage(cardID, handlerTexture.texture);
+                _textureRequest = _factory.Create();
             }
-
-            yield return null;
+            
+            _textureRequest.SetCardImage(eventName, zone, cardID, isMonster);
         }
     }
 }

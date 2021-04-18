@@ -14,7 +14,7 @@ ModelImporter:
     second: Idle
   - first:
       74: -2361512165147288874
-    second: Model_skeleton|MotionC
+    second: Idle - Defence
   - first:
       74: 2331642159709094490
     second: Model_skeleton|MotionD
@@ -105,7 +105,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionC
+      name: Idle - Defence
       takeName: Model_skeleton|MotionC
       internalID: 0
       firstFrame: 0

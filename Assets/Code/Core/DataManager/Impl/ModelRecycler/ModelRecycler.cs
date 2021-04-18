@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 
-namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
+namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
 {
     public class ModelRecycler : IModelRecycler
     {
@@ -27,15 +27,15 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             model.SetActive(true);
             return model;
         }
+
+        public void Remove(string key)
+        {
+            _generalRecycler.Remove(key);
+        }
         
         public void CacheImage(string key, Texture texture)
         {
             _images.Add(key, texture);
-        }
-
-        public bool CheckForCachedImage(string key)
-        {
-            return _images.TryGetValue(key, out _);
         }
 
         public Texture GetCachedImage(string key)
@@ -49,10 +49,7 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
             return texture;
         }
 
-        public bool CheckForPlayfield()
-        {
-            return _generalRecycler.TryGetValue("Playfield", out var _);
-        }
+        #region Bools
 
         public bool DoesModelExist(string key)
         {
@@ -63,5 +60,13 @@ namespace AssemblyCSharp.Assets.Core.DataManager.Impl.ModelRecycler
         {
             return _generalRecycler.TryGetValue("Playfield", out var _);
         }
+
+        public bool DoesCachedImageExist(string key)
+        {
+            return _images.TryGetValue(key, out _);
+        }
+
+        #endregion
+
     }
 }
