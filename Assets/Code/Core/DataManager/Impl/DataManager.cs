@@ -60,9 +60,30 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.GetFromQueue(key, position, rotation, parent);
         }
 
+        public void Remove(string key)
+        {
+            _modelRecycler.Remove(key);
+        }
+
         public bool DoesModelExist(string key)
         {
             return _modelRecycler.DoesModelExist(key);
+        }
+
+        public void CacheImage(string key, Texture texture)
+        {
+            _modelRecycler.CacheImage(key, texture);
+        }
+
+        //Change bool names
+        public bool DoesCachedImageExist(string key)
+        {
+            return _modelRecycler.DoesCachedImageExist(key);
+        }
+
+        public Texture GetCachedImage(string key)
+        {
+            return _modelRecycler.GetCachedImage(key);
         }
 
         public bool DoesPlayfieldExist()

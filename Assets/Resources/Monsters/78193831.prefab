@@ -1,7 +1,7 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!65 &5889604161573641470
-BoxCollider:
+--- !u!136 &7212309857191246421
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10,9 +10,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.006382904, y: 0.010819358, z: 0.005019985}
-  m_Center: {x: -0.00066362857, y: 0.004294357, z: 0.00032288686}
+  m_Radius: 0.002198662
+  m_Height: 0.010372874
+  m_Direction: 1
+  m_Center: {x: -0.00012450515, y: 0.0052047777, z: 0.0009769616}
 --- !u!95 &4730957222172086977
 Animator:
   serializedVersion: 3
@@ -32,7 +33,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6482342145836769214
+--- !u!114 &3319383035076336100
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,6 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 50, y: 50, z: 50}
+  _eventHandler: {fileID: 11400000, guid: 37a7f3edd99789540b4fb589a8908f82, type: 2}
 --- !u!1 &7224916136937916771
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,6 +144,22 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
       propertyPath: m_Name
       value: Buster Blader
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696416163457522751, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8007432631361551688, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
       propertyPath: m_Materials.Array.data[0]

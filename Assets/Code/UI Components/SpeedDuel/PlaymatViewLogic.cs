@@ -1,37 +1,65 @@
+using Zenject;
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.General;
+using AssemblyCSharp.Assets.Code.Core.General.Statics;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 
 namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
-        private static readonly string Indicator_Tag = "Indicator";
-
         [SerializeField]
-        private GameObject _playmatShell;
+        private GameObject _menus;
         [SerializeField]
-        private GameObject _menu;
+        private GameObject _bottomMenu;
         [SerializeField]
         private Slider _scaleSlider;
         [SerializeField]
         private Toggle _toggleView;
 
+        private ModelEventHandler _modelEventHandler;
+
+        private GameObject _playmatShell;
         private MeshRenderer[] _renderers;
         private Animator[] _animators;
-        private GameObject _interaction;
+
+        #region Constructor
+
+        [Inject]
+        public void Construct(ModelEventHandler modelEventHandler)
+        {
+            _modelEventHandler = modelEventHandler;
+        }
+
+        #endregion
 
         private void Awake()
         {
-            _renderers = GetComponentsInChildren<MeshRenderer>();
-            _animators = GetComponentsInChildren<Animator>();
-            //TODO Create a more solid connection to Indicator object
-            _interaction = GameObject.FindGameObjectWithTag(Indicator_Tag);
+            _modelEventHandler.OnActivatePlayfield += ActivatePlayfieldMenus;
+            _modelEventHandler.OnRemovePlayfield += RemovePlayfieldMenus;
+        }
+
+        private void ActivatePlayfieldMenus(GameObject playfield)
+        {
+            _playmatShell = playfield;
+            _renderers = _playmatShell.GetComponentsInChildren<MeshRenderer>();
+
+            _menus.SetActive(true);
+
+            if (_animators == null)
+            {
+                _animators = GetComponentsInChildren<Animator>();
+            }
+        }
+
+        private void RemovePlayfieldMenus()
+        {
+            _menus.SetActive(false);
         }
 
         public void SetScaleStartPosition(float startPosition) => _scaleSlider.value = startPosition;
 
-        public void ScalePlaymat(float scale) 
+        public void ScalePlaymat(float scale)
         {
             var mappedScale = MapScaleValueToSliderValue(scale, _scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
             _playmatShell.transform.localScale = new Vector3(mappedScale, mappedScale, mappedScale);
@@ -48,17 +76,23 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
 
         public void RotatePlaymat(float rotation) => _playmatShell.transform.rotation = Quaternion.Euler(0, rotation, 0);
 
-        public void ChangePlaymatHeight(float height) => _playmatShell.transform.position = new Vector3(
-            _playmatShell.transform.position.x, 
-            height, 
-            _playmatShell.transform.position.z
-            );
+        public void FlipPlaymat(bool state)
+        {
+            if (state)
+            {
+                _playmatShell.transform.rotation = Quaternion.Euler(0, 180, 0);
+                return;
+            }
+
+            _playmatShell.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
 
         public void ShowSettingsMenu(bool state)
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetBool(AnimatorIDSetter.Animator_Open_Playfield_Menu, state);
+                animator.SetBool(AnimatorParams.Open_Playfield_Menu_Bool, state);
             }
         }
 
@@ -74,14 +108,14 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
         {
             foreach (Animator animator in _animators)
             {
-                animator.SetTrigger(AnimatorIDSetter.Animator_Remove_Playfield);
+                animator.SetTrigger(AnimatorParams.Remove_Playfield_Trigger);
             }
             _toggleView.isOn = false;
         }
 
         private void DestroyPlaymat()
         {
-            _interaction.BroadcastMessage("OnPlaymatDestroyed");
+            _modelEventHandler.DestroyPlayfield();
         }
     }
 }

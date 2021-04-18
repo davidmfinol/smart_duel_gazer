@@ -15,10 +15,5 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
         {
             SceneManager.LoadScene((int)Routes.SpeedDuel);
         }
-
-        public void ShowModelViewScene()
-        {
-            SceneManager.LoadScene((int)Routes.ModelView);
-        }
     }
 }

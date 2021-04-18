@@ -15,9 +15,16 @@ namespace AssemblyCSharp.Assets.Code.Core.Screen.Impl
             UnityEngine.Screen.orientation = ScreenOrientation.Portrait;
         }
 
-        public void UseLandscapeOrientation()
+        public void UseAutoLandscapeOrientation()
         {
             UnityEngine.Screen.orientation = ScreenOrientation.Landscape;
+            
+            UnityEngine.Screen.autorotateToLandscapeLeft = true;
+            UnityEngine.Screen.autorotateToLandscapeRight = true;
+            UnityEngine.Screen.autorotateToPortrait = false;
+            UnityEngine.Screen.autorotateToPortraitUpsideDown = false;
+
+            UnityEngine.Screen.orientation = ScreenOrientation.AutoRotation;
         }
     }
 }

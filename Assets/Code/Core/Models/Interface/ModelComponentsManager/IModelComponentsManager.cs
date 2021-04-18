@@ -2,9 +2,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelComponentsManage
 {
     public interface IModelComponentsManager
     {
-        public void ScaleModel();
-        public void SummonMonster(string zone);
-        public void DestroyMonster(string zone);
-        public void SetMonsterVisibility(string zone, bool state);
+        public void SubscribeToEvents();
+        public void UnsubscribeToEvents();
     }
 }

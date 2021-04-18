@@ -4,6 +4,5 @@
     {
         void ShowConnectionScene();
         void ShowSpeedDuelScene();
-        void ShowModelViewScene();
     }
 }

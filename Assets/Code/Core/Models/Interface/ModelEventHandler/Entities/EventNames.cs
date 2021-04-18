@@ -4,7 +4,13 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.En
     {
         SummonMonster,
         ChangeMonsterVisibility,
+        RevealSetMonster,
         DestroyMonster,
-        OnMonsterDestruction,
+        DestroySetMonster,
+        MonsterDestruction,
+        SummonSetCard,
+        SpellTrapActivate,
+        SetCardRemove,
+        ActivatePlayField,
     }
 }

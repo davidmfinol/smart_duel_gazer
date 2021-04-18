@@ -6,5 +6,15 @@
         {
             return value.Replace("\"", "");
         }
+
+        public static string RemoveStartingZeroIfRequired(this string value)
+        {
+            if (value.StartsWith("0"))
+            {
+                return value.Substring(1, value.Length-1);
+            }
+
+            return value;
+        }
     }
 }

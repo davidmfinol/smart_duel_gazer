@@ -75,6 +75,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &2100371726123090378
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7721827691419354876}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0038251635, y: 0.0076493365, z: 0.0029088317}
+  m_Center: {x: -0.00013867916, y: 0.0034107587, z: -0.00031105455}
 --- !u!1001 &7487261380678941613
 PrefabInstance:
   m_ObjectHideFlags: 0
