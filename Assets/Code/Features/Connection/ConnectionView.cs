@@ -23,9 +23,6 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
         [SerializeField]
         private Button _speedDuelButton;
 
-        [SerializeField]
-        private Button _modelViewButton;
-
         private ConnectionFormValidators _connectionFormValidators;
         private INavigationService _navigationService;
         private IDialogService _dialogService;

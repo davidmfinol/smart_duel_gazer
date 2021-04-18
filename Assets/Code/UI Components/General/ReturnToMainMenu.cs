@@ -28,7 +28,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
             _backButton.onClick.AsObservable().Subscribe(_ => OnBackButtonPressed());
         }
 
-        public void OnBackButtonPressed()
+        private void OnBackButtonPressed()
         {
             _navigationService.ShowConnectionScene();
         }

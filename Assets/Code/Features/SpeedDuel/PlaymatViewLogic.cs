@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
