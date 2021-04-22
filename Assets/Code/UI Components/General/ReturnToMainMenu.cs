@@ -14,6 +14,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
         private INavigationService _navigationService;
 
         #region Constructors
+
         [Inject]
         public void Construct(INavigationService navigationService)
         {
@@ -21,6 +22,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
 
             InitNavigation();
         }
+
         #endregion
 
         private void InitNavigation()
