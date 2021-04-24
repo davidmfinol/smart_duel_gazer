@@ -11,7 +11,7 @@
         {
             if (value.StartsWith("0"))
             {
-                return value.Substring(1, value.Length-1);
+                return value.Substring(1, value.Length - 1);
             }
 
             return value;

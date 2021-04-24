@@ -49,11 +49,9 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
             return texture;
         }
 
-        #region Bools
-
-        public bool DoesModelExist(string key)
+        public bool IsModelRecyclable(string key)
         {
-            return _generalRecycler.TryGetValue(key, out _);
+            return _generalRecycler.ContainsKey(key);
         }
 
         public bool DoesPlayfieldExist()
@@ -65,8 +63,5 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
         {
             return _images.TryGetValue(key, out _);
         }
-
-        #endregion
-
     }
 }

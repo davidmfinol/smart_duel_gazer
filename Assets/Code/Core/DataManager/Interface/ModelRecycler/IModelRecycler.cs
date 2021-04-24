@@ -10,7 +10,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler
         public void CacheImage(string key, Texture texture);
         public Texture GetCachedImage(string key);
         public bool DoesPlayfieldExist();
-        public bool DoesModelExist(string key);
+        public bool IsModelRecyclable(string key);
         public bool DoesCachedImageExist(string key);
     }
 }

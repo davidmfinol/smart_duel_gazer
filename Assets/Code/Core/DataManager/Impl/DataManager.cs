@@ -65,9 +65,9 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _modelRecycler.Remove(key);
         }
 
-        public bool DoesModelExist(string key)
+        public bool IsModelRecyclable(string key)
         {
-            return _modelRecycler.DoesModelExist(key);
+            return _modelRecycler.IsModelRecyclable(key);
         }
 
         public void CacheImage(string key, Texture texture)

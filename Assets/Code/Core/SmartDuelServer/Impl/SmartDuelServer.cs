@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using Dpoch.SocketIO;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
@@ -11,8 +10,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
     public class SmartDuelServer : ISmartDuelServer
     {
         private const string ConnectionUrl = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
-        private const string PlayCardEvent = "card:play";
-        private const string RemoveCardEvent = "card:remove";
+        private const string PlayCardEventName = "card:play";
+        private const string RemoveCardEventName = "card:remove";
 
         private IDataManager _dataManager;
 
@@ -42,8 +41,8 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
             _socket.OnClose += () => Debug.Log("Socket closed!");
             _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(PlayCardEvent, OnPlayCardEventReceived);
-            _socket.On(RemoveCardEvent, OnRemoveCardEventReceived);
+            _socket.On(PlayCardEventName, OnPlayCardEventReceived);
+            _socket.On(RemoveCardEventName, OnRemoveCardEventReceived);
 
             _socket.Connect();
         }
@@ -59,22 +58,14 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
         {
             Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
 
-            var data = e.Data[0];
-            var cardId = data["cardId"].ToString().RemoveQuotes();
-            var zoneName = data["zoneName"].ToString().RemoveQuotes();
-            var cardPosition = data["cardPosition"].ToString().RemoveQuotes();
-
-            _listener.OnSmartDuelEventReceived(new PlayCardEvent(cardId, zoneName, cardPosition));
+            _listener.OnSmartDuelEventReceived(PlayCardEvent.FromJson(e.Data[0]));
         }
 
         private void OnRemoveCardEventReceived(SocketIOEvent e)
         {
             Debug.Log($"OnRemoveCardEventReceived(SocketIOEvent: {e})");
 
-            var data = e.Data[0];
-            var zoneName = data["zoneName"].ToString().RemoveQuotes();
-
-            _listener.OnSmartDuelEventReceived(new RemoveCardEvent(zoneName));
+            _listener.OnSmartDuelEventReceived(RemoveCardEvent.FromJson(e.Data[0]));
         }
     }
 }
