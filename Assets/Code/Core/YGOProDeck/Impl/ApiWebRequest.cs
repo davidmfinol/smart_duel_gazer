@@ -16,14 +16,14 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
             _factory = factory;
         }        
 
-        public void RequestCardImageFromWeb(EventNames eventName, string zone, string cardID, bool isMonster)
+        public void RequestCardImageFromWeb(ModelEvent modelEvent, string zone, string cardId, bool isMonster)
         {
             if (_textureRequest == null)
             {
                 _textureRequest = _factory.Create();
             }
             
-            _textureRequest.SetCardImage(eventName, zone, cardID, isMonster);
+            _textureRequest.SetCardImage(modelEvent, zone, cardId, isMonster);
         }
     }
 }

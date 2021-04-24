@@ -66,7 +66,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void OnDestroy()
         {
             _modelEventHandler.OnDestroyPlayfield -= OnPlaymatDestroyed;
-            _dataManager.Remove(_keyPlayfield);
+            _dataManager.RemoveGameObject(_keyPlayfield);
         }
 
         #endregion
@@ -141,7 +141,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectIsPlaced = true;
             _placementIndicator.SetActive(false);
 
-            if (!_dataManager.DoesPlayfieldExist())
+            if (!_dataManager.IsPlayfieldRecyclable())
             {
                 _speedDuelField = Instantiate(_playfieldPrefab, _placementPose.position, _placementPose.rotation);
                 _prefabManager.transform.SetParent(_speedDuelField.transform);
@@ -151,7 +151,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            _dataManager.GetFromQueue(_keyPlayfield, _placementPose.position, _placementPose.rotation, transform.root).transform
+            _dataManager.GetGameObjectFromQueue(_keyPlayfield, _placementPose.position, _placementPose.rotation, transform.root).transform
                 .SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
 
             _modelEventHandler.ActivatePlayfield(_speedDuelField);
@@ -199,7 +199,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
 
-            _dataManager.AddToQueue(_keyPlayfield, _speedDuelField);
+            _dataManager.AddGameObjectToQueue(_keyPlayfield, _speedDuelField);
             _modelEventHandler.RemovePlayfield();
         }
     }

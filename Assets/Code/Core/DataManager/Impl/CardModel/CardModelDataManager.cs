@@ -6,7 +6,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel
 {
     public class CardModelDataManager : ICardModelDataManager
     {
-        private const string RESOURCES_MONSTERS_FOLDER_NAME = "Monsters";
+        private const string MonsterResourcesFolderPath = "Monsters";
 
         private GameObject[] _cardModels;
 
@@ -22,7 +22,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel
 
         private void LoadCardModels()
         {
-            _cardModels = Resources.LoadAll<GameObject>(RESOURCES_MONSTERS_FOLDER_NAME);
+            _cardModels = Resources.LoadAll<GameObject>(MonsterResourcesFolderPath);
         }
     }
 }

@@ -4,6 +4,6 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface
 {
     public interface IApiWebRequest
     {
-        public void RequestCardImageFromWeb(EventNames eventName, string zone, string cardID, bool isMonster);
+        public void RequestCardImageFromWeb(ModelEvent modelEvent, string zone, string cardId, bool isMonster);
     }
 }

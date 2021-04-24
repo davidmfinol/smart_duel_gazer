@@ -11,7 +11,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl.ApiTextureRequest
 {
     public class TextureRequest : MonoBehaviour
     {
-        private const string API_IMAGE_URL = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
+        private const string ImageBaseUrl = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
 
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
@@ -28,50 +28,48 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl.ApiTextureRequest
 
         #endregion
 
-        public void SetCardImage(EventNames eventName, string zone, string cardID, bool isMonster)
+        public void SetCardImage(ModelEvent modelEvent, string zone, string cardId, bool isMonster)
         {
-            StartCoroutine(AwaitAndSetImage(eventName, zone, cardID, isMonster));
+            StartCoroutine(AwaitAndSetImage(modelEvent, zone, cardId, isMonster));
         }
 
         #region Coroutines
 
-        private IEnumerator AwaitAndSetImage(EventNames eventName, string zone, string cardID, bool isMonster)
+        private IEnumerator AwaitAndSetImage(ModelEvent modelEvent, string zone, string cardId, bool isMonster)
         {
-            yield return TextureWebRequest(cardID);
+            yield return TextureWebRequest(cardId);
 
-            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardID, isMonster);
+            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId, isMonster);
 
-            switch (eventName)
+            switch (modelEvent)
             {
-                case EventNames.SpellTrapActivate:
-                    _modelEventHandler.RaiseEventByEventName(EventNames.SpellTrapActivate, zone);
+                case ModelEvent.SpellTrapActivate:
+                    _modelEventHandler.RaiseEventByEventName(ModelEvent.SpellTrapActivate, zone);
                     break;
-                case EventNames.RevealSetMonster:
-                    _modelEventHandler.RaiseEventByEventName(EventNames.RevealSetMonster, zone);
-                    break;
-                default:
+                case ModelEvent.RevealSetMonster:
+                    _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, zone);
                     break;
             }
         }
 
-        private IEnumerator TextureWebRequest(string cardID)
+        private IEnumerator TextureWebRequest(string cardId)
         {
-            if (!_dataManager.DoesCachedImageExist(cardID))
+            if (!_dataManager.IsImageRecyclable(cardId))
             {
-                string URL = string.Format(API_IMAGE_URL, cardID.RemoveStartingZeroIfRequired());
+                string URL = string.Format(ImageBaseUrl, cardId.RemoveLeadingZero());
 
                 using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(URL);
                 yield return webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.ProtocolError)
                 {
-                    Debug.LogWarning($"Error {webRequest.error} on cardID: {cardID}");
+                    Debug.LogWarning($"Error {webRequest.error} on cardId: {cardId}");
                     yield return null;
                 }
 
                 DownloadHandlerTexture handlerTexture = webRequest.downloadHandler as DownloadHandlerTexture;
 
-                _dataManager.CacheImage(cardID, handlerTexture.texture);
+                _dataManager.SaveImage(cardId, handlerTexture.texture);
             }
 
             yield return null;

@@ -160,9 +160,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         private void GetAndDisplayCardImage(string cardID)
         {
-            if (_dataManager.DoesCachedImageExist(cardID))
+            if (_dataManager.IsImageRecyclable(cardID))
             {
-                var image = _dataManager.GetCachedImage(cardID);
+                var image = _dataManager.GetImage(cardID);
                 if (image != null)
                 {
                     _image.material.SetTexture("_MainTex", image);

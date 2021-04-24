@@ -1,6 +1,6 @@
 namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities
 {
-    public enum EventNames
+    public enum ModelEvent
     {
         SummonMonster,
         ChangeMonsterVisibility,

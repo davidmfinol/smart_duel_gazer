@@ -9,7 +9,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler
         public void RemovePlayfield();
         public void DestroyPlayfield();
         public void ActivateModel(string zone);
-        public void RaiseEventByEventName(EventNames eventNames, string zone);
+        public void RaiseEventByEventName(ModelEvent eventNames, string zone);
         public void RaiseChangeVisibilityEvent(string zone, bool state);
         public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
         public void RaiseSummonSetCardEvent(string zone, string modelName, bool isMonster);

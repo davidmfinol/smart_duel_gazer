@@ -5,6 +5,8 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using UnityEngine;
 using Zenject;
+using System.Threading.Tasks;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardImage;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
@@ -12,16 +14,19 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
     {
         private readonly IConnectionDataManager _connectionDataManager;
         private readonly ICardModelDataManager _cardModelDataManager;
+        private readonly ICardImageDataManager _cardImageDataManager;
         private readonly IModelRecycler _modelRecycler;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
             ICardModelDataManager cardModelDataManager,
+            ICardImageDataManager cardImageDataManager,
             IModelRecycler modelRecycler)
         {
             _connectionDataManager = connectionDataManager;
             _cardModelDataManager = cardModelDataManager;
+            _cardImageDataManager = cardImageDataManager;
             _modelRecycler = modelRecycler;
         }
 
@@ -48,47 +53,55 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         #endregion
 
+        #region CardImage
+
+        public Task<Texture> GetCardImage(string cardId)
+        {
+            return _cardImageDataManager.GetCardImage(cardId);
+        }
+
+        #endregion
+
         #region ModelRecycler
 
-        public void AddToQueue(string key, GameObject model)
+        public void AddGameObjectToQueue(string key, GameObject model)
         {
-            _modelRecycler.AddToQueue(key, model);
+            _modelRecycler.AddGameObjectToQueue(key, model);
         }
 
-        public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
         {
-            return _modelRecycler.GetFromQueue(key, position, rotation, parent);
+            return _modelRecycler.GetGameObjectFromQueue(key, position, rotation, parent);
         }
 
-        public void Remove(string key)
+        public void RemoveGameObject(string key)
         {
-            _modelRecycler.Remove(key);
+            _modelRecycler.RemoveGameObject(key);
         }
 
-        public bool IsModelRecyclable(string key)
+        public bool IsGameObjectRecyclable(string key)
         {
-            return _modelRecycler.IsModelRecyclable(key);
+            return _modelRecycler.IsGameObjectRecyclable(key);
         }
 
-        public void CacheImage(string key, Texture texture)
+        public void SaveImage(string key, Texture texture)
         {
-            _modelRecycler.CacheImage(key, texture);
+            _modelRecycler.SaveImage(key, texture);
         }
 
-        //Change bool names
-        public bool DoesCachedImageExist(string key)
+        public bool IsImageRecyclable(string key)
         {
-            return _modelRecycler.DoesCachedImageExist(key);
+            return _modelRecycler.IsImageRecyclable(key);
         }
 
-        public Texture GetCachedImage(string key)
+        public Texture GetImage(string key)
         {
-            return _modelRecycler.GetCachedImage(key);
+            return _modelRecycler.GetImage(key);
         }
 
-        public bool DoesPlayfieldExist()
+        public bool IsPlayfieldRecyclable()
         {
-            return _modelRecycler.DoesPlayfieldExist();
+            return _modelRecycler.IsPlayfieldRecyclable();
         }
 
         #endregion

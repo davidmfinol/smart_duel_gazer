@@ -51,7 +51,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 {
                     var obj = _setCardFactory.Create(_dataManager.GetCardModel(SET_CARD)).transform.gameObject;
                     obj.transform.SetParent(transform);
-                    _dataManager.AddToQueue(key, obj);
+                    _dataManager.AddGameObjectToQueue(key, obj);
                 }
                 return;
             }
@@ -61,7 +61,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 {
                     var obj = _particleFactory.Create(_particles).transform.gameObject;
                     obj.transform.SetParent(transform);
-                    _dataManager.AddToQueue(key, obj);
+                    _dataManager.AddGameObjectToQueue(key, obj);
                 }
                 return;
             }

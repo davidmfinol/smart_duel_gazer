@@ -7,7 +7,7 @@
             return value.Replace("\"", "");
         }
 
-        public static string RemoveStartingZeroIfRequired(this string value)
+        public static string RemoveLeadingZero(this string value)
         {
             if (value.StartsWith("0"))
             {

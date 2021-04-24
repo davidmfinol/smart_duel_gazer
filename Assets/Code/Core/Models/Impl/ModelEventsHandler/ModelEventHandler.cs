@@ -122,26 +122,26 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
             _OnActivateModel?.Invoke(zone);
         }
         
-        public void RaiseEventByEventName(EventNames eventName, string zone)
+        public void RaiseEventByEventName(ModelEvent eventName, string zone)
         {
             switch (eventName)
             {
-                case EventNames.SummonMonster:
+                case ModelEvent.SummonMonster:
                     _OnSummonMonster?.Invoke(zone);
                     break;
-                case EventNames.DestroyMonster:
+                case ModelEvent.DestroyMonster:
                     _OnDestroyMonster?.Invoke(zone);
                     break;
-                case EventNames.RevealSetMonster:
+                case ModelEvent.RevealSetMonster:
                     _OnRevealSetMonster?.Invoke(zone);
                     break;
-                case EventNames.DestroySetMonster:
+                case ModelEvent.DestroySetMonster:
                     _OnDestroySetMonster?.Invoke(zone);
                     break;
-                case EventNames.SpellTrapActivate:
+                case ModelEvent.SpellTrapActivate:
                     _OnSpellTrapActivate?.Invoke(zone);
                     break;
-                case EventNames.SetCardRemove:
+                case ModelEvent.SetCardRemove:
                     _OnSetCardRemove?.Invoke(zone);
                     break;
             }

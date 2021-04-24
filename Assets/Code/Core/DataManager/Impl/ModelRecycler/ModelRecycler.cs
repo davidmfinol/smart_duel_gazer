@@ -6,39 +6,54 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
 {
     public class ModelRecycler : IModelRecycler
     {
-        private readonly Dictionary<string, Queue<GameObject>> _generalRecycler = new Dictionary<string, Queue<GameObject>>();
+        private readonly Dictionary<string, Queue<GameObject>> _gameObjects = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, Texture> _images = new Dictionary<string, Texture>();
+       
+        public bool IsGameObjectRecyclable(string key)
+        {
+            return _gameObjects.ContainsKey(key);
+        }
 
-        public void AddToQueue(string key, GameObject model)
-        {            
-            if (!_generalRecycler.ContainsKey(key))
+        public bool IsPlayfieldRecyclable()
+        {
+            return IsGameObjectRecyclable("Playfield");
+        }
+
+        public void AddGameObjectToQueue(string key, GameObject model)
+        {
+            if (!_gameObjects.ContainsKey(key))
             {
-                _generalRecycler.Add(key, new Queue<GameObject>());
+                _gameObjects.Add(key, new Queue<GameObject>());
             }
 
-            _generalRecycler[key].Enqueue(model);
+            _gameObjects[key].Enqueue(model);
             model.SetActive(false);
         }
 
-        public GameObject GetFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
+        public GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
         {
-            var model = _generalRecycler[key].Dequeue();
+            var model = _gameObjects[key].Dequeue();
             model.transform.SetPositionAndRotation(position, rotation);
             model.SetActive(true);
             return model;
         }
 
-        public void Remove(string key)
+        public void RemoveGameObject(string key)
         {
-            _generalRecycler.Remove(key);
+            _gameObjects.Remove(key);
         }
-        
-        public void CacheImage(string key, Texture texture)
+
+        public bool IsImageRecyclable(string key)
+        {
+            return _images.ContainsKey(key);
+        }
+
+        public void SaveImage(string key, Texture texture)
         {
             _images.Add(key, texture);
         }
 
-        public Texture GetCachedImage(string key)
+        public Texture GetImage(string key)
         {
             if (!_images.TryGetValue(key, out var texture))
             {
@@ -47,21 +62,6 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
             }
 
             return texture;
-        }
-
-        public bool IsModelRecyclable(string key)
-        {
-            return _generalRecycler.ContainsKey(key);
-        }
-
-        public bool DoesPlayfieldExist()
-        {
-            return _generalRecycler.TryGetValue("Playfield", out var _);
-        }
-
-        public bool DoesCachedImageExist(string key)
-        {
-            return _images.TryGetValue(key, out _);
         }
     }
 }

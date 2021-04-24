@@ -28,28 +28,40 @@ using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
 using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardImage;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardImage;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.CardImage;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.CardImage;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
     public class GameInstaller : MonoInstaller
-    {        
+    {
         public override void InstallBindings()
         {
             #region Core
 
+            // Services
             Container.Bind<IDialogService>().To<DialogService>().AsSingle();
             Container.Bind<IScreenService>().To<ScreenService>().AsSingle();
             Container.Bind<INavigationService>().To<NavigationService>().AsSingle();
 
+            // Data managers
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
             Container.Bind<ICardModelDataManager>().To<CardModelDataManager>().AsSingle();
+            Container.Bind<ICardImageDataManager>().To<CardImageDataManager>().AsSingle();
             Container.Bind<IModelRecycler>().To<ModelRecycler>().AsSingle();
-            
-            Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
+            // API providers
+            Container.Bind<IYGOProDeckApiProvider>().To<YGOProDeckApiProvider>().AsSingle();
+
+            // Storage providers
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
+            Container.Bind<ICardImageStorageProvider>().To<CardImageStorageProvider>().AsSingle();
+
+            Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
             Container.Bind<IApiWebRequest>().To<ApiWebRequest>().AsSingle();
             Container.BindFactory<TextureRequest, TextureRequest.Factory>()
