@@ -1,32 +1,32 @@
-﻿using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
+﻿using Zenject;
+using System.Threading.Tasks;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
 using UnityEngine;
-using Zenject;
-using System.Threading.Tasks;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardImage;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
     public class DataManager : IDataManager
     {
         private readonly IConnectionDataManager _connectionDataManager;
-        private readonly ICardModelDataManager _cardModelDataManager;
-        private readonly ICardImageDataManager _cardImageDataManager;
+        private readonly IGameObjectDataManager _gameObjectDataManager;
+        private readonly ITextureDataManager _textureDataManager;
         private readonly IModelRecycler _modelRecycler;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
-            ICardModelDataManager cardModelDataManager,
-            ICardImageDataManager cardImageDataManager,
+            IGameObjectDataManager gameObjectDataManager,
+            ITextureDataManager textureDataManager,
             IModelRecycler modelRecycler)
         {
             _connectionDataManager = connectionDataManager;
-            _cardModelDataManager = cardModelDataManager;
-            _cardImageDataManager = cardImageDataManager;
+            _gameObjectDataManager = gameObjectDataManager;
+            _textureDataManager = textureDataManager;
             _modelRecycler = modelRecycler;
         }
 
@@ -44,39 +44,54 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 
         #endregion
 
-        #region CardModel
+        #region Game object
 
-        public GameObject GetCardModel(string cardId)
+        public UnityEngine.GameObject GetGameObject(string key)
         {
-            return _cardModelDataManager.GetCardModel(cardId);
+            return _gameObjectDataManager.GetGameObject(key);
+        }
+
+        public void SaveGameObject(string key, UnityEngine.GameObject model)
+        {
+            _gameObjectDataManager.SaveGameObject(key, model);
+        }
+
+        public void RemoveGameObject(string key)
+        {
+            _gameObjectDataManager.RemoveGameObject(key);
+        }
+
+        public UnityEngine.GameObject GetCardModel(string cardId)
+        {
+            return _gameObjectDataManager.GetCardModel(cardId);
         }
 
         #endregion
 
-        #region CardImage
+        #region Texture
 
-        public Task<Texture> GetCardImage(string cardId)
+        public Task<UnityEngine.Texture> GetCardImage(string cardId)
         {
-            return _cardImageDataManager.GetCardImage(cardId);
+            return _textureDataManager.GetCardImage(cardId);
         }
 
         #endregion
 
         #region ModelRecycler
 
-        public void AddGameObjectToQueue(string key, GameObject model)
+        public void AddGameObjectToQueue(string key, UnityEngine.GameObject model)
         {
             _modelRecycler.AddGameObjectToQueue(key, model);
         }
 
-        public GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
+        public UnityEngine.GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent)
         {
             return _modelRecycler.GetGameObjectFromQueue(key, position, rotation, parent);
         }
 
-        public void RemoveGameObject(string key)
+        public void RemoveGameObjectQueue(string key)
         {
-            _modelRecycler.RemoveGameObject(key);
+            _modelRecycler.RemoveGameObjectQueue(key);
         }
 
         public bool IsGameObjectRecyclable(string key)

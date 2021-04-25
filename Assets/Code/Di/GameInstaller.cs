@@ -3,15 +3,13 @@ using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Impl;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
+using AssemblyCSharp.Assets.Code.Core.Navigation.Impl;
 using AssemblyCSharp.Assets.Code.Core.Screen.Impl;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Core.Navigation.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardModel;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardModel;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection;
@@ -27,10 +25,16 @@ using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel;
 using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.CardImage;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardImage;
-using AssemblyCSharp.Assets.Code.Core.Storage.Interface.CardImage;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.CardImage;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Texture;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Texture;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Texture;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.GameObject;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Impl;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Interface;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -48,8 +52,8 @@ namespace AssemblyCSharp.Assets.Code.Di
             // Data managers
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
-            Container.Bind<ICardModelDataManager>().To<CardModelDataManager>().AsSingle();
-            Container.Bind<ICardImageDataManager>().To<CardImageDataManager>().AsSingle();
+            Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
+            Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
             Container.Bind<IModelRecycler>().To<ModelRecycler>().AsSingle();
 
             // API providers
@@ -57,8 +61,10 @@ namespace AssemblyCSharp.Assets.Code.Di
 
             // Storage providers
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
+            Container.Bind<IResourcesProvider>().To<ResourcesProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
-            Container.Bind<ICardImageStorageProvider>().To<CardImageStorageProvider>().AsSingle();
+            Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
+            Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
 
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 

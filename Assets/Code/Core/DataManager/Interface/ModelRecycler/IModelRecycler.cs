@@ -6,8 +6,8 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler
     {
         public bool IsGameObjectRecyclable(string key);
         public bool IsPlayfieldRecyclable();
-        public void AddGameObjectToQueue(string key, GameObject model);
-        public GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent);
-        public void RemoveGameObject(string key);
+        public void AddGameObjectToQueue(string key, UnityEngine.GameObject model);
+        public UnityEngine.GameObject GetGameObjectFromQueue(string key, Vector3 position, Quaternion rotation, Transform parent);
+        public void RemoveGameObjectQueue(string key);
     }
 }
