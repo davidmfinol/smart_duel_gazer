@@ -10,8 +10,6 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Impl;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.ModelRecycler;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Impl;
@@ -54,7 +52,6 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
             Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
-            Container.Bind<IModelRecycler>().To<ModelRecycler>().AsSingle();
 
             // API providers
             Container.Bind<IYGOProDeckApiProvider>().To<YGOProDeckApiProvider>().AsSingle();

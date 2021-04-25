@@ -82,13 +82,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
 
 #if UNITY_EDITOR
-            //Use Spacebar to place playfield if in Editor. Good for quick tests
+
+            // Use Spacebar to place playfield if in Editor. Good for quick tests
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
+                return;
             }
 
-            return;
 #endif
 
             if (_objectIsPlaced)
@@ -141,19 +142,20 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectIsPlaced = true;
             _placementIndicator.SetActive(false);
 
-            if (!_dataManager.IsPlayfieldRecyclable())
+            var playMat = _dataManager.GetGameObject(_keyPlayfield);
+            if (playMat == null)
             {
                 _speedDuelField = Instantiate(_playfieldPrefab, _placementPose.position, _placementPose.rotation);
                 _prefabManager.transform.SetParent(_speedDuelField.transform);
                 _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position, _speedDuelField.transform.rotation);
                 _modelEventHandler.ActivatePlayfield(_speedDuelField);
-
                 return;
             }
-
-            _dataManager.GetGameObjectFromQueue(_keyPlayfield, _placementPose.position, _placementPose.rotation, transform.root).transform
-                .SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-
+            else
+            {
+                playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+                playMat.SetActive(true);
+            }
             _modelEventHandler.ActivatePlayfield(_speedDuelField);
         }
 
@@ -199,7 +201,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
 
-            _dataManager.AddGameObjectToQueue(_keyPlayfield, _speedDuelField);
+            _dataManager.SaveGameObject(_keyPlayfield, _speedDuelField);
+            _speedDuelField.SetActive(false);
             _modelEventHandler.RemovePlayfield();
         }
     }

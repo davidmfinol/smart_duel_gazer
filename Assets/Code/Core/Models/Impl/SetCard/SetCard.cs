@@ -161,7 +161,10 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         private async Task GetAndDisplayCardImage(string cardId)
         {
-            var image = await _dataManager.GetCardImage(cardId);
+            Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})");
+
+            // TODO: Sometimes this cardId has a trailing (Clone). Figure out why that is.
+            var image = await _dataManager.GetCardImage(cardId.Split('(')[0]);
             if (image == null)
             {
                 SetRandomErrorImage();

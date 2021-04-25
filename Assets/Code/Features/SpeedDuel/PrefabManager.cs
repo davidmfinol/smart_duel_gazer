@@ -5,12 +5,15 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
+    /// <summary>
+    /// Used for initialising prefabs that can be reused during a duel.
+    /// e.g. set cards, destruction particles, monster models, ...
+    /// </summary>
     public class PrefabManager : MonoBehaviour
     {
-        private static readonly string SET_CARD = "SetCard";
-
-        private const string _keyParticles = "Particles";
-        private const string _keySetCard = "SetCards";
+        private const string SetCardResourceName = "SetCard";
+        private const string ParticlesKey = "Particles";
+        private const string SetCardKey = "SetCards";
 
         [SerializeField]
         private GameObject _particles;
@@ -37,31 +40,33 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Awake()
         {
-            InstantiatePrefabs(_keySetCard, 8);
-            InstantiatePrefabs(_keyParticles, 8);
+            InstantiatePrefabs(SetCardKey, 8);
+            InstantiatePrefabs(ParticlesKey, 8);
         }
 
         #endregion
 
         private void InstantiatePrefabs(string key, int amount)
         {
-            if (key == _keySetCard)
+            if (key == SetCardKey)
             {
                 for (int i = 0; i < amount; i++)
                 {
-                    var obj = _setCardFactory.Create(_dataManager.GetCardModel(SET_CARD)).transform.gameObject;
+                    var obj = _setCardFactory.Create(_dataManager.GetCardModel(SetCardResourceName)).transform.gameObject;
                     obj.transform.SetParent(transform);
-                    _dataManager.AddGameObjectToQueue(key, obj);
+                    obj.SetActive(false);
+                    _dataManager.SaveGameObject(key, obj);
                 }
                 return;
             }
-            else if (key == _keyParticles)
+            else if (key == ParticlesKey)
             {
                 for (int i = 0; i < amount; i++)
                 {
                     var obj = _particleFactory.Create(_particles).transform.gameObject;
                     obj.transform.SetParent(transform);
-                    _dataManager.AddGameObjectToQueue(key, obj);
+                    obj.SetActive(false);
+                    _dataManager.SaveGameObject(key, obj);
                 }
                 return;
             }

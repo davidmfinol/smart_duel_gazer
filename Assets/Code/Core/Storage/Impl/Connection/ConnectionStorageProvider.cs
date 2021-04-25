@@ -8,7 +8,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection
 {
     public class ConnectionStorageProvider : IConnectionStorageProvider
     {
-        private const string CONNECTION_INFO_KEY = "connectionInfo";
+        private const string ConnectionInfoKey = "connectionInfo";
 
         private readonly IPlayerPrefsProvider _playerPrefsProvider;
 
@@ -21,12 +21,12 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection
 
         public ConnectionInfoModel GetConnectionInfo()
         {
-            if (!_playerPrefsProvider.HasKey(CONNECTION_INFO_KEY))
+            if (!_playerPrefsProvider.HasKey(ConnectionInfoKey))
             {
                 return null;
             }
 
-            var json = _playerPrefsProvider.GetString(CONNECTION_INFO_KEY);
+            var json = _playerPrefsProvider.GetString(ConnectionInfoKey);
             var connectionInfo = JsonConvert.DeserializeObject<ConnectionInfoModel>(json);
 
             return connectionInfo;
@@ -35,7 +35,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection
         public void SaveConnectionInfo(ConnectionInfoModel connectionInfo)
         {
             var json = JsonConvert.SerializeObject(connectionInfo);
-            _playerPrefsProvider.SetString(CONNECTION_INFO_KEY, json);
+            _playerPrefsProvider.SetString(ConnectionInfoKey, json);
         }
     }
 }

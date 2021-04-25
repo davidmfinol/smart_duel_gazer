@@ -126,7 +126,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             var setCardKey = $"{zone.name}:{SetCard}";
             if (!InstantiatedModels.ContainsKey(setCardKey))
             {
-                var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
+                var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
                 InstantiatedModels.Add(setCardKey, setCard);
             }
 
@@ -158,7 +158,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             var instantiatedModel = GetInstantiatedModel(cardModel, zone);
             var hasSetCard = InstantiatedModels.TryGetValue($"{zone.name}:{SetCard}", out var setCardModel);
 
-            switch(playCardEvent.CardPosition)
+            switch (playCardEvent.CardPosition)
             {
                 case CardPosition.FaceUp:
                     HandleFaceUpPosition(instantiatedModel, zone, hasSetCard, setCardModel);
@@ -185,18 +185,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private GameObject InstantiateModel(GameObject cardModel, Transform zone)
         {
-            GameObject instantiatedModel;
-            if (_dataManager.IsGameObjectRecyclable(cardModel.name))
-            {
-                instantiatedModel = _dataManager.GetGameObjectFromQueue(
-                    cardModel.name, zone.position, zone.rotation, _speedDuelField.transform);
-            }
-            else
-            {
-                instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
-                instantiatedModel.transform.SetParent(_speedDuelField.transform);
-                instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
-            }
+            Debug.Log($"InstantiateModel(cardModel: {cardModel}, zone: {zone})");
+
+            var instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
+            instantiatedModel.transform.SetParent(_speedDuelField.transform);
+            instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
 
             _modelEventHandler.ActivateModel(zone.name);
             InstantiatedModels.Add(zone.name, instantiatedModel);
@@ -213,7 +206,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, zone.name);
                 InstantiatedModels.Remove($"{zone.name}:{SetCard}");
-                _dataManager.AddGameObjectToQueue(SetCardModelRecyclerKey, setCardModel);
+                setCardModel.SetActive(false);
+                _dataManager.SaveGameObject(SetCardModelRecyclerKey, setCardModel);
             }
         }
 
@@ -228,7 +222,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             if (!hasSetCard)
             {
-                var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
+                var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
                 HandlePlayCardModelEvents(default, zone.name, cardId, true);
                 InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
             }
@@ -246,7 +240,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
+            var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
             HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
             model.transform.position = setCard.transform.position;
             InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
@@ -283,13 +277,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var destructionParticles = _dataManager.GetGameObjectFromQueue(
-                ParticlesModelRecyclerKey, model.transform.position, model.transform.rotation, _speedDuelField.transform);
+            var destructionParticles = GetGameObject(
+                ParticlesModelRecyclerKey, model.transform.position, model.transform.rotation);
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, removeCardEvent.ZoneName);
 
-            StartCoroutine(RemoveCard(ParticlesModelRecyclerKey, destructionParticles));
-            StartCoroutine(RemoveCard(model.name, model));
+            StartCoroutine(RecycleGameObject(ParticlesModelRecyclerKey, destructionParticles));
+            StartCoroutine(RecycleGameObject(model.name, model));
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
@@ -298,9 +292,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, removeCardEvent.ZoneName);
                 InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCard}");
-                StartCoroutine(RemoveCard(SetCardModelRecyclerKey, setCard));
-
-                _dataManager.AddGameObjectToQueue(SetCardModelRecyclerKey, setCard);
+                StartCoroutine(RecycleGameObject(SetCardModelRecyclerKey, setCard));
             }
         }
 
@@ -314,16 +306,26 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, removeCardEvent.ZoneName);
             InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCard}");
-            StartCoroutine(RemoveCard(SetCardModelRecyclerKey, setCard));
-        }
-
-        private IEnumerator RemoveCard(string key, GameObject model)
-        {
-            yield return new WaitForSeconds(RemoveCardDurationInSeconds);
-            _dataManager.AddGameObjectToQueue(key.Split('(')[0], model);
+            StartCoroutine(RecycleGameObject(SetCardModelRecyclerKey, setCard));
         }
 
         #endregion
+
+        private GameObject GetGameObject(string cardId, Vector3 position, Quaternion rotation)
+        {
+            var model = _dataManager.GetCardModel(cardId);
+            model.transform.SetPositionAndRotation(position, rotation);
+            model.SetActive(true);
+            return model;
+        }
+
+        private IEnumerator RecycleGameObject(string key, GameObject model)
+        {
+            yield return new WaitForSeconds(RemoveCardDurationInSeconds);
+            model.SetActive(false);
+            // TODO: Create an extension with a descriptive name.
+            _dataManager.SaveGameObject(key.Split('(')[0], model);
+        }
 
         #endregion
     }

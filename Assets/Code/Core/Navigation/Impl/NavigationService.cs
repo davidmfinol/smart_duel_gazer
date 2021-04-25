@@ -10,7 +10,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Navigation.Impl
         {
             SceneManager.LoadScene((int)Routes.Connection);
         }
-        
+
         public void ShowSpeedDuelScene()
         {
             SceneManager.LoadScene((int)Routes.SpeedDuel);

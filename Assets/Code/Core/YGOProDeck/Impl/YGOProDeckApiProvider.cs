@@ -23,7 +23,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.Log($"An error occurred while fetching the card of ");
+                Debug.Log($"An error occurred while fetching the card of {cardId}: {request.result}");
                 return null;
             }
 
