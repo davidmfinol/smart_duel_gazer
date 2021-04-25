@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
+using System.Threading.Tasks;
 
 namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 {
@@ -78,7 +79,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         #endregion
 
-        private void OnSummonSetCard(string zone, string modelName, bool isMonster)
+        private async void OnSummonSetCard(string zone, string modelName, bool isMonster)
         {
             if (transform.gameObject.activeSelf == false)
             {
@@ -86,7 +87,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
             }
 
             _zone = zone;
-            GetAndDisplayCardImage(modelName);
+            await GetAndDisplayCardImage(modelName);
             _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
 
             if (isMonster)
@@ -158,18 +159,16 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         #region Card Image
 
-        private void GetAndDisplayCardImage(string cardID)
+        private async Task GetAndDisplayCardImage(string cardId)
         {
-            if (_dataManager.IsImageRecyclable(cardID))
+            var image = await _dataManager.GetCardImage(cardId);
+            if (image == null)
             {
-                var image = _dataManager.GetImage(cardID);
-                if (image != null)
-                {
-                    _image.material.SetTexture("_MainTex", image);
-                    return;
-                }
+                SetRandomErrorImage();
+                return;
             }
-            SetRandomErrorImage();
+
+            _image.material.SetTexture("_MainTex", image);
         }
 
         private void SetRandomErrorImage()

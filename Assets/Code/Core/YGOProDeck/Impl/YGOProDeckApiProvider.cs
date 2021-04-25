@@ -17,6 +17,7 @@ namespace AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl
             var asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)
             {
+                // TODO: create delay provider
                 await Task.Delay(1000 / 30);
             }
 

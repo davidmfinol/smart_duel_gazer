@@ -23,6 +23,8 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.CardImage
 
         public async Task<Texture> GetCardImage(string cardId)
         {
+            Debug.Log($"GetCardImage(cardId: {cardId})");
+
             var image = _cardImageStorageProvider.GetCardImage(cardId);
             if (image != null)
             {

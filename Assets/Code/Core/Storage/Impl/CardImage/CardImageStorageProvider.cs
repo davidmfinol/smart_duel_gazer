@@ -16,7 +16,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.CardImage
 
         public void SaveCardImage(string cardId, Texture image)
         {
-            _images.Add(cardId, image);
+            _images[cardId] = image;
         }
     }
 }

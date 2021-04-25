@@ -54,18 +54,18 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
             _listener = null;
         }
 
-        private void OnPlayCardEventReceived(SocketIOEvent e)
+        private async void OnPlayCardEventReceived(SocketIOEvent e)
         {
             Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
 
-            _listener.OnSmartDuelEventReceived(PlayCardEvent.FromJson(e.Data[0]));
+            await _listener.OnSmartDuelEventReceived(PlayCardEvent.FromJson(e.Data[0]));
         }
 
-        private void OnRemoveCardEventReceived(SocketIOEvent e)
+        private async void OnRemoveCardEventReceived(SocketIOEvent e)
         {
             Debug.Log($"OnRemoveCardEventReceived(SocketIOEvent: {e})");
 
-            _listener.OnSmartDuelEventReceived(RemoveCardEvent.FromJson(e.Data[0]));
+            await _listener.OnSmartDuelEventReceived(RemoveCardEvent.FromJson(e.Data[0]));
         }
     }
 }

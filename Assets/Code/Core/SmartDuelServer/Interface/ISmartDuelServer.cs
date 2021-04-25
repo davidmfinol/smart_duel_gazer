@@ -1,4 +1,5 @@
-﻿using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+﻿using System.Threading.Tasks;
+using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 
 namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface
 {
@@ -10,6 +11,6 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface
 
     public interface ISmartDuelEventListener
     {
-        void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent);
+        Task OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent);
     }
 }

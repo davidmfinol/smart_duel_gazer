@@ -3,13 +3,13 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using System.Threading.Tasks;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
@@ -25,7 +25,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
-        private IApiWebRequest _webRequest;
         private ModelEventHandler _modelEventHandler;
         private ModelComponentsManager.Factory _modelFactory;
 
@@ -44,14 +43,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         public void Construct(
             ISmartDuelServer smartDuelServer,
             IDataManager dataManager,
-            IApiWebRequest webRequest,
             IScreenService screenService,
             ModelEventHandler modelEventHandler,
             ModelComponentsManager.Factory modelFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
-            _webRequest = webRequest;
             _modelEventHandler = modelEventHandler;
             _modelFactory = modelFactory;
 
@@ -77,13 +74,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         #region ISmartDuelEventListener
 
-        public void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
+        public async Task OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
             FetchSpeedDuelField();
 
             if (smartDuelEvent is PlayCardEvent playCardEvent)
             {
-                OnPlayCardEventReceived(playCardEvent);
+                await OnPlayCardEventReceived(playCardEvent);
             }
             else if (smartDuelEvent is RemoveCardEvent removeCardEvent)
             {
@@ -101,7 +98,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         #region PlayCardEvent
 
-        private void OnPlayCardEventReceived(PlayCardEvent playCardEvent)
+        private async Task OnPlayCardEventReceived(PlayCardEvent playCardEvent)
         {
             var zone = _speedDuelField.transform.Find($"{PlaymatZonesPath}/{playCardEvent.ZoneName}");
             if (zone == null)
@@ -114,41 +111,49 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 // TODO: create a function which returns either an instantiated 3D model of the monster
                 // or an instantiated model of the card, and then handle the position
-                PlayCardWithoutModel(playCardEvent, zone);
+                await PlayCardImage(playCardEvent, zone);
                 return;
             }
 
-            PlayCardWithModel(playCardEvent, zone, cardModel);
+            PlayCardModel(playCardEvent, zone, cardModel);
         }
 
-        private void PlayCardWithoutModel(PlayCardEvent playCardEvent, Transform zone)
+        #region Card image
+
+        // TODO: Test with monster for which there's no 3D model
+        private async Task PlayCardImage(PlayCardEvent playCardEvent, Transform zone)
         {
-            if (!InstantiatedModels.TryGetValue($"{zone.name}:{SetCard}", out var _))
+            var setCardKey = $"{zone.name}:{SetCard}";
+            if (!InstantiatedModels.ContainsKey(setCardKey))
             {
                 var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
-                InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
+                InstantiatedModels.Add(setCardKey, setCard);
             }
 
-            // TODO: Test with monster for which there's no 3D model
-            // TODO: Create data manager for handling most of this logic
+            await _dataManager.GetCardImage(playCardEvent.CardId);
+
             switch (playCardEvent.CardPosition)
             {
                 case CardPosition.FaceUp:
-                    _webRequest.RequestCardImageFromWeb(ModelEvent.SpellTrapActivate, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(ModelEvent.SpellTrapActivate, zone.name, playCardEvent.CardId, false);
                     break;
                 case CardPosition.FaceDown:
-                    _webRequest.RequestCardImageFromWeb(default, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, false);
                     break;
                 case CardPosition.FaceUpDefence:
-                    _webRequest.RequestCardImageFromWeb(ModelEvent.RevealSetMonster, zone.name, playCardEvent.CardId, true);
+                    HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, playCardEvent.CardId, true);
                     break;
                 case CardPosition.FaceDownDefence:
-                    _webRequest.RequestCardImageFromWeb(default, zone.name, playCardEvent.CardId, true);
+                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, true);
                     break;
             }
         }
 
-        private void PlayCardWithModel(PlayCardEvent playCardEvent, Transform zone, GameObject cardModel)
+        #endregion
+
+        #region Card model
+
+        private void PlayCardModel(PlayCardEvent playCardEvent, Transform zone, GameObject cardModel)
         {
             var instantiatedModel = GetInstantiatedModel(cardModel, zone);
             var hasSetCard = InstantiatedModels.TryGetValue($"{zone.name}:{SetCard}", out var setCardModel);
@@ -224,7 +229,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             if (!hasSetCard)
             {
                 var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
-                _webRequest.RequestCardImageFromWeb(default, zone.name, cardId, true);
+                HandlePlayCardModelEvents(default, zone.name, cardId, true);
                 InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
             }
 
@@ -235,17 +240,34 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             if (hasSetCard)
             {
-                _webRequest.RequestCardImageFromWeb(ModelEvent.RevealSetMonster, zone.name, cardId, true);
+                HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
                 _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
                 model.transform.position = setCardModel.transform.GetChild(0).GetChild(0).position;
                 return;
             }
 
             var setCard = _dataManager.GetGameObjectFromQueue(SetCardModelRecyclerKey, zone.position, zone.rotation, _speedDuelField.transform);
-            _webRequest.RequestCardImageFromWeb(ModelEvent.RevealSetMonster, zone.name, cardId, true);
+            HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
             model.transform.position = setCard.transform.position;
             InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
+        }
+
+        #endregion
+
+        private void HandlePlayCardModelEvents(ModelEvent modelEvent, string zone, string cardId, bool isMonster)
+        {
+            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId, isMonster);
+
+            switch (modelEvent)
+            {
+                case ModelEvent.SpellTrapActivate:
+                    _modelEventHandler.RaiseEventByEventName(ModelEvent.SpellTrapActivate, zone);
+                    break;
+                case ModelEvent.RevealSetMonster:
+                    _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, zone);
+                    break;
+            }
         }
 
         #endregion

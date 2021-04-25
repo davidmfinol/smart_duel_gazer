@@ -42,26 +42,5 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.ModelRecycler
         {
             _gameObjects.Remove(key);
         }
-
-        public bool IsImageRecyclable(string key)
-        {
-            return _images.ContainsKey(key);
-        }
-
-        public void SaveImage(string key, Texture texture)
-        {
-            _images.Add(key, texture);
-        }
-
-        public Texture GetImage(string key)
-        {
-            if (!_images.TryGetValue(key, out var texture))
-            {
-                Debug.LogWarning("Texture Doesn't Exist");
-                return null;
-            }
-
-            return texture;
-        }
     }
 }

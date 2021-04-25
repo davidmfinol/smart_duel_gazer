@@ -84,21 +84,6 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             return _modelRecycler.IsGameObjectRecyclable(key);
         }
 
-        public void SaveImage(string key, Texture texture)
-        {
-            _modelRecycler.SaveImage(key, texture);
-        }
-
-        public bool IsImageRecyclable(string key)
-        {
-            return _modelRecycler.IsImageRecyclable(key);
-        }
-
-        public Texture GetImage(string key)
-        {
-            return _modelRecycler.GetImage(key);
-        }
-
         public bool IsPlayfieldRecyclable()
         {
             return _modelRecycler.IsPlayfieldRecyclable();

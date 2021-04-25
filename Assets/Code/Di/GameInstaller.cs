@@ -21,7 +21,6 @@ using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interfa
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl.ApiTextureRequest;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
@@ -62,10 +61,6 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<ICardImageStorageProvider>().To<CardImageStorageProvider>().AsSingle();
 
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
-
-            Container.Bind<IApiWebRequest>().To<ApiWebRequest>().AsSingle();
-            Container.BindFactory<TextureRequest, TextureRequest.Factory>()
-                .FromNewComponentOnNewGameObject().AsSingle();
 
             Container.Bind<ModelEventHandler>().AsSingle();
             Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
