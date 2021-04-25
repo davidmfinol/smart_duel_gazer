@@ -18,10 +18,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private const float RemoveCardDurationInSeconds = 7;
 
         private const string PlaymatZonesPath = "Playmat/Zones";
-        private const string SetCard = "SetCard";
-
-        private const string ParticlesModelRecyclerKey = "Particles";
-        private const string SetCardModelRecyclerKey = "SetCards";
+        private const string SetCardKey = "SetCard";
+        private const string ParticlesKey = "Particles";
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
@@ -123,10 +121,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         // TODO: Test with monster for which there's no 3D model
         private async Task PlayCardImage(PlayCardEvent playCardEvent, Transform zone)
         {
-            var setCardKey = $"{zone.name}:{SetCard}";
+            var setCardKey = $"{zone.name}:{SetCardKey}";
             if (!InstantiatedModels.ContainsKey(setCardKey))
             {
-                var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
+                var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
                 InstantiatedModels.Add(setCardKey, setCard);
             }
 
@@ -156,7 +154,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void PlayCardModel(PlayCardEvent playCardEvent, Transform zone, GameObject cardModel)
         {
             var instantiatedModel = GetInstantiatedModel(cardModel, zone);
-            var hasSetCard = InstantiatedModels.TryGetValue($"{zone.name}:{SetCard}", out var setCardModel);
+            var hasSetCard = InstantiatedModels.TryGetValue($"{zone.name}:{SetCardKey}", out var setCardModel);
 
             switch (playCardEvent.CardPosition)
             {
@@ -205,16 +203,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             if (hasSetCard)
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, zone.name);
-                InstantiatedModels.Remove($"{zone.name}:{SetCard}");
+                InstantiatedModels.Remove($"{zone.name}:{SetCardKey}");
                 setCardModel.SetActive(false);
-                _dataManager.SaveGameObject(SetCardModelRecyclerKey, setCardModel);
+                _dataManager.SaveGameObject(SetCardKey, setCardModel);
             }
         }
 
         private void HandleFaceDownDefencePosition(Transform zone, bool hasSetCard, string cardId)
         {
             // TODO: create special function for the set card model, and remove the resource from the monster resources folder
-            if (_dataManager.GetCardModel(SetCard) == null)
+            if (_dataManager.GetCardModel(SetCardKey) == null)
             {
                 Debug.LogWarning("No Model for Set Card", this);
                 return;
@@ -222,9 +220,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             if (!hasSetCard)
             {
-                var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
+                var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
                 HandlePlayCardModelEvents(default, zone.name, cardId, true);
-                InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
+                InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
             }
 
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, false);
@@ -240,10 +238,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var setCard = GetGameObject(SetCardModelRecyclerKey, zone.position, zone.rotation);
+            var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
             HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
             model.transform.position = setCard.transform.position;
-            InstantiatedModels.Add($"{zone.name}:{SetCard}", setCard);
+            InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
         }
 
@@ -278,35 +276,35 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             var destructionParticles = GetGameObject(
-                ParticlesModelRecyclerKey, model.transform.position, model.transform.rotation);
+                ParticlesKey, model.transform.position, model.transform.rotation);
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, removeCardEvent.ZoneName);
 
-            StartCoroutine(RecycleGameObject(ParticlesModelRecyclerKey, destructionParticles));
+            StartCoroutine(RecycleGameObject(ParticlesKey, destructionParticles));
             StartCoroutine(RecycleGameObject(model.name, model));
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            var isModelSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCard}", out var setCard);
+            var isModelSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCardKey}", out var setCard);
             if (!isModelSet)
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, removeCardEvent.ZoneName);
-                InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCard}");
-                StartCoroutine(RecycleGameObject(SetCardModelRecyclerKey, setCard));
+                InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCardKey}");
+                StartCoroutine(RecycleGameObject(SetCardKey, setCard));
             }
         }
 
         private void RemoveSetCard(RemoveCardEvent removeCardEvent)
         {
-            var isCardSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCard}", out var setCard);
+            var isCardSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCardKey}", out var setCard);
             if (!isCardSet)
             {
                 return;
             }
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, removeCardEvent.ZoneName);
-            InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCard}");
-            StartCoroutine(RecycleGameObject(SetCardModelRecyclerKey, setCard));
+            InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCardKey}");
+            StartCoroutine(RecycleGameObject(SetCardKey, setCard));
         }
 
         #endregion

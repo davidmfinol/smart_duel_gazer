@@ -7,7 +7,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
     public class DestructionParticles : MonoBehaviour
     {
         private ModelEventHandler _eventHandler;
-        private ParticleSystem _particles;
+        private ParticleSystem _particleSystem;
 
         #region Constructor
 
@@ -23,7 +23,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Awake()
         {
-            _particles = GetComponent<ParticleSystem>();
+            _particleSystem = GetComponent<ParticleSystem>();
         }
 
         private void OnEnable()
@@ -35,14 +35,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void OnMonsterDestruction(SkinnedMeshRenderer[] renderers)
         {
-            GetMeshShape(renderers[0]);
-            _particles.Play();
+            SetMeshShape(renderers[0]);
+            _particleSystem.Play();
             _eventHandler.OnMonsterRemoval -= OnMonsterDestruction;
         }
 
-        public void GetMeshShape(SkinnedMeshRenderer _skinnedMesh)
+        private void SetMeshShape(SkinnedMeshRenderer _skinnedMesh)
         {
-            var shape = _particles.shape;
+            var shape = _particleSystem.shape;
             shape.shapeType = ParticleSystemShapeType.SkinnedMeshRenderer;
             shape.skinnedMeshRenderer = _skinnedMesh;
         }

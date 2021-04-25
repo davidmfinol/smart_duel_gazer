@@ -74,6 +74,7 @@ namespace AssemblyCSharp.Assets.Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
+
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()

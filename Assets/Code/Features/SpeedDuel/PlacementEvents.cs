@@ -11,7 +11,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class PlacementEvents : MonoBehaviour
     {
-        private const string _keyPlayfield = "Playfield";
+        private const string PlayfieldKey = "Playfield";
 
         [SerializeField]
         private GameObject _playfieldPrefab;
@@ -66,7 +66,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void OnDestroy()
         {
             _modelEventHandler.OnDestroyPlayfield -= OnPlaymatDestroyed;
-            _dataManager.RemoveGameObject(_keyPlayfield);
+            _dataManager.RemoveGameObject(PlayfieldKey);
         }
 
         #endregion
@@ -142,7 +142,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _objectIsPlaced = true;
             _placementIndicator.SetActive(false);
 
-            var playMat = _dataManager.GetGameObject(_keyPlayfield);
+            var playMat = _dataManager.GetGameObject(PlayfieldKey);
             if (playMat == null)
             {
                 _speedDuelField = Instantiate(_playfieldPrefab, _placementPose.position, _placementPose.rotation);
@@ -201,7 +201,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
 
-            _dataManager.SaveGameObject(_keyPlayfield, _speedDuelField);
+            _dataManager.SaveGameObject(PlayfieldKey, _speedDuelField);
             _speedDuelField.SetActive(false);
             _modelEventHandler.RemovePlayfield();
         }
