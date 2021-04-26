@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
-    public class PlacementEvents : MonoBehaviour
+    public class PlacementEventHandler : MonoBehaviour
     {
         private const string PlayfieldKey = "Playfield";
 

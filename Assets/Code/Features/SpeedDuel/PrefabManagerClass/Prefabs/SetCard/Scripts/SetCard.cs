@@ -6,7 +6,7 @@ using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 using System.Threading.Tasks;
 
-namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.SetCard.Scripts
 {
     [RequireComponent(typeof(Animator))]
     public class SetCard : MonoBehaviour
@@ -62,6 +62,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
         {
             _modelEventHandler.OnSummonSetCard += OnSummonSetCard;
             _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
+            _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
             _modelEventHandler.OnRevealSetMonster += RevealSetMonster;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
@@ -70,7 +71,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         private void UnsubscribeFromEvents()
         {
+            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
             _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
+            _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
             _modelEventHandler.OnRevealSetMonster -= RevealSetMonster;
             _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
@@ -85,15 +88,15 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
             {
                 return;
             }
-
-            _zone = zone;
-            await GetAndDisplayCardImage(modelName);
-            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
-
+            
             if (isMonster)
             {
                 SetMonster();
             }
+
+            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
+            _zone = zone;
+            await GetAndDisplayCardImage(modelName);
         }
 
         #region Spell/Trap Events
@@ -106,6 +109,16 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
             }
 
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+        }
+
+        private void OnReturnToFaceDown(string zone)
+        {
+            if (_zone != zone)
+            {
+                return;
+            }
+
+            _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
         }
 
         private void OnSpellTrapRemove(string zone)
@@ -161,7 +174,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard
 
         private async Task GetAndDisplayCardImage(string cardId)
         {
-            Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})");
+            Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})", this);
 
             // TODO: Sometimes this cardId has a trailing (Clone). Figure out why that is.
             var image = await _dataManager.GetCardImage(cardId.Split('(')[0]);

@@ -1,9 +1,10 @@
 using Zenject;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.SetCard;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.SetCard.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.ParticleSystems.Scripts;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass
 {
     /// <summary>
     /// Used for pre-instantiating prefabs that can be reused.
@@ -18,6 +19,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         [SerializeField]
         private GameObject _particles;
+        [SerializeField]
+        private GameObject _setCard;
 
         private IDataManager _dataManager;
         private SetCard.Factory _setCardFactory;
@@ -57,9 +60,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             for (int i = 0; i < amount; i++)
             {
                 var gameObject = CreateGameObject(key);
-                gameObject.transform.SetParent(transform);
-                gameObject.SetActive(false);
+                gameObject.transform.SetParent(transform);                
                 _dataManager.SaveGameObject(key, gameObject);
+
+                gameObject.SetActive(false);
             }
         }
 
@@ -67,7 +71,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             return key switch
             {
-                SetCardKey => _setCardFactory.Create(_dataManager.GetCardModel(SetCardKey)).transform.gameObject,
+                SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
                 ParticlesKey => _particleFactory.Create(_particles).transform.gameObject,
                 _ => null,
             };

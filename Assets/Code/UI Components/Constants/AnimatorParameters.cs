@@ -9,6 +9,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
         public static readonly int SummoningTrigger = Animator.StringToHash("SummoningTrigger");
         public static readonly int DeathTrigger = Animator.StringToHash("Death");
         public static readonly int ActivateSpellOrTrapTrigger = Animator.StringToHash("ActivateSpellTrap");
+        public static readonly int ReturnSpellTrapToFaceDown = Animator.StringToHash("ReturnToFaceDown");
         public static readonly int RemoveSetCardTrigger = Animator.StringToHash("RemoveSetCard");
         public static readonly int RevealSetMonsterTrigger = Animator.StringToHash("RevealSetMonster");
         public static readonly int HideSetMonsterImageTrigger = Animator.StringToHash("HideSetMonsterImage");

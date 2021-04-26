@@ -20,6 +20,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
         private event Action<string> _OnDestroySetMonster;
 
         private event Action<string> _OnSpellTrapActivate;
+        private event Action<string> _OnReturnToFaceDown;
         private event Action<string> _OnSetCardRemove;
 
         private event Action<string, bool> _OnChangeMonsterVisibility;
@@ -72,6 +73,11 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
         {
             add => _OnSpellTrapActivate += value;
             remove => _OnSpellTrapActivate -= value;
+        }
+        public event Action<string> OnReturnToFaceDown
+        {
+            add => _OnReturnToFaceDown += value;
+            remove => _OnReturnToFaceDown -= value;
         }
         public event Action<string> OnSetCardRemove
         {
@@ -143,6 +149,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
                     break;
                 case ModelEvent.SetCardRemove:
                     _OnSetCardRemove?.Invoke(zone);
+                    break;
+                case ModelEvent.ReturnToFaceDown:
+                    _OnReturnToFaceDown?.Invoke(zone);
                     break;
             }
         }
