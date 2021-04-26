@@ -33,6 +33,8 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Interface;
+using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
+using AssemblyCSharp.Assets.Code.Core.Config.Impl.Providers;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -46,6 +48,9 @@ namespace AssemblyCSharp.Assets.Code.Di
             Container.Bind<IDialogService>().To<DialogService>().AsSingle();
             Container.Bind<IScreenService>().To<ScreenService>().AsSingle();
             Container.Bind<INavigationService>().To<NavigationService>().AsSingle();
+
+            // Config
+            Container.Bind<IDelayProvider>().To<DelayProvider>().AsSingle();
 
             // Data managers
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
