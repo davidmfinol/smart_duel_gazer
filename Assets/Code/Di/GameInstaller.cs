@@ -31,8 +31,8 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.SetCard.Scripts;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.ParticleSystems.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.SetCard.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.ParticleSystems.Scripts;
 using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
 using AssemblyCSharp.Assets.Code.Core.Config.Impl.Providers;
 

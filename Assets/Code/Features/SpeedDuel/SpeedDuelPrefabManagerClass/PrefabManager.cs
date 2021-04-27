@@ -1,10 +1,10 @@
 using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.SetCard.Scripts;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.ParticleSystems.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.SetCard.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.ParticleSystems.Scripts;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager
 {
     /// <summary>
     /// Used for pre-instantiating prefabs that can be reused.

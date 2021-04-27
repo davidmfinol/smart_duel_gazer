@@ -2,7 +2,7 @@ using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.ParticleSystems.Scripts
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.ParticleSystems.Scripts
 {
     public class DestructionParticles : MonoBehaviour
     {

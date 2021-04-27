@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {

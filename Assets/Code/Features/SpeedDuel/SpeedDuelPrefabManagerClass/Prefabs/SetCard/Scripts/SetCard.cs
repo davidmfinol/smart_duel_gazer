@@ -6,7 +6,7 @@ using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 using System.Threading.Tasks;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManagerClass.Prefabs.SetCard.Scripts
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.SetCard.Scripts
 {
     [RequireComponent(typeof(Animator))]
     public class SetCard : MonoBehaviour

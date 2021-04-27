@@ -220,15 +220,15 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void HandleFaceDownDefencePosition(Transform zone, bool hasSetCard, string cardId)
         {
-            if (_dataManager.GetCardModel(SetCardKey) == null)
-            {
-                Debug.LogWarning("The setCard queue is empty :(", this);
-                return;
-            }
-
             if (!hasSetCard)
             {
                 var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
+                if(setCard == null)
+                {
+                    Debug.LogWarning("The setCard queue is empty :(");
+                    return;
+                }
+                
                 InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
 
                 HandlePlayCardModelEvents(default, zone.name, cardId, true);
@@ -243,13 +243,19 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
                 _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
+                
+                //This puts the model on top of the set card rather than clipping through it
                 model.transform.position = setCardModel.transform.GetChild(0).GetChild(0).position;
+                
                 return;
             }
 
             var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
             HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
+
+            //This puts the model on top of the set card rather than clipping through it
             model.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
+
             InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
         }
