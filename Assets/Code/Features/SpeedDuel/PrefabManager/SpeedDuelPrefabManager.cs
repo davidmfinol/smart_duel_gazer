@@ -1,16 +1,16 @@
 using Zenject;
 using UnityEngine;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.SetCard.Scripts;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager.Prefabs.ParticleSystems.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
 {
     /// <summary>
     /// Used for pre-instantiating prefabs that can be reused.
     /// e.g. set cards, destruction particles, monster models, ...
     /// </summary>
-    public class PrefabManager : MonoBehaviour
+    public class SpeedDuelPrefabManager : MonoBehaviour
     {
         private const string ParticlesKey = "Particles";
         private const string SetCardKey = "SetCard";

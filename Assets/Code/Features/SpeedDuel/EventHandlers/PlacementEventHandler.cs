@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.SpeedDuelPrefabManager;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
@@ -76,7 +76,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         {
             _arRaycastManager = FindObjectOfType<ARRaycastManager>();
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
-            _prefabManager = FindObjectOfType<PrefabManager>().gameObject;
+            _prefabManager = FindObjectOfType<SpeedDuelPrefabManager>().gameObject;
         }
 
         private void UpdatePlacementIndicatorIfNecessary()
