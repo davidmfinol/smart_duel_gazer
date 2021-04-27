@@ -12,5 +12,6 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.En
         SpellTrapActivate,
         SetCardRemove,
         ActivatePlayField,
+        ReturnToFaceDown,
     }
 }

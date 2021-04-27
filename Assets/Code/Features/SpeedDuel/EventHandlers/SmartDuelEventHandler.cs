@@ -2,6 +2,7 @@ using Zenject;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
@@ -9,9 +10,8 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using System.Threading.Tasks;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
+namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
     public class SmartDuelEventHandler : MonoBehaviour, ISmartDuelEventListener
     {
@@ -90,7 +90,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             if (_speedDuelField == null)
             {
-                _speedDuelField = GetComponent<PlacementEvents>().SpeedDuelField;
+                _speedDuelField = GetComponent<PlacementEventHandler>().SpeedDuelField;
             }
         }
 
@@ -126,8 +126,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
                 InstantiatedModels.Add(setCardKey, setCard);
+
+                if (playCardEvent.CardPosition == CardPosition.FaceDown)
+                {
+                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, false);
+                    return;
+                }
             }
 
+            //This line of code is creating a duplicate call for the card image as it is also being called in the
+            //setCard.cs script as well
             await _dataManager.GetCardImage(playCardEvent.CardId);
 
             switch (playCardEvent.CardPosition)
@@ -136,7 +144,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     HandlePlayCardModelEvents(ModelEvent.SpellTrapActivate, zone.name, playCardEvent.CardId, false);
                     break;
                 case CardPosition.FaceDown:
-                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(ModelEvent.ReturnToFaceDown, zone.name, playCardEvent.CardId, false);
                     break;
                 case CardPosition.FaceUpDefence:
                     HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, playCardEvent.CardId, true);
@@ -144,7 +152,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 case CardPosition.FaceDownDefence:
                     HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, true);
                     break;
-            }
+            }  
         }
 
         #endregion
@@ -161,8 +169,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 case CardPosition.FaceUp:
                     HandleFaceUpPosition(instantiatedModel, zone, hasSetCard, setCardModel);
                     break;
-                case CardPosition.FaceDown:
-                    HandleFaceUpDefencePosition(instantiatedModel, zone, hasSetCard, setCardModel, instantiatedModel.name);
+                case CardPosition.FaceUpDefence:
+                    HandleFaceUpDefencePosition(instantiatedModel, zone, hasSetCard, setCardModel);
                     break;
                 case CardPosition.FaceDownDefence:
                     HandleFaceDownDefencePosition(zone, hasSetCard, instantiatedModel.name);
@@ -204,43 +212,50 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, zone.name);
                 InstantiatedModels.Remove($"{zone.name}:{SetCardKey}");
-                setCardModel.SetActive(false);
                 _dataManager.SaveGameObject(SetCardKey, setCardModel);
+
+                setCardModel.SetActive(false);
             }
         }
 
         private void HandleFaceDownDefencePosition(Transform zone, bool hasSetCard, string cardId)
         {
-            // TODO: create special function for the set card model, and remove the resource from the monster resources folder
-            if (_dataManager.GetCardModel(SetCardKey) == null)
-            {
-                Debug.LogWarning("No Model for Set Card", this);
-                return;
-            }
-
             if (!hasSetCard)
             {
                 var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
-                HandlePlayCardModelEvents(default, zone.name, cardId, true);
+                if(setCard == null)
+                {
+                    Debug.LogWarning("The setCard queue is empty :(");
+                    return;
+                }
+                
                 InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
+
+                HandlePlayCardModelEvents(default, zone.name, cardId, true);
             }
 
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, false);
         }
 
-        private void HandleFaceUpDefencePosition(GameObject model, Transform zone, bool hasSetCard, GameObject setCardModel, string cardId)
+        private void HandleFaceUpDefencePosition(GameObject model, Transform zone, bool hasSetCard, GameObject setCardModel)
         {
             if (hasSetCard)
             {
-                HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
+                HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
                 _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
+                
+                //This puts the model on top of the set card rather than clipping through it
                 model.transform.position = setCardModel.transform.GetChild(0).GetChild(0).position;
+                
                 return;
             }
 
             var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
-            HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, cardId, true);
-            model.transform.position = setCard.transform.position;
+            HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
+
+            //This puts the model on top of the set card rather than clipping through it
+            model.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
+
             InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
         }
@@ -258,6 +273,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     break;
                 case ModelEvent.RevealSetMonster:
                     _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, zone);
+                    break;
+                case ModelEvent.ReturnToFaceDown:
+                    _modelEventHandler.RaiseEventByEventName(ModelEvent.ReturnToFaceDown, zone);
                     break;
             }
         }
@@ -285,12 +303,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
             InstantiatedModels.Remove(removeCardEvent.ZoneName);
 
-            var isModelSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCardKey}", out var setCard);
-            if (!isModelSet)
+            if (InstantiatedModels.ContainsKey($"{removeCardEvent.ZoneName}:{SetCardKey}"))
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, removeCardEvent.ZoneName);
-                InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCardKey}");
-                StartCoroutine(RecycleGameObject(SetCardKey, setCard));
+                RemoveSetCard(removeCardEvent);
             }
         }
 
