@@ -2,7 +2,6 @@ using Zenject;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
@@ -72,13 +71,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #region ISmartDuelEventListener
 
-        public async Task OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
+        public void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
             FetchSpeedDuelField();
 
             if (smartDuelEvent is PlayCardEvent playCardEvent)
             {
-                await OnPlayCardEventReceived(playCardEvent);
+                OnPlayCardEventReceived(playCardEvent);
             }
             else if (smartDuelEvent is RemoveCardEvent removeCardEvent)
             {
@@ -96,7 +95,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #region PlayCardEvent
 
-        private async Task OnPlayCardEventReceived(PlayCardEvent playCardEvent)
+        private void OnPlayCardEventReceived(PlayCardEvent playCardEvent)
         {
             var zone = _speedDuelField.transform.Find($"{PlaymatZonesPath}/{playCardEvent.ZoneName}");
             if (zone == null)
@@ -109,7 +108,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 // TODO: create a function which returns either an instantiated 3D model of the monster
                 // or an instantiated model of the card, and then handle the position
-                await PlayCardImage(playCardEvent, zone);
+                PlayCardImage(playCardEvent, zone);
                 return;
             }
 
@@ -119,7 +118,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         #region Card image
 
         // TODO: Test with monster for which there's no 3D model
-        private async Task PlayCardImage(PlayCardEvent playCardEvent, Transform zone)
+        private void PlayCardImage(PlayCardEvent playCardEvent, Transform zone)
         {
             var setCardKey = $"{zone.name}:{SetCardKey}";
             if (!InstantiatedModels.ContainsKey(setCardKey))
@@ -133,10 +132,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                     return;
                 }
             }
-
-            //This line of code is creating a duplicate call for the card image as it is also being called in the
-            //setCard.cs script as well
-            await _dataManager.GetCardImage(playCardEvent.CardId);
 
             switch (playCardEvent.CardPosition)
             {
