@@ -16,16 +16,17 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
         #region Constructors
 
         [Inject]
-        public void Construct(INavigationService navigationService)
+        public void Construct(
+            INavigationService navigationService)
         {
             _navigationService = navigationService;
 
-            InitNavigation();
+            RegisterClickListeners();
         }
 
         #endregion
 
-        private void InitNavigation()
+        private void RegisterClickListeners()
         {
             _backButton.onClick.AsObservable().Subscribe(_ => OnBackButtonPressed());
         }
