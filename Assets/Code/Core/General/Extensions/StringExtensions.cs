@@ -16,5 +16,15 @@
 
             return value;
         }
+
+        public static string RemoveCloneSuffix(this string value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            return value.Replace("(Clone)", "").Trim();
+        }
     }
 }

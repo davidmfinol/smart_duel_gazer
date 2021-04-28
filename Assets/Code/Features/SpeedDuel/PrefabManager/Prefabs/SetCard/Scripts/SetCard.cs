@@ -5,6 +5,7 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 using System.Threading.Tasks;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 {
@@ -176,8 +177,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         {
             Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})", this);
 
-            // TODO: Sometimes this cardId has a trailing (Clone). Figure out why that is.
-            var image = await _dataManager.GetCardImage(cardId.Split('(')[0]);
+            var image = await _dataManager.GetCardImage(cardId.RemoveCloneSuffix());
             if (image == null)
             {
                 SetRandomErrorImage();

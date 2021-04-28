@@ -9,6 +9,7 @@ using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
@@ -73,6 +74,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         public void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
+            // TODO: an excepion is thrown when an event is received and the speed duel field hasn't been placed yet.
             FetchSpeedDuelField();
 
             if (smartDuelEvent is PlayCardEvent playCardEvent)
@@ -112,6 +114,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 return;
             }
 
+            cardModel.SetActive(true);
             PlayCardModel(playCardEvent, zone, cardModel);
         }
 
@@ -147,7 +150,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 case CardPosition.FaceDownDefence:
                     HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, true);
                     break;
-            }  
+            }
         }
 
         #endregion
@@ -188,7 +191,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         {
             Debug.Log($"InstantiateModel(cardModel: {cardModel}, zone: {zone})");
 
-            var instantiatedModel = _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
+            var instantiatedModel = cardModel.IsClone()
+                ? cardModel
+                : _modelFactory.Create(cardModel).gameObject.transform.parent.gameObject;
+
             instantiatedModel.transform.SetParent(_speedDuelField.transform);
             instantiatedModel.transform.SetPositionAndRotation(zone.position, zone.rotation);
 
@@ -207,9 +213,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, zone.name);
                 InstantiatedModels.Remove($"{zone.name}:{SetCardKey}");
-                _dataManager.SaveGameObject(SetCardKey, setCardModel);
-
                 setCardModel.SetActive(false);
+                _dataManager.SaveGameObject(SetCardKey, setCardModel);
             }
         }
 
@@ -218,12 +223,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             if (!hasSetCard)
             {
                 var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
-                if(setCard == null)
+                if (setCard == null)
                 {
                     Debug.LogWarning("The setCard queue is empty :(");
                     return;
                 }
-                
+
                 InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
 
                 HandlePlayCardModelEvents(default, zone.name, cardId, true);
@@ -238,17 +243,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
                 _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
-                
-                //This puts the model on top of the set card rather than clipping through it
+
+                // This puts the model on top of the set card rather than clipping through it.
                 model.transform.position = setCardModel.transform.GetChild(0).GetChild(0).position;
-                
                 return;
             }
 
             var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
             HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, model.name, true);
 
-            //This puts the model on top of the set card rather than clipping through it
+            // This puts the model on top of the set card rather than clipping through it.
             model.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
 
             InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
@@ -288,8 +292,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 return;
             }
 
-            var destructionParticles = GetGameObject(
-                ParticlesKey, model.transform.position, model.transform.rotation);
+            var destructionParticles = GetGameObject(ParticlesKey, model.transform.position, model.transform.rotation);
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, removeCardEvent.ZoneName);
 
@@ -320,20 +323,23 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #endregion
 
-        private GameObject GetGameObject(string cardId, Vector3 position, Quaternion rotation)
+        private GameObject GetGameObject(string key, Vector3 position, Quaternion rotation)
         {
-            var model = _dataManager.GetCardModel(cardId);
+            var model = _dataManager.GetGameObject(key);
+
             model.transform.SetPositionAndRotation(position, rotation);
             model.SetActive(true);
+
             return model;
         }
 
         private IEnumerator RecycleGameObject(string key, GameObject model)
         {
             yield return new WaitForSeconds(RemoveCardDurationInSeconds);
+
             model.SetActive(false);
-            // TODO: Create an extension with a descriptive name.
-            _dataManager.SaveGameObject(key.Split('(')[0], model);
+
+            _dataManager.SaveGameObject(key.RemoveCloneSuffix(), model);
         }
 
         #endregion
