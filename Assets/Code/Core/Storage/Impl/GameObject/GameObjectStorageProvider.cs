@@ -69,9 +69,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject
                 LoadCardModels();
             }
 
-            model = _cardModels.FirstOrDefault(model => model.name == cardId);
-            SaveGameObject(cardId, model);
-            return model;
+            return _cardModels.FirstOrDefault(model => model.name == cardId);
         }
 
         private void LoadCardModels()
