@@ -110,6 +110,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             }
+            _playmatShell.GetComponentInChildren<Animator>().SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             _toggleView.isOn = false;
         }
 
