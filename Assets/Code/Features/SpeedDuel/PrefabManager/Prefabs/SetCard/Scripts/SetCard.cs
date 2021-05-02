@@ -61,12 +61,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void SubscribeToEvents()
         {
-            _modelEventHandler.OnSummonEvent += OnSummonEvent;
+            _modelEventHandler.OnSummonSetCard += OnSummonEvent;
 
             _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
-            _modelEventHandler.OnSetMonster += SetMonsterEvent;
+            _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
             _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
 
@@ -76,12 +76,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void UnsubscribeFromEvents()
         {
-            _modelEventHandler.OnSummonEvent -= OnSummonEvent;
+            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
 
             _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
-            _modelEventHandler.OnSetMonster -= SetMonsterEvent;
+            _modelEventHandler.OnRevealSetMonster -= SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
             _modelEventHandler.OnChangeMonsterVisibility -= HideSetCardImage;
 
@@ -104,7 +104,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _zone = zone;
-            _modelEventHandler.OnSummonEvent -= OnSummonEvent;
+            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
             
             await GetAndDisplayCardImage(modelName);
         }
@@ -164,14 +164,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
         
-        private void SetMonsterEvent(string zone, bool state)
+        private void SetMonsterEvent(string zone)
         {
             if (_zone != zone)
-            {
-                return;
-            }
-
-            if (!state)
             {
                 return;
             }

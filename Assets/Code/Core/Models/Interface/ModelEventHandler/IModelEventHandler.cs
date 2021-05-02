@@ -6,7 +6,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler
     public interface IModelEventHandler
     {
         public void ActivatePlayfield(GameObject playfield);
-        public void RemovePlayfield();
+        public void PickupPlayfield();
         public void DestroyPlayfield();
         public void ActivateModel(string zone);
         public void RaiseEventByEventName(ModelEvent eventNames, string zone);

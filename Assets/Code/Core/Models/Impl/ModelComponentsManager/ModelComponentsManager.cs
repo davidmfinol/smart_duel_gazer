@@ -84,6 +84,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             transform.parent.transform.localScale = _settings.ModelScale;
         }
 
+        private void SummonMonster(string zone)
         {
             if (_zone != zone)
             {
