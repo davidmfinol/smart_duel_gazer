@@ -9,7 +9,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
     {
         //Create playfield event handler
         private event Action<GameObject> _OnActivatePlayfield;
-        private event Action _OnRemovePlayfield;
+        private event Action _OnPickUpPlayfield;
         private event Action _OnDestroyPlayfield;
         
         private event Action<string> _OnActivateModel;
@@ -34,10 +34,10 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
             add => _OnActivatePlayfield += value;
             remove => _OnActivatePlayfield -= value;
         }
-        public event Action OnRemovePlayfield
+        public event Action OnPickupPlayfield
         {
-            add => _OnRemovePlayfield += value;
-            remove => _OnRemovePlayfield -= value;
+            add => _OnPickUpPlayfield += value;
+            remove => _OnPickUpPlayfield -= value;
         }
         public event Action OnDestroyPlayfield
         {
@@ -109,9 +109,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
             _OnActivatePlayfield?.Invoke(playfield);
         }
 
-        public void RemovePlayfield()
+        public void PickupPlayfield()
         {
-            _OnRemovePlayfield?.Invoke();
+            _OnPickUpPlayfield?.Invoke();
         }
 
         public void DestroyPlayfield()

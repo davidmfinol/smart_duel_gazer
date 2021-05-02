@@ -49,6 +49,8 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
         #endregion
 
+        #region Event Subscriptions
+
         public void SubscribeToEvents()
         {
             _eventHandler.OnActivateModel += ActivateModel;
@@ -67,6 +69,8 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnDestroyMonster -= DestroyMonster;
         }
 
+        #endregion
+
         private void ActivateModel(string zone)
         {
             _zone = zone;
@@ -80,7 +84,6 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             transform.parent.transform.localScale = _settings.ModelScale;
         }
 
-        private void SummonMonster(string zone)
         {
             if (_zone != zone)
             {
@@ -133,6 +136,14 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.RaiseMonsterRemovalEvent(_renderers);
             _renderers.SetRendererVisibility(false);
             _eventHandler.OnDestroyMonster -= DestroyMonster;
+        }
+
+        private void ActivatePlayfield(GameObject playfield)
+        {
+        }
+        
+        private void PickupPlayfield()
+        {
         }
 
         public class Factory : PlaceholderFactory<GameObject, ModelComponentsManager>
