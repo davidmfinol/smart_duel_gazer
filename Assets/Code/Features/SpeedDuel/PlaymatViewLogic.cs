@@ -56,7 +56,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _animators = GetComponentsInChildren<Animator>();
                 _playmatAnimator = _playmatShell.GetComponentInChildren<Animator>();
+                return;
             }
+
+            _playmatAnimator.SetTrigger(AnimatorParameters.ActivatePlayfieldTrigger);
         }
 
         private void RemovePlayfieldMenus()

@@ -157,7 +157,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             else
             {
                 playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-                playMat.SetActive(true);
+                _modelEventHandler.ActivatePlayfield(_speedDuelField);
             }    
         }
 
@@ -201,7 +201,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             _arPlaneManager.enabled = true;
 
             _dataManager.SaveGameObject(PlayfieldKey, _speedDuelField);
-            //_speedDuelField.SetActive(false);
             _modelEventHandler.PickupPlayfield();
         }
     }

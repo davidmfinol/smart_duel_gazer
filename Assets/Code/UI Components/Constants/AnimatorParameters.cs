@@ -27,7 +27,9 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
 
         #region UI Animations
 
+        public static readonly int ActivatePlayfieldTrigger = Animator.StringToHash("ActivatePlayfield");
         public static readonly int RemovePlayfieldTrigger = Animator.StringToHash("RemovePlayfield");
+
         public static readonly int OpenPlayfieldMenuBool = Animator.StringToHash("OpenPlayfieldMenu");
         public static readonly int PrefabMenuBool = Animator.StringToHash("PrefabMenuEnter");
         

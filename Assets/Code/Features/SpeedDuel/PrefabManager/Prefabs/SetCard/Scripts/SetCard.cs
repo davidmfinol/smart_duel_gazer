@@ -22,6 +22,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private Animator _animator;
         private string _zone;
+        private CurrentState currentState;
 
         #region Constructors
 
@@ -50,6 +51,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         private void OnDisable()
         {
             _zone = null;
+            currentState = CurrentState.FaceDown;
             _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
 
             UnsubscribeFromEvents();
@@ -113,7 +115,18 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void ActivatePlayfield(GameObject playfield)
         {
-            _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+            switch (currentState) 
+            {
+                case CurrentState.FaceDown:
+                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+                    break;
+                case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+                    break;
+                case CurrentState.SetMonsterRevealed:
+                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+                    break;
+            }
         }
 
         private void PickupPlayfield()
@@ -133,6 +146,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+            currentState = CurrentState.SpellActivated;
         }
 
         private void OnReturnToFaceDown(string zone)
@@ -143,6 +157,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
+            currentState = CurrentState.FaceDown;
         }
 
         private void OnSpellTrapRemove(string zone)
@@ -172,6 +187,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+            currentState = CurrentState.SetMonsterRevealed;
         }
 
         private void HideSetCardImage(string zone, bool state)
@@ -179,6 +195,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             if (_zone == zone && state == false)
             {
                 _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+                currentState = CurrentState.FaceDown;
             }
         }
 
@@ -220,6 +237,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         public class Factory : PlaceholderFactory<GameObject, SetCard>
         {
+        }
+
+        public enum CurrentState
+        {
+            FaceDown,
+            SpellActivated,
+            SetMonsterRevealed,
         }
     }
 }

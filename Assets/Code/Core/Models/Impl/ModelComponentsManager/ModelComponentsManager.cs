@@ -16,6 +16,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         private SkinnedMeshRenderer[] _renderers;
         private ModelSettings _settings;
         private string _zone;
+        private bool currentState;
 
         #region Constructor
 
@@ -58,6 +59,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnRevealSetMonster += RevealSetMonster;
             _eventHandler.OnChangeMonsterVisibility += SetMonsterVisibility;
             _eventHandler.OnDestroyMonster += DestroyMonster;
+
+            _eventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _eventHandler.OnPickupPlayfield += PickupPlayfield;
         }
 
         public void UnsubscribeToEvents()
@@ -67,6 +71,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnRevealSetMonster -= RevealSetMonster;
             _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
             _eventHandler.OnDestroyMonster -= DestroyMonster;
+
+            _eventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _eventHandler.OnPickupPlayfield -= PickupPlayfield;
         }
 
         #endregion
@@ -92,6 +99,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(true);
+            currentState = true;
             _animator.SetBool(AnimatorParameters.DefenceBool, false);
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
@@ -114,6 +122,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(state);
+            currentState = state;
         }
 
         private void DestroyMonster(string zone)
@@ -141,10 +150,12 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
         private void ActivatePlayfield(GameObject playfield)
         {
+            _renderers.SetRendererVisibility(currentState);
         }
         
         private void PickupPlayfield()
         {
+            _renderers.SetRendererVisibility(false);
         }
 
         public class Factory : PlaceholderFactory<GameObject, ModelComponentsManager>
