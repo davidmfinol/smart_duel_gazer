@@ -72,7 +72,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         private void SetSliderValues()
         {
             var scale = _playmatShell.transform.localScale.x;
-            var rotation = _playmatShell.transform.rotation.y;
+            var rotation = _playmatShell.transform.localRotation.y;
 
             if (scale > 10f)
             {
