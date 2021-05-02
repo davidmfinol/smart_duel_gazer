@@ -61,44 +61,67 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void SubscribeToEvents()
         {
-            _modelEventHandler.OnSummonSetCard += OnSummonSetCard;
+            _modelEventHandler.OnSummonEvent += OnSummonEvent;
+
             _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster += RevealSetMonster;
+            _modelEventHandler.OnSetMonster += SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
             _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
+
+            _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
+            _modelEventHandler.OnSummonEvent -= OnSummonEvent;
+
             _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster -= RevealSetMonster;
+            _modelEventHandler.OnSetMonster -= SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
             _modelEventHandler.OnChangeMonsterVisibility -= HideSetCardImage;
+
+            _modelEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _modelEventHandler.OnPickupPlayfield -= PickupPlayfield;
         }
 
         #endregion
 
-        private async void OnSummonSetCard(string zone, string modelName, bool isMonster)
+        private async void OnSummonEvent(string zone, string modelName, bool isSetMonster)
         {
             if (transform.gameObject.activeSelf == false)
             {
                 return;
             }
             
-            if (isMonster)
+            if (isSetMonster)
             {
                 SetMonster();
             }
 
-            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
             _zone = zone;
+            _modelEventHandler.OnSummonEvent -= OnSummonEvent;
+            
             await GetAndDisplayCardImage(modelName);
         }
+
+        #region Playfield Events
+
+        private void ActivatePlayfield(GameObject playfield)
+        {
+            _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+        }
+
+        private void PickupPlayfield()
+        {
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
+        }
+
+        #endregion
 
         #region Spell/Trap Events
 
@@ -141,9 +164,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
         
-        private void RevealSetMonster(string zone)
+        private void SetMonsterEvent(string zone, bool state)
         {
             if (_zone != zone)
+            {
+                return;
+            }
+
+            if (!state)
             {
                 return;
             }

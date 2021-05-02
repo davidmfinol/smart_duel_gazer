@@ -14,6 +14,8 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
         public static readonly int RevealSetMonsterTrigger = Animator.StringToHash("RevealSetMonster");
         public static readonly int HideSetMonsterImageTrigger = Animator.StringToHash("HideSetMonsterImage");
         public static readonly int PlayMonsterAttack1Trigger = Animator.StringToHash("Attack1");
+        public static readonly int PickUpPlayfieldTrigger = Animator.StringToHash("PickUpPlayfield");
+        public static readonly int FadeInSetCardTrigger = Animator.StringToHash("FadeIn");
 
         public static readonly int DefenceBool = Animator.StringToHash("IsDefence");
         public static readonly int RotatePlatformBool = Animator.StringToHash("Rotate");
