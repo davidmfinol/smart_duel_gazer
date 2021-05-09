@@ -52,7 +52,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         {
             _zone = null;
             currentState = CurrentState.FaceDown;
-            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
 
             UnsubscribeFromEvents();
         }
@@ -70,7 +69,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
             _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
-            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
+            
 
             _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
             _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
@@ -109,6 +108,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
             
             await GetAndDisplayCardImage(modelName);
+            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
         }
 
         #region Playfield Events
