@@ -92,14 +92,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         #endregion
 
-        private async void OnSummonEvent(string zone, string modelName, bool isSetMonster)
+        private async void OnSummonEvent(string zone, string modelName, bool isMonster)
         {
             if (transform.gameObject.activeSelf == false)
             {
                 return;
             }
             
-            if (isSetMonster)
+            if (isMonster)
             {
                 SetMonster();
             }
