@@ -22,7 +22,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private Animator _animator;
         private string _zone;
-        private CurrentState currentState;
+        private CurrentState _currentState;
 
         #region Constructors
 
@@ -51,7 +51,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         private void OnDisable()
         {
             _zone = null;
-            currentState = CurrentState.FaceDown;
+            _currentState = CurrentState.FaceDown;
 
             UnsubscribeFromEvents();
         }
@@ -115,7 +115,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void ActivatePlayfield(GameObject playfield)
         {
-            switch (currentState) 
+            switch (_currentState) 
             {
                 case CurrentState.FaceDown:
                     _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
@@ -146,7 +146,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
-            currentState = CurrentState.SpellActivated;
+            _currentState = CurrentState.SpellActivated;
         }
 
         private void OnReturnToFaceDown(string zone)
@@ -157,7 +157,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
-            currentState = CurrentState.FaceDown;
+            _currentState = CurrentState.FaceDown;
         }
 
         private void OnSpellTrapRemove(string zone)
@@ -187,7 +187,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
-            currentState = CurrentState.SetMonsterRevealed;
+            _currentState = CurrentState.SetMonsterRevealed;
         }
 
         private void HideSetCardImage(string zone, bool state)
@@ -195,7 +195,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             if (_zone == zone && state == false)
             {
                 _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
-                currentState = CurrentState.FaceDown;
+                _currentState = CurrentState.FaceDown;
             }
         }
 
