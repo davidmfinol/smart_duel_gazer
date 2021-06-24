@@ -16,7 +16,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         private SkinnedMeshRenderer[] _renderers;
         private ModelSettings _settings;
         private string _zone;
-        private bool areRenderersEnabled;
+        private bool _areRenderersEnabled;
 
         #region Constructor
 
@@ -99,7 +99,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(true);
-            areRenderersEnabled = true;
+            _areRenderersEnabled = true;
             _animator.SetBool(AnimatorParameters.DefenceBool, false);
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
@@ -122,7 +122,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(state);
-            areRenderersEnabled = state;
+            _areRenderersEnabled = state;
         }
 
         private void DestroyMonster(string zone)
