@@ -150,7 +150,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
         private void ActivatePlayfield(GameObject playfield)
         {
-            _renderers.SetRendererVisibility(areRenderersEnabled);
+            _renderers.SetRendererVisibility(_areRenderersEnabled);
         }
         
         private void PickupPlayfield()
