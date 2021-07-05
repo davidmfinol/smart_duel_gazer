@@ -33,7 +33,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         {
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-            _settings = GetComponent<ModelSettings>();            
+            _settings = GetComponent<ModelSettings>();
         }
 
         private void OnEnable()
@@ -56,6 +56,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnRevealSetMonster += RevealSetMonster;
             _eventHandler.OnChangeMonsterVisibility += SetMonsterVisibility;
             _eventHandler.OnDestroyMonster += DestroyMonster;
+            _eventHandler.OnAttack += Attack;
         }
 
         public void UnsubscribeToEvents()
@@ -65,6 +66,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _eventHandler.OnRevealSetMonster -= RevealSetMonster;
             _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
             _eventHandler.OnDestroyMonster -= DestroyMonster;
+            _eventHandler.OnAttack -= Attack;
         }
 
         private void ActivateModel(string zone)
@@ -110,6 +112,21 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             }
 
             _renderers.SetRendererVisibility(state);
+        }
+
+        private void Attack(string monsterID)
+        {
+            if(transform.GetInstanceID().ToString() != monsterID)
+            {
+                return;
+            }
+
+            if(_animator.GetBool("IsDefence"))
+            {
+                return;
+            }
+
+            _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
         }
 
         private void DestroyMonster(string zone)
