@@ -90,6 +90,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
+                _modelEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
 
@@ -108,6 +109,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 PlaceObject();
                 SetPlaymatScale(_hits);
+                _modelEventHandler.ActivatePlayfield(_speedDuelField);
             }
         }
 
@@ -158,16 +160,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             else
             {
                 playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-                playMat.SetActive(true);
-            }
-            _modelEventHandler.ActivatePlayfield(_speedDuelField);
+                _modelEventHandler.ActivatePlayfield(_speedDuelField);
+            }    
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
         {
-            var screenCenter = _mainCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
-            _arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinBounds);
-
             if (hits == null)
             {
                 return;
@@ -206,8 +204,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             _arPlaneManager.enabled = true;
 
             _dataManager.SaveGameObject(PlayfieldKey, _speedDuelField);
-            _speedDuelField.SetActive(false);
-            _modelEventHandler.RemovePlayfield();
+            _modelEventHandler.PickupPlayfield();
         }
     }
 }

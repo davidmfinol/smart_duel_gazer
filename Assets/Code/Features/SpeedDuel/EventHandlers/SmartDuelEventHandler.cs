@@ -74,8 +74,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         public void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
         {
-            // TODO: an excepion is thrown when an event is received and the speed duel field hasn't been placed yet.
             FetchSpeedDuelField();
+
+            if (_speedDuelField == null)
+            {
+                Debug.LogWarning("Speed Duel Field isn't placed yet");
+                return;
+            }
 
             if (smartDuelEvent is PlayCardEvent playCardEvent)
             {
