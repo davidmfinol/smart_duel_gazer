@@ -62,6 +62,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
             _eventHandler.OnActivatePlayfield += ActivatePlayfield;
             _eventHandler.OnPickupPlayfield += PickupPlayfield;
+            _eventHandler.OnAttack += Attack;
         }
 
         public void UnsubscribeToEvents()
@@ -74,6 +75,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
             _eventHandler.OnActivatePlayfield -= ActivatePlayfield;
             _eventHandler.OnPickupPlayfield -= PickupPlayfield;
+            _eventHandler.OnAttack -= Attack;
         }
 
         #endregion
