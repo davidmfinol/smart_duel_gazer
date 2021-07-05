@@ -106,6 +106,21 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
 
+        private void Attack(string monsterID)
+        {
+            if (transform.GetInstanceID().ToString() != monsterID)
+            {
+                return;
+            }
+
+            if (_animator.GetBool("IsDefence"))
+            {
+                return;
+            }
+
+            _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
+        }
+
         private void RevealSetMonster(string zone)
         {
             if (_zone != zone)
