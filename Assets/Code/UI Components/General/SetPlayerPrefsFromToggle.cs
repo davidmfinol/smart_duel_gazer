@@ -3,81 +3,63 @@ using UnityEngine.UI;
 using UniRx;
 using Zenject;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
+using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 
-public class SetPlayerPrefsFromToggle : MonoBehaviour
+namespace AssemblyCSharp.Assets.Code.UIComponents.General
 {
-    private readonly string Enabled = "Enabled";
-    private readonly string Disabled = "Disabled";
-    
-    private IPlayerPrefsProvider _playerPrefsProvider;
-
-    private Toggle _toggle;
-    private string toggleKey;
-
-    #region Constructors
-
-    [Inject]
-    public void Construct(IPlayerPrefsProvider playerPrefsProvider)
+    public class SetPlayerPrefsFromToggle : MonoBehaviour
     {
-        _playerPrefsProvider = playerPrefsProvider;
-    }
+        [SerializeField]
+        private Settings _settingsKey;
 
-    #endregion
+        private IPlayerPrefsProvider _playerPrefsProvider;
 
-    #region Lifecycle
+        private Toggle _toggle;
+        private string _toggleKey;
 
-    private void Awake()
-    {
-        _toggle = GetComponent<Toggle>();
-        toggleKey = _toggle.name;
-        
-        if(!_playerPrefsProvider.HasKey(toggleKey))
+        #region Constructors
+
+        [Inject]
+        public void Construct(IPlayerPrefsProvider playerPrefsProvider)
         {
-            _playerPrefsProvider.SetString(toggleKey, Enabled);
+            _playerPrefsProvider = playerPrefsProvider;
         }
 
-        _toggle.isOn = ChangeStringToBool(_playerPrefsProvider.GetString(toggleKey));
+        #endregion
 
-        RegisterClickListeners();
-    }
+        #region Lifecycle
 
-    #endregion
-
-    private void RegisterClickListeners()
-    {
-        _toggle.OnValueChangedAsObservable().Subscribe(_ => SetPreferencesUsingToggleValue(_toggle.isOn));
-    }
-
-    private void SetPreferencesUsingToggleValue(bool isEnabled)
-    {        
-        if(toggleKey == null)
+        private void Awake()
         {
-            Debug.LogError($"No Key Has Been Set!", this);
-            return;
+            _toggle = GetComponent<Toggle>();
+            _toggleKey = _settingsKey.ToString();
+
+            if (!_playerPrefsProvider.HasKey(_toggleKey))
+            {
+                _playerPrefsProvider.SetBool(_toggleKey, true);
+            }
+
+            _toggle.isOn = _playerPrefsProvider.GetBool(_toggleKey);
+
+            RegisterClickListeners();
         }
 
-        var playerPreference = ChangeBoolToString(isEnabled);
-        _playerPrefsProvider.SetString(toggleKey, playerPreference);
-    }
+        #endregion
 
-    private string ChangeBoolToString(bool playerPreference)
-    {
-        if(!playerPreference)
+        private void RegisterClickListeners()
         {
-            return Disabled;
+            _toggle.OnValueChangedAsObservable().Subscribe(_ => SetPreferencesUsingToggleValue(_toggle.isOn));
         }
 
-        return Enabled;
-    }
-
-    private bool ChangeStringToBool(string playerPreference)
-    {
-        if(playerPreference == Disabled)
+        private void SetPreferencesUsingToggleValue(bool isEnabled)
         {
-            return false;
+            if (_toggleKey == null)
+            {
+                Debug.LogError($"No Key Has Been Set!", this);
+                return;
+            }
+
+            _playerPrefsProvider.SetBool(_toggleKey, isEnabled);
         }
-
-        return true;
     }
-
 }

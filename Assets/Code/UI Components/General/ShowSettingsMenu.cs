@@ -2,32 +2,35 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 
-public class ShowSettingsMenu : MonoBehaviour
+namespace AssemblyCSharp.Assets.Code.UIComponents.General
 {
-    [SerializeField]
-    private Button _settingsButton;
-
-    [SerializeField]
-    private GameObject _settingsMenu;
-
-    private void Awake()
+    public class ShowSettingsMenu : MonoBehaviour
     {
-        RegisterClickListeners();
-    }
+        [SerializeField]
+        private GameObject _settingsMenu;
 
-    private void RegisterClickListeners()
-    {
-        _settingsButton.OnClickAsObservable().Subscribe(_ => OnSettingsButtonPressed());
-    }
+        private Button _settingsButton;
 
-    private void OnSettingsButtonPressed()
-    {
-        if(_settingsMenu.activeSelf)
+        private void Awake()
         {
-            _settingsMenu.SetActive(false);
-            return;
+            _settingsButton = GetComponent<Button>();
+            RegisterClickListeners();
         }
-        
-        _settingsMenu.SetActive(true);
+
+        private void RegisterClickListeners()
+        {
+            _settingsButton.OnClickAsObservable().Subscribe(_ => OnSettingsButtonPressed());
+        }
+
+        private void OnSettingsButtonPressed()
+        {
+            if (_settingsMenu.activeSelf)
+            {
+                _settingsMenu.SetActive(false);
+                return;
+            }
+
+            _settingsMenu.SetActive(true);
+        }
     }
 }
