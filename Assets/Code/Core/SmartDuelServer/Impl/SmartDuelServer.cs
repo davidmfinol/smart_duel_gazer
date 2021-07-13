@@ -1,71 +1,61 @@
 ﻿using System;
-using UnityEngine;
-using Dpoch.SocketIO;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
 using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Interface;
+using Newtonsoft.Json.Linq;
+using UniRx;
 
 namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 {
-    public class SmartDuelServer : ISmartDuelServer
+    public class SmartDuelServer : ISmartDuelServer, ISmartDuelEventReceiver
     {
-        private const string ConnectionUrl = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
-        private const string PlayCardEventName = "card:play";
-        private const string RemoveCardEventName = "card:remove";
+        private readonly IWebSocketFactory _webSocketFactory;
 
-        private IDataManager _dataManager;
+        private IWebSocketProvider _socket;
 
-        private ISmartDuelEventListener _listener;
-        private SocketIO _socket;
+        private ISubject<SmartDuelEvent> _globalEvents = new Subject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> GlobalEvents => _globalEvents;
 
-        public SmartDuelServer(IDataManager dataManager)
+        private ISubject<SmartDuelEvent> _roomEvents = new Subject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> RoomEvents => _roomEvents;
+
+        private ReplaySubject<SmartDuelEvent> _cardEvents = new ReplaySubject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> CardEvents => _cardEvents;
+
+        public SmartDuelServer(IWebSocketFactory webSocketFactory)
         {
-            _dataManager = dataManager;
+            _webSocketFactory = webSocketFactory;
         }
 
-        public void Connect(ISmartDuelEventListener listener)
+        public void Init()
         {
             if (_socket != null)
             {
-                throw new Exception("There is already a socket that has not been closed yet!");
+                return;
             }
 
-            _listener = listener;
+            _socket = _webSocketFactory.CreateWebSocketProvider();
+            _socket.Init(this);
+        }
 
-            var connectionInfo = _dataManager.GetConnectionInfo();
-            var url = string.Format(ConnectionUrl, connectionInfo?.IpAddress, connectionInfo?.Port);
+        public void EmitEvent(SmartDuelEvent e)
+        {
+            // TODO:
+            _socket.EmitEvent($"{e.Scope}:{e.Action}", null);
+        }
 
-            _socket = new SocketIO(url);
-
-            _socket.OnOpen += () => Debug.Log("Socket open!");
-            _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
-            _socket.OnClose += () => Debug.Log("Socket closed!");
-            _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(PlayCardEventName, OnPlayCardEventReceived);
-            _socket.On(RemoveCardEventName, OnRemoveCardEventReceived);
-
-            _socket.Connect();
+        public void OnEventReceived(string scope, string action, JToken json)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            _socket?.Close();
+            _socket?.Dispose();
             _socket = null;
-            _listener = null;
-        }
 
-        private void OnPlayCardEventReceived(SocketIOEvent e)
-        {
-            Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
-
-            _listener.OnSmartDuelEventReceived(PlayCardEvent.FromJson(e.Data[0]));
-        }
-
-        private void OnRemoveCardEventReceived(SocketIOEvent e)
-        {
-            Debug.Log($"OnRemoveCardEventReceived(SocketIOEvent: {e})");
-
-            _listener.OnSmartDuelEventReceived(RemoveCardEvent.FromJson(e.Data[0]));
+            _cardEvents.Dispose();
+            _cardEvents = new ReplaySubject<SmartDuelEvent>();
         }
     }
 }

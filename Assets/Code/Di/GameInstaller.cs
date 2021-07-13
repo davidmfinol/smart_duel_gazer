@@ -35,6 +35,9 @@ using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCar
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
 using AssemblyCSharp.Assets.Code.Core.Config.Impl.Providers;
+using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Interface;
+using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Impl;
+using Dpoch.SocketIO;
 
 namespace AssemblyCSharp.Assets.Code.Di
 {
@@ -84,6 +87,14 @@ namespace AssemblyCSharp.Assets.Code.Di
                 .FromFactory<PrefabFactory<DestructionParticles>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()
                 .FromFactory<PrefabFactory<SetCard>>();
+
+            #endregion
+
+            #region Wrappers
+
+            Container.Bind<IWebSocketFactory>().To<WebSocketFactory>();
+            Container.Bind<IWebSocketProvider>().To<WebSocketProvider>();
+            Container.BindFactory<SocketIO, SocketIOFactory>().FromFactory<CustomSocketIOFactory>();
 
             #endregion
         }
