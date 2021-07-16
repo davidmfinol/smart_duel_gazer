@@ -1,14 +1,14 @@
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities
+namespace Code.Core.SmartDuelServer.Interface.Entities
 {
     public class SmartDuelEvent
     {
-        public string Scope { get; private set; }
-        public string Action { get; private set; }
-        public SmartDuelEventData Data { get; private set; }
+        public string Scope { get; }
+        public string Action { get; }
+        public SmartDuelEventData Data { get; }
 
-        public SmartDuelEvent(string scope, string action, SmartDuelEventData data)
+        public SmartDuelEvent(string scope, string action, SmartDuelEventData data = null)
         {
             Scope = scope;
             Action = action;

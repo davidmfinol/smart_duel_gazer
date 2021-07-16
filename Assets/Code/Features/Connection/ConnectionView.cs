@@ -72,7 +72,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             }
 
             SaveConnectionInfo();
-            ShowSpeedDuelScene();
+            ShowDuelRoomScene();
         }
 
         private bool ValidateForm()
@@ -110,9 +110,9 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             _dataManager.SaveConnectionInfo(connectionInfo);
         }
 
-        private void ShowSpeedDuelScene()
+        private void ShowDuelRoomScene()
         {
-            _navigationService.ShowSpeedDuelScene();
+            _navigationService.ShowDuelRoomScene();
         }
 
         #endregion

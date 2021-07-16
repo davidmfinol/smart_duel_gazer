@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities
+namespace Code.Core.SmartDuelServer.Interface.Entities
 {
     public interface ISmartDuelEventReceiver
     {

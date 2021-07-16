@@ -2,19 +2,15 @@
 using Dpoch.SocketIO;
 using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Impl
+namespace Code.Wrappers.WrapperWebSocket.Impl
 {
-    public class SocketIOFactory : PlaceholderFactory<SocketIO>
-    {
-    }
-
-    public class CustomSocketIOFactory : IFactory<SocketIO>
+    public class SocketIOFactory : IFactory<SocketIO>
     {
         private const string ConnectionUrl = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
 
         private readonly IDataManager _dataManager;
 
-        public CustomSocketIOFactory(IDataManager dataManager)
+        public SocketIOFactory(IDataManager dataManager)
         {
             _dataManager = dataManager;
         }

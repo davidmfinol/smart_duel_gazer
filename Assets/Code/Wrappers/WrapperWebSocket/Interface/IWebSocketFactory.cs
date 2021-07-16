@@ -1,4 +1,4 @@
-﻿namespace AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Interface
+﻿namespace Code.Wrappers.WrapperWebSocket.Interface
 {
     public interface IWebSocketFactory
     {

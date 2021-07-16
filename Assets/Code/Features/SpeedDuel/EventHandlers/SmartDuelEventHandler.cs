@@ -5,14 +5,14 @@ using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using Code.Core.SmartDuelServer.Interface;
 using UniRx;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
@@ -63,10 +63,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         private void ConnectToServer()
         {
             _smartDuelServer.Init();
-        }
 
-        private void InitSmartDuelEventSubscription()
-        {
             _smartDuelEventSubscription = Observable
                 .Merge(_smartDuelServer.CardEvents, _smartDuelServer.RoomEvents)
                 .Subscribe(OnSmartDuelEventReceived);
@@ -99,7 +96,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
             switch (e.Scope)
             {
-                case SmartDuelEventConstants.cardScope:
+                case SmartDuelEventConstants.CardScope:
                     HandleCardEvent(e);
                     break;
                 // TODO:
@@ -129,10 +126,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
             switch (e.Action)
             {
-                case SmartDuelEventConstants.cardPlayAction:
+                case SmartDuelEventConstants.CardPlayAction:
                     HandlePlayCardEvent(eventData as CardEventData);
                     break;
-                case SmartDuelEventConstants.cardRemoveAction:
+                case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(eventData as CardEventData);
                     return;
             }

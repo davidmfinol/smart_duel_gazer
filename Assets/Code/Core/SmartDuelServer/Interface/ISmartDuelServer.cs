@@ -1,7 +1,7 @@
 ﻿using System;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+using Code.Core.SmartDuelServer.Interface.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface
+namespace Code.Core.SmartDuelServer.Interface
 {
     public interface ISmartDuelServer
     {

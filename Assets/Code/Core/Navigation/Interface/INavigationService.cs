@@ -3,6 +3,7 @@
     public interface INavigationService
     {
         void ShowConnectionScene();
+        void ShowDuelRoomScene();
         void ShowSpeedDuelScene();
     }
 }

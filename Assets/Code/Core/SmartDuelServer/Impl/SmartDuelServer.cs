@@ -1,11 +1,15 @@
 ﻿using System;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
-using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Interface;
+using Code.Core.SmartDuelServer.Interface;
+using Code.Core.SmartDuelServer.Interface.Entities;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Wrappers.WrapperWebSocket.Interface;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using UniRx;
+using UnityEngine;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
+namespace Code.Core.SmartDuelServer.Impl
 {
     public class SmartDuelServer : ISmartDuelServer, ISmartDuelEventReceiver
     {
@@ -13,10 +17,10 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         private IWebSocketProvider _socket;
 
-        private ISubject<SmartDuelEvent> _globalEvents = new Subject<SmartDuelEvent>();
+        private readonly ISubject<SmartDuelEvent> _globalEvents = new Subject<SmartDuelEvent>();
         public IObservable<SmartDuelEvent> GlobalEvents => _globalEvents;
 
-        private ISubject<SmartDuelEvent> _roomEvents = new Subject<SmartDuelEvent>();
+        private readonly ISubject<SmartDuelEvent> _roomEvents = new Subject<SmartDuelEvent>();
         public IObservable<SmartDuelEvent> RoomEvents => _roomEvents;
 
         private ReplaySubject<SmartDuelEvent> _cardEvents = new ReplaySubject<SmartDuelEvent>();
@@ -40,14 +44,70 @@ namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
 
         public void EmitEvent(SmartDuelEvent e)
         {
-            // TODO:
-            _socket.EmitEvent($"{e.Scope}:{e.Action}", null);
+            // TODO: can be improved
+            var json = JsonConvert.SerializeObject(e.Data, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            _socket.EmitEvent($"{e.Scope}:{e.Action}", json);
         }
+
+        #region Receive smart duel events
 
         public void OnEventReceived(string scope, string action, JToken json)
         {
-            throw new NotImplementedException();
+            switch (scope)
+            {
+                case SmartDuelEventConstants.GlobalScope:
+                    HandleGlobalEvent(action);
+                    break;
+                case SmartDuelEventConstants.RoomScope:
+                    HandleRoomEvent(action, json);
+                    break;
+                    // TODO:
+                    //case SmartDuelEventConstants.cardScope:
+                    //    HandleCardEvent(action, json);
+                    //    break;
+            }
         }
+
+        private void HandleGlobalEvent(string action)
+        {
+            try
+            {
+                var e = new SmartDuelEvent(SmartDuelEventConstants.GlobalScope, action);
+
+                _globalEvents.OnNext(e);
+            }
+            // TODO: check if subject is disposed before calling OnNext
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        private void HandleRoomEvent(string action, JToken json)
+        {
+            try
+            {
+                var data = RoomEventData.FromJson(json);
+                var e = new SmartDuelEvent(SmartDuelEventConstants.RoomScope, action, data);
+
+                _roomEvents.OnNext(e);
+            }
+            // TODO: check if subject is disposed before calling OnNext
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        #endregion
 
         public void Dispose()
         {

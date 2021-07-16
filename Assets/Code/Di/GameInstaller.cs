@@ -1,45 +1,45 @@
-﻿using Zenject;
-using UnityEngine;
+﻿using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Connection;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Texture;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Impl;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
-using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Impl;
+using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
 using AssemblyCSharp.Assets.Code.Core.Screen.Impl;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Connection;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Connection;
-using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Impl;
 using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Impl;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Interface;
+using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Texture;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Connection;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.GameObject;
+using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Texture;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Impl;
 using AssemblyCSharp.Assets.Code.Core.YGOProDeck.Interface;
 using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.Texture;
-using AssemblyCSharp.Assets.Code.Core.Storage.Interface.Texture;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Texture;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject;
-using AssemblyCSharp.Assets.Code.Core.Storage.Interface.GameObject;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Impl;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.Resources.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
-using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
-using AssemblyCSharp.Assets.Code.Core.Config.Impl.Providers;
-using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Interface;
-using AssemblyCSharp.Assets.Code.Wrappers.WrapperWebSocket.Impl;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
+using Code.Core.Config.Impl.Providers;
+using Code.Core.SmartDuelServer.Impl;
+using Code.Core.SmartDuelServer.Interface;
+using Code.Wrappers.WrapperWebSocket.Impl;
+using Code.Wrappers.WrapperWebSocket.Interface;
 using Dpoch.SocketIO;
+using UnityEngine;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Di
+namespace Code.Di
 {
     public class GameInstaller : MonoInstaller
     {
@@ -92,9 +92,9 @@ namespace AssemblyCSharp.Assets.Code.Di
 
             #region Wrappers
 
-            Container.Bind<IWebSocketFactory>().To<WebSocketFactory>();
-            Container.Bind<IWebSocketProvider>().To<WebSocketProvider>();
-            Container.BindFactory<SocketIO, SocketIOFactory>().FromFactory<CustomSocketIOFactory>();
+            Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
+            Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
+            Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
 
             #endregion
         }

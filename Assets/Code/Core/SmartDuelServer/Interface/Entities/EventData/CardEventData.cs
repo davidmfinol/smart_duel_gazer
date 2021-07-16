@@ -2,14 +2,14 @@
 using AssemblyCSharp.Assets.Code.Core.General.Extensions;
 using Newtonsoft.Json.Linq;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities.EventData
+namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
 {
     public class CardEventData : SmartDuelEventData
     {
-        public string CardId { get; private set; }
-        public int CopyNumber { get; private set; }
-        public string ZoneName { get; private set; }
-        public CardPosition CardPosition { get; private set; }
+        public string CardId { get; }
+        public int CopyNumber { get; }
+        public string ZoneName { get; }
+        public CardPosition CardPosition { get; }
 
         public CardEventData(string cardId, int copyNumber, string zoneName, CardPosition cardPosition)
         {
