@@ -57,7 +57,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
 
         private void InstantiatePrefabs(string key, int amount)
         {
-            for (int i = 0; i < amount; i++)
+            for (var i = 0; i < amount; i++)
             {
                 var gameObject = CreateGameObject(key);
                 gameObject.transform.SetParent(transform);                

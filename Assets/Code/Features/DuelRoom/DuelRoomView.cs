@@ -38,6 +38,7 @@ namespace Code.Features.DuelRoom
         [SerializeField] private GameObject waitingState;
         [SerializeField] private Button leaveRoomButton;
 
+        private DiContainer _di;
         private INavigationService _navigationService;
         private IDialogService _dialogService;
         private ISmartDuelServer _smartDuelServer;
@@ -47,18 +48,20 @@ namespace Code.Features.DuelRoom
         private DuelRoomState _currentState;
         private string _roomName;
         private string _duelistToSpectate;
-        private bool _startedDuelSuccessfully = false;
+        private bool _startedDuelSuccessfully;
 
         #region Constructors
 
         [Inject]
         public void Construct(
+            DiContainer di,
             INavigationService navigationService,
             IDialogService dialogService,
             IScreenService screenService,
             ISmartDuelServer smartDuelServer,
             IDelayProvider delayProvider)
         {
+            _di = di;
             _navigationService = navigationService;
             _dialogService = dialogService;
             _smartDuelServer = smartDuelServer;
@@ -96,7 +99,7 @@ namespace Code.Features.DuelRoom
         private void UpdateDuelRoomState(DuelRoomState state)
         {
             Debug.Log($"UpdateDuelRoomState(state: {state})");
-            
+
             _currentState = state;
 
             loadingState.SetActive(state == DuelRoomState.Loading);
@@ -167,7 +170,7 @@ namespace Code.Features.DuelRoom
         private async Task OnTryAgainButtonPressed()
         {
             ResetFields();
-            
+
             UpdateDuelRoomState(DuelRoomState.Loading);
 
             _smartDuelServer.Dispose();
@@ -178,7 +181,7 @@ namespace Code.Features.DuelRoom
         private void OnLeaveRoomButtonPressed()
         {
             ResetFields();
-            
+
             UpdateDuelRoomState(DuelRoomState.EnterRoomName);
             SendLeaveRoomEvent();
         }
@@ -187,7 +190,7 @@ namespace Code.Features.DuelRoom
         {
             _roomName = null;
             _duelistToSpectate = null;
-            
+
             duelistsDropdown.ClearOptions();
         }
 
@@ -225,7 +228,7 @@ namespace Code.Features.DuelRoom
         private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
             Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
-            
+
             switch (e.Scope)
             {
                 case SmartDuelEventConstants.GlobalScope:
@@ -310,7 +313,7 @@ namespace Code.Features.DuelRoom
             }
 
             duelistsDropdown.ClearOptions();
-            duelistsDropdown.AddOptions(data.Duelists.ToList());
+            duelistsDropdown.AddOptions(data.DuelistsIds.ToList());
 
             UpdateDuelRoomState(DuelRoomState.SelectDuelist);
         }
@@ -322,9 +325,18 @@ namespace Code.Features.DuelRoom
 
         private void HandleRoomStartEvent(RoomEventData data)
         {
-            _startedDuelSuccessfully = true;
+            var duelRoom = data.DuelRoom;
+            if (duelRoom == null)
+            {
+                HandleErrorEvent("invalid duel room data");
+                return;
+            }
+
+            duelRoom.DuelistToSpectate = _duelistToSpectate;
+
+            _di.Rebind<Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom>().FromInstance(duelRoom);
             
-            // TODO: duel room (scriptable object)? + pass who to spectate
+            _startedDuelSuccessfully = true;
             _navigationService.ShowSpeedDuelScene();
         }
 

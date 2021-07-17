@@ -13,6 +13,7 @@ using Code.Core.SmartDuelServer.Interface;
 using UniRx;
 using Code.Core.SmartDuelServer.Interface.Entities;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
@@ -24,13 +25,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         private const string SetCardKey = "SetCard";
         private const string ParticlesKey = "Particles";
 
+        private DuelRoom _duelRoom;
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
         private ModelComponentsManager.Factory _modelFactory;
 
         private IDisposable _smartDuelEventSubscription;
-
         private GameObject _speedDuelField;
 
         #region Properties
@@ -64,8 +65,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         {
             _smartDuelServer.Init();
 
-            _smartDuelEventSubscription = Observable
-                .Merge(_smartDuelServer.CardEvents, _smartDuelServer.RoomEvents)
+            _smartDuelEventSubscription = _smartDuelServer.CardEvents
+                .Merge(_smartDuelServer.RoomEvents)
                 .Subscribe(OnSmartDuelEventReceived);
         }
 
@@ -85,7 +86,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #region Receive smart duel events
 
-        public void OnSmartDuelEventReceived(SmartDuelEvent e)
+        private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
             FetchSpeedDuelField();
             if (_speedDuelField == null)
@@ -119,7 +120,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         private void HandleCardEvent(SmartDuelEvent e)
         {
             var eventData = e.Data;
-            if (eventData is CardEventData)
+            if (!(eventData is CardEventData data))
             {
                 return;
             }
@@ -127,10 +128,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             switch (e.Action)
             {
                 case SmartDuelEventConstants.CardPlayAction:
-                    HandlePlayCardEvent(eventData as CardEventData);
+                    HandlePlayCardEvent(data);
                     break;
                 case SmartDuelEventConstants.CardRemoveAction:
-                    HandleRemoveCardEvent(eventData as CardEventData);
+                    HandleRemoveCardEvent(data);
                     return;
             }
         }

@@ -1,41 +1,31 @@
-﻿using System;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
 {
     public class CardEventData : SmartDuelEventData
     {
-        public string CardId { get; }
-        public int CopyNumber { get; }
-        public string ZoneName { get; }
-        public CardPosition CardPosition { get; }
+        [JsonProperty("duelistId")] public string DuelistId { get; set; }
+        [JsonProperty("cardId")] public string CardId { get; set; }
+        [JsonProperty("copyNumber")] public int CopyNumber { get; set; }
+        [JsonProperty("zoneName")] public string ZoneName { get; set; }
 
-        public CardEventData(string cardId, int copyNumber, string zoneName, CardPosition cardPosition)
+        [JsonProperty("cardPosition")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CardPosition CardPosition { get; set; }
+
+        public CardEventData(
+            string duelistId,
+            string cardId,
+            int copyNumber,
+            string zoneName = null,
+            CardPosition cardPosition = CardPosition.None)
         {
+            DuelistId = duelistId;
             CardId = cardId;
             CopyNumber = copyNumber;
             ZoneName = zoneName;
             CardPosition = cardPosition;
-        }
-
-        public static CardEventData FromJson(JToken data)
-        {
-            var cardId = data["cardId"].ToString().RemoveQuotes();
-
-            var copyNumberString = data["copyNumber"].ToString().RemoveQuotes();
-            var hasCopyNumber = int.TryParse(copyNumberString, out var copyNumber);
-
-            var zoneName = data["zoneName"].ToString().RemoveQuotes();
-
-            var cardPositionString = data["cardPosition"].ToString().RemoveQuotes();
-            var hasCardPosition = Enum.TryParse<CardPosition>(cardPositionString, ignoreCase: true, out var cardPosition);
-
-            return new CardEventData(
-                cardId,
-                hasCopyNumber ? copyNumber : 0,
-                zoneName,
-                hasCardPosition ? cardPosition : CardPosition.None);
         }
     }
 
@@ -45,6 +35,6 @@ namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
         FaceDown,
         FaceUpDefence,
         FaceDownDefence,
-        None,
+        None
     }
 }

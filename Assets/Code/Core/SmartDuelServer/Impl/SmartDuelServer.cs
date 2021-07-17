@@ -69,10 +69,9 @@ namespace Code.Core.SmartDuelServer.Impl
                 case SmartDuelEventConstants.RoomScope:
                     HandleRoomEvent(action, json);
                     break;
-                    // TODO:
-                    //case SmartDuelEventConstants.cardScope:
-                    //    HandleCardEvent(action, json);
-                    //    break;
+                case SmartDuelEventConstants.CardScope:
+                    HandleCardEvent(action, json);
+                    break;
             }
         }
 
@@ -81,10 +80,8 @@ namespace Code.Core.SmartDuelServer.Impl
             try
             {
                 var e = new SmartDuelEvent(SmartDuelEventConstants.GlobalScope, action);
-
                 _globalEvents.OnNext(e);
             }
-            // TODO: check if subject is disposed before calling OnNext
             catch (Exception e)
             {
                 Debug.Log(e);
@@ -95,12 +92,24 @@ namespace Code.Core.SmartDuelServer.Impl
         {
             try
             {
-                var data = RoomEventData.FromJson(json);
+                var data = JsonConvert.DeserializeObject<RoomEventData>(json.ToString());
                 var e = new SmartDuelEvent(SmartDuelEventConstants.RoomScope, action, data);
-
                 _roomEvents.OnNext(e);
             }
-            // TODO: check if subject is disposed before calling OnNext
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        private void HandleCardEvent(string action, JToken json)
+        {
+            try
+            {
+                var data = JsonConvert.DeserializeObject<CardEventData>(json.ToString());
+                var e = new SmartDuelEvent(SmartDuelEventConstants.CardScope, action, data);
+                _cardEvents.OnNext(e);
+            }
             catch (Exception e)
             {
                 Debug.Log(e);
