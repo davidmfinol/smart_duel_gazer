@@ -31,8 +31,10 @@ using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Core.Config.Impl.Providers;
+using Code.Core.DataManager.DuelRoom;
 using Code.Core.SmartDuelServer.Impl;
 using Code.Core.SmartDuelServer.Interface;
+using Code.Core.Storage.DuelRoom;
 using Code.Wrappers.WrapperWebSocket.Impl;
 using Code.Wrappers.WrapperWebSocket.Interface;
 using Dpoch.SocketIO;
@@ -60,6 +62,7 @@ namespace Code.Di
             Container.Bind<IConnectionDataManager>().To<ConnectionDataManager>().AsSingle();
             Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
+            Container.Bind<IDuelRoomDataManager>().To<DuelRoomDataManager>().AsSingle();
 
             // API providers
             Container.Bind<IYGOProDeckApiProvider>().To<YGOProDeckApiProvider>().AsSingle();
@@ -70,6 +73,7 @@ namespace Code.Di
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
             Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
+            Container.Bind<IDuelRoomStorageProvider>().To<DuelRoomStorageProvider>().AsSingle();
 
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 

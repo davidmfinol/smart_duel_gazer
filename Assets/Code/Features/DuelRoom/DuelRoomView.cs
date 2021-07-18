@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AssemblyCSharp.Assets.Code.Core.Config.Interface.Providers;
+using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
@@ -38,7 +39,7 @@ namespace Code.Features.DuelRoom
         [SerializeField] private GameObject waitingState;
         [SerializeField] private Button leaveRoomButton;
 
-        private DiContainer _di;
+        private IDataManager _dataManager;
         private INavigationService _navigationService;
         private IDialogService _dialogService;
         private ISmartDuelServer _smartDuelServer;
@@ -54,14 +55,14 @@ namespace Code.Features.DuelRoom
 
         [Inject]
         public void Construct(
-            DiContainer di,
+            IDataManager dataManager,
             INavigationService navigationService,
             IDialogService dialogService,
             IScreenService screenService,
             ISmartDuelServer smartDuelServer,
             IDelayProvider delayProvider)
         {
-            _di = di;
+            _dataManager = dataManager;
             _navigationService = navigationService;
             _dialogService = dialogService;
             _smartDuelServer = smartDuelServer;
@@ -333,9 +334,8 @@ namespace Code.Features.DuelRoom
             }
 
             duelRoom.DuelistToSpectate = _duelistToSpectate;
+            _dataManager.SaveDuelRoom(duelRoom);
 
-            _di.Rebind<Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom>().FromInstance(duelRoom);
-            
             _startedDuelSuccessfully = true;
             _navigationService.ShowSpeedDuelScene();
         }

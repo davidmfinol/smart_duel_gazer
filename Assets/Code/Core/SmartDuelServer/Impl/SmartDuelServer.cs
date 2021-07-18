@@ -77,6 +77,8 @@ namespace Code.Core.SmartDuelServer.Impl
 
         private void HandleGlobalEvent(string action)
         {
+            Debug.Log($"HandleGlobalEvent(action: {action})");
+            
             try
             {
                 var e = new SmartDuelEvent(SmartDuelEventConstants.GlobalScope, action);
@@ -90,6 +92,8 @@ namespace Code.Core.SmartDuelServer.Impl
 
         private void HandleRoomEvent(string action, JToken json)
         {
+            Debug.Log($"HandleRoomEvent(action: {action})");
+            
             try
             {
                 var data = JsonConvert.DeserializeObject<RoomEventData>(json.ToString());
@@ -104,6 +108,8 @@ namespace Code.Core.SmartDuelServer.Impl
 
         private void HandleCardEvent(string action, JToken json)
         {
+            Debug.Log($"HandleCardEvent(action: {action})");
+            
             try
             {
                 var data = JsonConvert.DeserializeObject<CardEventData>(json.ToString());

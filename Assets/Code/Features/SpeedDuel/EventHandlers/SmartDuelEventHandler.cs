@@ -24,8 +24,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         private const string PlaymatZonesPath = "Playmat/Zones";
         private const string SetCardKey = "SetCard";
         private const string ParticlesKey = "Particles";
-
-        private DuelRoom _duelRoom;
+        
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
@@ -88,6 +87,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
+            Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
+            
             FetchSpeedDuelField();
             if (_speedDuelField == null)
             {
@@ -119,8 +120,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void HandleCardEvent(SmartDuelEvent e)
         {
-            var eventData = e.Data;
-            if (!(eventData is CardEventData data))
+            if (!(e.Data is CardEventData data))
             {
                 return;
             }
@@ -130,6 +130,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 case SmartDuelEventConstants.CardPlayAction:
                     HandlePlayCardEvent(data);
                     break;
+                
                 case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(data);
                     return;
@@ -138,6 +139,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void HandlePlayCardEvent(CardEventData data)
         {
+            Debug.Log($"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            
             var zone = _speedDuelField.transform.Find($"{PlaymatZonesPath}/{data.ZoneName}");
             if (zone == null)
             {
@@ -319,6 +322,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void HandleRemoveCardEvent(CardEventData data)
         {
+            Debug.Log($"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            
             var modelExists = InstantiatedModels.TryGetValue(data.ZoneName, out var model);
             if (!modelExists)
             {
