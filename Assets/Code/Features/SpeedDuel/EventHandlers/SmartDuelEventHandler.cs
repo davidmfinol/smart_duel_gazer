@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
@@ -13,7 +14,6 @@ using Code.Core.SmartDuelServer.Interface;
 using UniRx;
 using Code.Core.SmartDuelServer.Interface.Entities;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent;
 
 namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 {
@@ -27,6 +27,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
         
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
+        private IDialogService _dialogService;
         private ModelEventHandler _modelEventHandler;
         private ModelComponentsManager.Factory _modelFactory;
 
@@ -47,11 +48,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             ISmartDuelServer smartDuelServer,
             IDataManager dataManager,
             IScreenService screenService,
+            IDialogService dialogService,
             ModelEventHandler modelEventHandler,
             ModelComponentsManager.Factory modelFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
+            _dialogService = dialogService;
             _modelEventHandler = modelEventHandler;
             _modelFactory = modelFactory;
 
@@ -101,10 +104,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 case SmartDuelEventConstants.CardScope:
                     HandleCardEvent(e);
                     break;
-                // TODO:
-                //case SmartDuelEventConstants.roomScope:
-                //    HandleRoomEvent(e);
-                //    break;
+
+                case SmartDuelEventConstants.RoomScope:
+                    HandleRoomEvent(e);
+                    break;
             }
         }
 
@@ -358,6 +361,36 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, data.ZoneName);
             InstantiatedModels.Remove($"{data.ZoneName}:{SetCardKey}");
             StartCoroutine(RecycleGameObject(SetCardKey, setCard));
+        }
+
+        #endregion
+
+        #region Handle room events
+
+        private void HandleRoomEvent(SmartDuelEvent e)
+        {
+            if (!(e.Data is RoomEventData data))
+            {
+                return;
+            }
+            
+            switch (e.Action)
+            {
+                case SmartDuelEventConstants.RoomCloseAction:
+                    HandleCloseRoomEvent(data);
+                    break;
+            }
+        }
+
+        private void HandleCloseRoomEvent(RoomEventData data)
+        {
+            var winnerId = data.WinnerId;
+            if (winnerId == null) {
+                return;
+            }
+
+            var winnerMessage = $"{winnerId} won the duel!";
+            _dialogService.ShowToast(winnerMessage);
         }
 
         #endregion

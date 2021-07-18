@@ -10,15 +10,20 @@ namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
         [JsonProperty("error")] public string Error { get; set; }
         [JsonProperty("duelists")] public IList<string> DuelistsIds { get; set; }
         [JsonProperty("duelRoom")] public DuelRoom DuelRoom { get; set; }
+        [JsonProperty("winnerId")] public string WinnerId { get; set; }
 
         public RoomEventData(
             string roomName,
             string error = null,
-            IList<string> duelistsIds = null)
+            IList<string> duelistsIds = null,
+            DuelRoom duelRoom = null,
+            string winnerId = null)
         {
             RoomName = roomName;
             Error = error;
             DuelistsIds = duelistsIds;
+            DuelRoom = duelRoom;
+            WinnerId = winnerId;
         }
     }
 }
