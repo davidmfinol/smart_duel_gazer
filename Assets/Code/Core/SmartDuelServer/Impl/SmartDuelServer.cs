@@ -2,6 +2,8 @@
 using Code.Core.SmartDuelServer.Interface;
 using Code.Core.SmartDuelServer.Interface.Entities;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
 using Code.Wrappers.WrapperWebSocket.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

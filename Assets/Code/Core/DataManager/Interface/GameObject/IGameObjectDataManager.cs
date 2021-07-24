@@ -6,6 +6,6 @@
         public void SaveGameObject(string key, UnityEngine.GameObject model);
         public void RemoveGameObject(string key);
 
-        UnityEngine.GameObject GetCardModel(string cardId);
+        UnityEngine.GameObject GetCardModel(int cardId);
     }
 }

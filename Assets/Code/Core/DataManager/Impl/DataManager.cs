@@ -6,7 +6,7 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
 using Code.Core.DataManager.DuelRoom;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
@@ -61,7 +61,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _gameObjectDataManager.RemoveGameObject(key);
         }
 
-        public UnityEngine.GameObject GetCardModel(string cardId)
+        public UnityEngine.GameObject GetCardModel(int cardId)
         {
             return _gameObjectDataManager.GetCardModel(cardId);
         }

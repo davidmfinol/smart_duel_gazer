@@ -5,8 +5,8 @@ namespace Code.Core.DataManager.DuelRoom
 {
     public interface IDuelRoomDataManager
     {
-        SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom GetDuelRoom();
-        void SaveDuelRoom(SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom room);
+        SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom GetDuelRoom();
+        void SaveDuelRoom(SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom room);
     }
 
     public class DuelRoomDataManager : IDuelRoomDataManager
@@ -20,12 +20,12 @@ namespace Code.Core.DataManager.DuelRoom
             _duelRoomStorageProvider = duelRoomStorageProvider;
         }
 
-        public SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom GetDuelRoom()
+        public SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom GetDuelRoom()
         {
             return _duelRoomStorageProvider.GetDuelRoom();
         }
 
-        public void SaveDuelRoom(SmartDuelServer.Interface.Entities.EventData.RoomEvent.DuelRoom room)
+        public void SaveDuelRoom(SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom room)
         {
             _duelRoomStorageProvider.SaveDuelRoom(room);
         }

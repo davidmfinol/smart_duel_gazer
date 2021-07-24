@@ -9,6 +9,7 @@ using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
 using Code.Core.SmartDuelServer.Interface;
 using Code.Core.SmartDuelServer.Interface.Entities;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
 using Code.Features.DuelRoom.Models;
 using TMPro;
 using UniRx;

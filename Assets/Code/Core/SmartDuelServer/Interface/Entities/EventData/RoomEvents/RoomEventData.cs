@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvent;
 using Newtonsoft.Json;
 
-namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
+namespace Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents
 {
     public class RoomEventData : SmartDuelEventData
     {
@@ -12,18 +11,9 @@ namespace Code.Core.SmartDuelServer.Interface.Entities.EventData
         [JsonProperty("duelRoom")] public DuelRoom DuelRoom { get; set; }
         [JsonProperty("winnerId")] public string WinnerId { get; set; }
 
-        public RoomEventData(
-            string roomName,
-            string error = null,
-            IList<string> duelistsIds = null,
-            DuelRoom duelRoom = null,
-            string winnerId = null)
+        public RoomEventData(string roomName)
         {
             RoomName = roomName;
-            Error = error;
-            DuelistsIds = duelistsIds;
-            DuelRoom = duelRoom;
-            WinnerId = winnerId;
         }
     }
 }

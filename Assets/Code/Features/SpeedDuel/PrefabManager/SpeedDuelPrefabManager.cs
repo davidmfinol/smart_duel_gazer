@@ -15,7 +15,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
         private const string ParticlesKey = "Particles";
         private const string SetCardKey = "SetCard";
 
-        private const int AmountToInstantiate = 8;
+        private const int AmountToInstantiate = 16;
 
         [SerializeField]
         private GameObject _particles;
