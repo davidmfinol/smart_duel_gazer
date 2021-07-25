@@ -5,6 +5,8 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.GameObject;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Texture;
+using Code.Core.DataManager.DuelRoom;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
 
 namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
 {
@@ -13,16 +15,19 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         private readonly IConnectionDataManager _connectionDataManager;
         private readonly IGameObjectDataManager _gameObjectDataManager;
         private readonly ITextureDataManager _textureDataManager;
+        private readonly IDuelRoomDataManager _duelRoomDataManager;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
             IGameObjectDataManager gameObjectDataManager,
-            ITextureDataManager textureDataManager)
+            ITextureDataManager textureDataManager,
+            IDuelRoomDataManager duelRoomDataManager)
         {
             _connectionDataManager = connectionDataManager;
             _gameObjectDataManager = gameObjectDataManager;
             _textureDataManager = textureDataManager;
+            _duelRoomDataManager = duelRoomDataManager;
         }
 
         #region Connection
@@ -56,7 +61,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
             _gameObjectDataManager.RemoveGameObject(key);
         }
 
-        public UnityEngine.GameObject GetCardModel(string cardId)
+        public UnityEngine.GameObject GetCardModel(int cardId)
         {
             return _gameObjectDataManager.GetCardModel(cardId);
         }
@@ -68,6 +73,20 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl
         public Task<UnityEngine.Texture> GetCardImage(string cardId)
         {
             return _textureDataManager.GetCardImage(cardId);
+        }
+
+        #endregion
+
+        #region Duel room
+
+        public DuelRoom GetDuelRoom()
+        {
+            return _duelRoomDataManager.GetDuelRoom();
+        }
+
+        public void SaveDuelRoom(DuelRoom room)
+        {
+            _duelRoomDataManager.SaveDuelRoom(room);
         }
 
         #endregion

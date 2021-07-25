@@ -1,15 +1,15 @@
-﻿using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+﻿using System;
+using Code.Core.SmartDuelServer.Interface.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface
+namespace Code.Core.SmartDuelServer.Interface
 {
     public interface ISmartDuelServer
     {
-        void Connect(ISmartDuelEventListener listener);
+        IObservable<SmartDuelEvent> GlobalEvents { get; }
+        IObservable<SmartDuelEvent> RoomEvents { get; }
+        IObservable<SmartDuelEvent> CardEvents { get; }
+        void Init();
+        void EmitEvent(SmartDuelEvent e);
         void Dispose();
-    }
-
-    public interface ISmartDuelEventListener
-    {
-        void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent);
     }
 }

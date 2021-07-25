@@ -36,7 +36,7 @@ namespace AssemblyCSharp.Assets.Code.Core.DataManager.Impl.GameObject
 
         #region Card model
 
-        public UnityEngine.GameObject GetCardModel(string cardId)
+        public UnityEngine.GameObject GetCardModel(int cardId)
         {
             return _gameObjectStorageProvider.GetCardModel(cardId);
         }

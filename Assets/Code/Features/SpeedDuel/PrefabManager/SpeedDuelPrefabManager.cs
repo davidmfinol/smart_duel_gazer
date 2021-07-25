@@ -15,7 +15,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
         private const string ParticlesKey = "Particles";
         private const string SetCardKey = "SetCard";
 
-        private const int AmountToInstantiate = 8;
+        private const int AmountToInstantiate = 16;
 
         [SerializeField]
         private GameObject _particles;
@@ -57,7 +57,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
 
         private void InstantiatePrefabs(string key, int amount)
         {
-            for (int i = 0; i < amount; i++)
+            for (var i = 0; i < amount; i++)
             {
                 var gameObject = CreateGameObject(key);
                 gameObject.transform.SetParent(transform);                

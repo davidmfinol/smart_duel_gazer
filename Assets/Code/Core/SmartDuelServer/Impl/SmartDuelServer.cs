@@ -1,71 +1,138 @@
 ﻿using System;
+using Code.Core.SmartDuelServer.Interface;
+using Code.Core.SmartDuelServer.Interface.Entities;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
+using Code.Wrappers.WrapperWebSocket.Interface;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using UniRx;
 using UnityEngine;
-using Dpoch.SocketIO;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Impl
+namespace Code.Core.SmartDuelServer.Impl
 {
-    public class SmartDuelServer : ISmartDuelServer
+    public class SmartDuelServer : ISmartDuelServer, ISmartDuelEventReceiver
     {
-        private const string ConnectionUrl = "ws://{0}:{1}/socket.io/?EIO=3&transport=websocket";
-        private const string PlayCardEventName = "card:play";
-        private const string RemoveCardEventName = "card:remove";
+        private readonly IWebSocketFactory _webSocketFactory;
 
-        private IDataManager _dataManager;
+        private IWebSocketProvider _socket;
 
-        private ISmartDuelEventListener _listener;
-        private SocketIO _socket;
+        private readonly ISubject<SmartDuelEvent> _globalEvents = new Subject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> GlobalEvents => _globalEvents;
 
-        public SmartDuelServer(IDataManager dataManager)
+        private readonly ISubject<SmartDuelEvent> _roomEvents = new Subject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> RoomEvents => _roomEvents;
+
+        private ReplaySubject<SmartDuelEvent> _cardEvents = new ReplaySubject<SmartDuelEvent>();
+        public IObservable<SmartDuelEvent> CardEvents => _cardEvents;
+
+        public SmartDuelServer(IWebSocketFactory webSocketFactory)
         {
-            _dataManager = dataManager;
+            _webSocketFactory = webSocketFactory;
         }
 
-        public void Connect(ISmartDuelEventListener listener)
+        public void Init()
         {
             if (_socket != null)
             {
-                throw new Exception("There is already a socket that has not been closed yet!");
+                return;
             }
 
-            _listener = listener;
-
-            var connectionInfo = _dataManager.GetConnectionInfo();
-            var url = string.Format(ConnectionUrl, connectionInfo?.IpAddress, connectionInfo?.Port);
-
-            _socket = new SocketIO(url);
-
-            _socket.OnOpen += () => Debug.Log("Socket open!");
-            _socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
-            _socket.OnClose += () => Debug.Log("Socket closed!");
-            _socket.OnError += (err) => Debug.Log($"Socket Error: {err}");
-            _socket.On(PlayCardEventName, OnPlayCardEventReceived);
-            _socket.On(RemoveCardEventName, OnRemoveCardEventReceived);
-
-            _socket.Connect();
+            _socket = _webSocketFactory.CreateWebSocketProvider();
+            _socket.Init(this);
         }
+
+        public void EmitEvent(SmartDuelEvent e)
+        {
+            // TODO: can be improved
+            var json = JsonConvert.SerializeObject(e.Data, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            _socket.EmitEvent($"{e.Scope}:{e.Action}", json);
+        }
+
+        #region Receive smart duel events
+
+        public void OnEventReceived(string scope, string action, JToken json)
+        {
+            switch (scope)
+            {
+                case SmartDuelEventConstants.GlobalScope:
+                    HandleGlobalEvent(action);
+                    break;
+                case SmartDuelEventConstants.RoomScope:
+                    HandleRoomEvent(action, json);
+                    break;
+                case SmartDuelEventConstants.CardScope:
+                    HandleCardEvent(action, json);
+                    break;
+            }
+        }
+
+        private void HandleGlobalEvent(string action)
+        {
+            Debug.Log($"HandleGlobalEvent(action: {action})");
+            
+            try
+            {
+                var e = new SmartDuelEvent(SmartDuelEventConstants.GlobalScope, action);
+                _globalEvents.OnNext(e);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        private void HandleRoomEvent(string action, JToken json)
+        {
+            Debug.Log($"HandleRoomEvent(action: {action})");
+            
+            try
+            {
+                var data = JsonConvert.DeserializeObject<RoomEventData>(json.ToString());
+                var e = new SmartDuelEvent(SmartDuelEventConstants.RoomScope, action, data);
+                _roomEvents.OnNext(e);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        private void HandleCardEvent(string action, JToken json)
+        {
+            Debug.Log($"HandleCardEvent(action: {action})");
+            
+            try
+            {
+                var data = JsonConvert.DeserializeObject<CardEventData>(json.ToString());
+                var e = new SmartDuelEvent(SmartDuelEventConstants.CardScope, action, data);
+                _cardEvents.OnNext(e);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        #endregion
 
         public void Dispose()
         {
-            _socket?.Close();
+            _socket?.Dispose();
             _socket = null;
-            _listener = null;
-        }
 
-        private void OnPlayCardEventReceived(SocketIOEvent e)
-        {
-            Debug.Log($"OnPlayCardEventReceived(SocketIOEvent: {e})");
-
-            _listener.OnSmartDuelEventReceived(PlayCardEvent.FromJson(e.Data[0]));
-        }
-
-        private void OnRemoveCardEventReceived(SocketIOEvent e)
-        {
-            Debug.Log($"OnRemoveCardEventReceived(SocketIOEvent: {e})");
-
-            _listener.OnSmartDuelEventReceived(RemoveCardEvent.FromJson(e.Data[0]));
+            _cardEvents.Dispose();
+            _cardEvents = new ReplaySubject<SmartDuelEvent>();
         }
     }
 }

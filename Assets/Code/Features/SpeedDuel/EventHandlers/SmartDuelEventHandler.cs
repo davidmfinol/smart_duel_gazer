@@ -1,39 +1,46 @@
-using Zenject;
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
+using System.Linq;
 using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface;
-using AssemblyCSharp.Assets.Code.Core.SmartDuelServer.Interface.Entities;
+using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
+using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
+using AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers;
+using Code.Core.SmartDuelServer.Interface;
+using Code.Core.SmartDuelServer.Interface.Entities;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
+using Code.Features.SpeedDuel.Models;
+using Code.Features.SpeedDuel.Models.Zones;
+using UniRx;
+using UnityEngine;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
+namespace Code.Features.SpeedDuel.EventHandlers
 {
-    public class SmartDuelEventHandler : MonoBehaviour, ISmartDuelEventListener
+    public class SmartDuelEventHandler : MonoBehaviour
     {
         private const float RemoveCardDurationInSeconds = 7;
 
-        private const string PlaymatZonesPath = "Playmat/Zones";
+        private const string UserPlayMatZonesPath = "UserPlayMat/Zones";
+        private const string OpponentPlayMatZonesPath = "OpponentPlayMat/Zones";
         private const string SetCardKey = "SetCard";
         private const string ParticlesKey = "Particles";
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
+        private IDialogService _dialogService;
         private ModelEventHandler _modelEventHandler;
         private ModelComponentsManager.Factory _modelFactory;
 
+        private Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
+        private SpeedDuelState _speedDuelState;
+        private IDisposable _smartDuelEventSubscription;
         private GameObject _speedDuelField;
-
-        #region Properties
-
-        // TODO: work more OO: create PlayMat/Field entity with zones which contain models
-        private Dictionary<string, GameObject> InstantiatedModels { get; } = new Dictionary<string, GameObject>();
-
-        #endregion
 
         #region Constructors
 
@@ -42,21 +49,20 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             ISmartDuelServer smartDuelServer,
             IDataManager dataManager,
             IScreenService screenService,
+            IDialogService dialogService,
             ModelEventHandler modelEventHandler,
             ModelComponentsManager.Factory modelFactory)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
+            _dialogService = dialogService;
             _modelEventHandler = modelEventHandler;
             _modelFactory = modelFactory;
 
             screenService.UseAutoOrientation();
-            ConnectToServer();
-        }
 
-        private void ConnectToServer()
-        {
-            _smartDuelServer.Connect(this);
+            InitSpeedDuelState();
+            InitSmartDuelEventSubscription();
         }
 
         #endregion
@@ -65,34 +71,85 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private void OnDestroy()
         {
+            _smartDuelEventSubscription?.Dispose();
+            _smartDuelEventSubscription = null;
+
             _smartDuelServer?.Dispose();
         }
 
         #endregion
 
-        #region ISmartDuelEventListener
+        #region Initialization
 
-        public void OnSmartDuelEventReceived(SmartDuelEvent smartDuelEvent)
+        private void InitSpeedDuelState()
         {
-            FetchSpeedDuelField();
+            var duelRoom = _dataManager.GetDuelRoom();
+            _duelRoom = duelRoom ?? throw new Exception("Duel room not initialized");
 
+            var user = _duelRoom.Duelists.First(duelist => duelist.Id.Equals(_duelRoom.DuelistToSpectate));
+            var userState = CreatePlayerState(user, false);
+
+            var opponent = _duelRoom.Duelists.First(duelist => !duelist.Id.Equals(_duelRoom.DuelistToSpectate));
+            var opponentState = CreatePlayerState(opponent, true);
+
+            _speedDuelState = new SpeedDuelState(userState, opponentState);
+        }
+
+        private static PlayerState CreatePlayerState(Duelist duelist, bool isOpponent)
+        {
+            var playCards = new List<PlayCard>();
+            foreach (var cardId in duelist.DeckList)
+            {
+                var copyNumber = playCards.Count(playCard => playCard.Id == cardId);
+                playCards.Add(new PlayCard(cardId, copyNumber));
+            }
+
+            var playMatZonesPath = isOpponent ? OpponentPlayMatZonesPath : UserPlayMatZonesPath;
+
+            // TODO: when card type is available, move the correct cards to the extra deck
+            var playerState = new PlayerState(duelist.Id, isOpponent, playMatZonesPath);
+            playerState = playerState.CopyWith(
+                deckZone: playerState.DeckZone.CopyWith(playCards)
+            );
+
+            return playerState;
+        }
+
+        private void InitSmartDuelEventSubscription()
+        {
+            _smartDuelEventSubscription = _smartDuelServer.CardEvents
+                .Merge(_smartDuelServer.RoomEvents)
+                .Subscribe(OnSmartDuelEventReceived);
+        }
+
+        #endregion
+
+        #region Receive smart duel events
+
+        private void OnSmartDuelEventReceived(SmartDuelEvent e)
+        {
+            Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
+
+            FetchSpeedDuelFieldIfNecessary();
             if (_speedDuelField == null)
             {
                 Debug.LogWarning("Speed Duel Field isn't placed yet");
                 return;
             }
 
-            if (smartDuelEvent is PlayCardEvent playCardEvent)
+            switch (e.Scope)
             {
-                OnPlayCardEventReceived(playCardEvent);
-            }
-            else if (smartDuelEvent is RemoveCardEvent removeCardEvent)
-            {
-                OnRemoveCardEventReceived(removeCardEvent);
+                case SmartDuelEventConstants.CardScope:
+                    HandleCardEvent(e);
+                    break;
+
+                case SmartDuelEventConstants.RoomScope:
+                    HandleRoomEvent(e);
+                    break;
             }
         }
 
-        private void FetchSpeedDuelField()
+        private void FetchSpeedDuelFieldIfNecessary()
         {
             if (_speedDuelField == null)
             {
@@ -100,60 +157,129 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             }
         }
 
-        #region PlayCardEvent
+        #region Handle card events
 
-        private void OnPlayCardEventReceived(PlayCardEvent playCardEvent)
+        private void HandleCardEvent(SmartDuelEvent e)
         {
-            var zone = _speedDuelField.transform.Find($"{PlaymatZonesPath}/{playCardEvent.ZoneName}");
-            if (zone == null)
+            if (!(e.Data is CardEventData data))
             {
                 return;
             }
 
-            var cardModel = _dataManager.GetCardModel(playCardEvent.CardId);
+            switch (e.Action)
+            {
+                case SmartDuelEventConstants.CardPlayAction:
+                    HandlePlayCardEvent(data);
+                    break;
+
+                /*case SmartDuelEventConstants.CardRemoveAction:
+                    HandleRemoveCardEvent(data);
+                    return;*/
+            }
+        }
+
+        private void HandlePlayCardEvent(CardEventData data)
+        {
+            Debug.Log($"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+
+            var playerState = _speedDuelState.GetPlayerStates().FirstOrDefault(ps => ps.DuelistId == data.DuelistId);
+            var zone = playerState?.GetZone(data.ZoneType);
+            // TODO: handle cards in multi card zones
+            if (zone == null || zone is MultiCardZone)
+            {
+                return;
+            }
+
+            var playMatZonePath = $"{playerState.PlayMatZonesPath}/{data.ZoneType.ToString()}";
+            var playMatZone = _speedDuelField.transform.Find(playMatZonePath);
+            if (playMatZone == null)
+            {
+                return;
+            }
+
+            PlayCardImage(data, playerState, zone, playMatZone);
+
+            /*var cardModel = _dataManager.GetCardModel(data.CardId);
             if (cardModel == null)
             {
                 // TODO: create a function which returns either an instantiated 3D model of the monster
                 // or an instantiated model of the card, and then handle the position
-                PlayCardImage(playCardEvent, zone);
+                PlayCardImage(data, zone);
                 return;
             }
 
             cardModel.SetActive(true);
-            PlayCardModel(playCardEvent, zone, cardModel);
+            PlayCardModel(data, zone, cardModel);*/
         }
 
         #region Card image
 
-        // TODO: Test with monster for which there's no 3D model
-        private void PlayCardImage(PlayCardEvent playCardEvent, Transform zone)
+        private void PlayCardImage(CardEventData data, PlayerState playerState, Zone zone, Transform playMatZone)
         {
-            var setCardKey = $"{zone.name}:{SetCardKey}";
-            if (!InstantiatedModels.ContainsKey(setCardKey))
+            // TODO: handle cards in multi card zones
+            if (!(zone is SingleCardZone cardZone))
             {
-                var setCard = GetGameObject(SetCardKey, zone.position, zone.rotation);
-                InstantiatedModels.Add(setCardKey, setCard);
+                return;
+            }
 
-                if (playCardEvent.CardPosition == CardPosition.FaceDown)
+            if (cardZone.SetCardModel == null)
+            {
+                var playCard = new PlayCard(data.CardId, data.CopyNumber);
+                var setCardModel = GetGameObject(SetCardKey, playMatZone.position, playMatZone.rotation);
+
+                var updatedZone = cardZone.CopyWith(playCard, setCardModel);
+                var currentZones = playerState.GetZones().ToList();
+                currentZones.RemoveAll(z => z.ZoneType == data.ZoneType);
+                currentZones.Add(updatedZone);
+
+                var updatedPlayerState = playerState.CopyWith(
+                    currentZones.First(z => z.ZoneType == ZoneType.Hand) as MultiCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.Field) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.MainMonster1) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.MainMonster2) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.MainMonster3) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.Graveyard) as MultiCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.Banished) as MultiCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.ExtraDeck) as MultiCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.SpellTrap1) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.SpellTrap2) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.SpellTrap3) as SingleCardZone,
+                    currentZones.First(z => z.ZoneType == ZoneType.Deck) as MultiCardZone
+                );
+
+                var currentSpeedDuelState = _speedDuelState;
+                var playerStates = currentSpeedDuelState.GetPlayerStates().ToList();
+                playerStates.Remove(playerState);
+                playerStates.Add(updatedPlayerState);
+
+                var updatedSpeedDuelState = _speedDuelState.CopyWith(
+                    playerStates.First(ps => !ps.IsOpponent),
+                    playerStates.First(ps => ps.IsOpponent)
+                );
+
+                _speedDuelState = updatedSpeedDuelState;
+
+                // TODO: Ask Subtle why this is needed
+                if (data.CardPosition == CardPosition.FaceDown)
                 {
-                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(default, playMatZone.name, data.CardId, false);
                     return;
                 }
             }
 
-            switch (playCardEvent.CardPosition)
+            switch (data.CardPosition)
             {
                 case CardPosition.FaceUp:
-                    HandlePlayCardModelEvents(ModelEvent.SpellTrapActivate, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(ModelEvent.SpellTrapActivate, playMatZone.name, data.CardId, false);
                     break;
                 case CardPosition.FaceDown:
-                    HandlePlayCardModelEvents(ModelEvent.ReturnToFaceDown, zone.name, playCardEvent.CardId, false);
+                    HandlePlayCardModelEvents(ModelEvent.ReturnToFaceDown, playMatZone.name, data.CardId, false);
                     break;
                 case CardPosition.FaceUpDefence:
-                    HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, zone.name, playCardEvent.CardId, true);
+                    HandlePlayCardModelEvents(ModelEvent.RevealSetMonster, playMatZone.name, data.CardId, true);
                     break;
                 case CardPosition.FaceDownDefence:
-                    HandlePlayCardModelEvents(default, zone.name, playCardEvent.CardId, true);
+                    HandlePlayCardModelEvents(default, playMatZone.name, data.CardId, true);
                     break;
             }
         }
@@ -162,12 +288,12 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #region Card model
 
-        private void PlayCardModel(PlayCardEvent playCardEvent, Transform zone, GameObject cardModel)
+        /*private void PlayCardModel(CardEventData data, Transform zone, GameObject cardModel)
         {
             var instantiatedModel = GetInstantiatedModel(cardModel, zone);
             var hasSetCard = InstantiatedModels.TryGetValue($"{zone.name}:{SetCardKey}", out var setCardModel);
 
-            switch (playCardEvent.CardPosition)
+            switch (data.CardPosition)
             {
                 case CardPosition.FaceUp:
                     HandleFaceUpPosition(instantiatedModel, zone, hasSetCard, setCardModel);
@@ -262,13 +388,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
             InstantiatedModels.Add($"{zone.name}:{SetCardKey}", setCard);
             _modelEventHandler.RaiseChangeVisibilityEvent(zone.name, true);
-        }
+        }*/
 
         #endregion
 
-        private void HandlePlayCardModelEvents(ModelEvent modelEvent, string zone, string cardId, bool isMonster)
+        private void HandlePlayCardModelEvents(ModelEvent modelEvent, string zone, int cardId, bool isMonster)
         {
-            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId, isMonster);
+            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId.ToString(), isMonster);
 
             switch (modelEvent)
             {
@@ -284,46 +410,79 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             }
         }
 
-        #endregion
+        #region Remove card event
 
-        #region RemoveCardEvent
-
-        private void OnRemoveCardEventReceived(RemoveCardEvent removeCardEvent)
+        /*private void HandleRemoveCardEvent(CardEventData data)
         {
-            var modelExists = InstantiatedModels.TryGetValue(removeCardEvent.ZoneName, out var model);
+            Debug.Log($"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+
+            var modelExists = InstantiatedModels.TryGetValue(data.ZoneType, out var model);
             if (!modelExists)
             {
-                RemoveSetCard(removeCardEvent);
+                RemoveSetCard(data);
                 return;
             }
 
             var destructionParticles = GetGameObject(ParticlesKey, model.transform.position, model.transform.rotation);
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, removeCardEvent.ZoneName);
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, data.ZoneType);
 
             StartCoroutine(RecycleGameObject(ParticlesKey, destructionParticles));
             StartCoroutine(RecycleGameObject(model.name, model));
 
-            InstantiatedModels.Remove(removeCardEvent.ZoneName);
+            InstantiatedModels.Remove(data.ZoneType);
 
-            if (InstantiatedModels.ContainsKey($"{removeCardEvent.ZoneName}:{SetCardKey}"))
+            if (InstantiatedModels.ContainsKey($"{data.ZoneType}:{SetCardKey}"))
             {
-                _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, removeCardEvent.ZoneName);
-                RemoveSetCard(removeCardEvent);
+                _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, data.ZoneType);
+                RemoveSetCard(data);
             }
         }
 
-        private void RemoveSetCard(RemoveCardEvent removeCardEvent)
+        private void RemoveSetCard(CardEventData data)
         {
-            var isCardSet = InstantiatedModels.TryGetValue($"{removeCardEvent.ZoneName}:{SetCardKey}", out var setCard);
+            var isCardSet = InstantiatedModels.TryGetValue($"{data.ZoneType}:{SetCardKey}", out var setCard);
             if (!isCardSet)
             {
                 return;
             }
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, removeCardEvent.ZoneName);
-            InstantiatedModels.Remove($"{removeCardEvent.ZoneName}:{SetCardKey}");
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, data.ZoneType);
+            InstantiatedModels.Remove($"{data.ZoneType}:{SetCardKey}");
             StartCoroutine(RecycleGameObject(SetCardKey, setCard));
+        }*/
+
+        #endregion
+
+        #endregion
+
+        #region Handle room events
+
+        private void HandleRoomEvent(SmartDuelEvent e)
+        {
+            if (!(e.Data is RoomEventData data))
+            {
+                return;
+            }
+
+            switch (e.Action)
+            {
+                case SmartDuelEventConstants.RoomCloseAction:
+                    HandleCloseRoomEvent(data);
+                    break;
+            }
+        }
+
+        private void HandleCloseRoomEvent(RoomEventData data)
+        {
+            var winnerId = data.WinnerId;
+            if (winnerId == null)
+            {
+                return;
+            }
+
+            var winnerMessage = $"{winnerId} won the duel!";
+            _dialogService.ShowToast(winnerMessage);
         }
 
         #endregion

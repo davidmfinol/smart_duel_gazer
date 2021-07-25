@@ -56,9 +56,11 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject
 
         #region Card model
 
-        public UnityEngine.GameObject GetCardModel(string cardId)
+        public UnityEngine.GameObject GetCardModel(int cardId)
         {
-            var model = GetGameObject(cardId);
+            var modelName = cardId.ToString();
+            
+            var model = GetGameObject(modelName);
             if (model != null)
             {
                 return model;
@@ -69,7 +71,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Storage.Impl.GameObject
                 LoadCardModels();
             }
 
-            return _cardModels.FirstOrDefault(model => model.name == cardId);
+            return _cardModels.FirstOrDefault(cardModel => cardModel.name.Equals(modelName));
         }
 
         private void LoadCardModels()
