@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
         public PlayCard Card { get; private set; }
         public GameObject SetCardModel { get; private set; }
         public GameObject MonsterModel { get; private set; }
-        
+
         public SingleCardZone(ZoneType zoneType) : base(zoneType)
         {
         }
@@ -17,10 +18,15 @@ namespace Code.Features.SpeedDuel.Models.Zones
         {
             return new SingleCardZone(ZoneType)
             {
-                Card = card ?? Card,
-                SetCardModel = setCardModel ? setCardModel : SetCardModel,
-                MonsterModel = monsterModel ? monsterModel : MonsterModel
+                Card = card,
+                SetCardModel = setCardModel,
+                MonsterModel = monsterModel
             };
+        }
+
+        public override IEnumerable<PlayCard> GetCards()
+        {
+            return Card == null ? new List<PlayCard>() : new List<PlayCard> {Card};
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
 
 namespace Code.Features.SpeedDuel.Models.Zones
@@ -10,5 +11,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
         {
             ZoneType = zoneType;
         }
+
+        public abstract IEnumerable<PlayCard> GetCards();
     }
 }
