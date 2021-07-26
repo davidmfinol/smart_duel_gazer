@@ -96,5 +96,21 @@ namespace Code.Features.SpeedDuel.Models
                 DeckZone
             };
         }
+
+        public IEnumerable<PlayCard> GetCards()
+        {
+            return HandZone.GetCards()
+                .Concat(FieldZone.GetCards())
+                .Concat(MainMonsterZone1.GetCards())
+                .Concat(MainMonsterZone2.GetCards())
+                .Concat(MainMonsterZone3.GetCards())
+                .Concat(GraveyardZone.GetCards())
+                .Concat(BanishedZone.GetCards())
+                .Concat(ExtraDeckZone.GetCards())
+                .Concat(SpellTrapZone1.GetCards())
+                .Concat(SpellTrapZone2.GetCards())
+                .Concat(SpellTrapZone3.GetCards())
+                .Concat(DeckZone.GetCards());
+        }
     }
 }

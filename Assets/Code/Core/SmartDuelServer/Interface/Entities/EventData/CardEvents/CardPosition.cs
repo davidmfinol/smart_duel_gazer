@@ -2,9 +2,17 @@ namespace Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents
 {
     public enum CardPosition
     {
-        FaceUp,
-        FaceDown,
-        FaceUpDefence,
-        FaceDownDefence
+        FaceUp = 1,
+        FaceDown = 2,
+        FaceUpDefence = 3,
+        FaceDownDefence = 4
+    }
+
+    public static class CardPositionExtensions
+    {
+        public static bool IsDefence(this CardPosition value)
+        {
+            return value == CardPosition.FaceUpDefence || value == CardPosition.FaceDownDefence;
+        }
     }
 }

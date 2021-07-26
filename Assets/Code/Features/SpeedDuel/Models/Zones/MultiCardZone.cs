@@ -9,6 +9,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
 
         public MultiCardZone(ZoneType zoneType) : base(zoneType)
         {
+            Cards = new List<PlayCard>();
         }
 
         public MultiCardZone CopyWith(IList<PlayCard> cards)
@@ -17,6 +18,11 @@ namespace Code.Features.SpeedDuel.Models.Zones
             {
                 Cards = cards
             };
+        }
+
+        public override IEnumerable<PlayCard> GetCards()
+        {
+            return Cards;
         }
     }
 }

@@ -2,17 +2,17 @@ namespace Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents
 {
     public enum ZoneType
     {
-        Hand,
-        Field,
-        MainMonster1,
-        MainMonster2,
-        MainMonster3,
-        Graveyard,
-        Banished,
-        ExtraDeck,
-        SpellTrap1,
-        SpellTrap2,
-        SpellTrap3,
-        Deck
+        Hand = 1,
+        Field = 2,
+        MainMonster1 = 3,
+        MainMonster2 = 4,
+        MainMonster3 = 5,
+        Graveyard = 6,
+        Banished = 7,
+        ExtraDeck = 8,
+        SpellTrap1 = 9,
+        SpellTrap2 = 10,
+        SpellTrap3 = 11,
+        Deck = 12
     }
 }

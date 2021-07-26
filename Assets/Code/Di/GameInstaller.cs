@@ -32,9 +32,14 @@ using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Partic
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Core.Config.Impl.Providers;
 using Code.Core.DataManager.DuelRoom;
+using Code.Core.DataManager.Impl.GameObject.UseCases;
+using Code.Core.DataManager.Interface.GameObject.UseCases;
 using Code.Core.SmartDuelServer.Impl;
 using Code.Core.SmartDuelServer.Interface;
 using Code.Core.Storage.DuelRoom;
+using Code.Features.SpeedDuel.UseCases;
+using Code.Features.SpeedDuel.UseCases.MoveCard;
+using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using Code.Wrappers.WrapperWebSocket.Impl;
 using Code.Wrappers.WrapperWebSocket.Interface;
 using Dpoch.SocketIO;
@@ -81,6 +86,10 @@ namespace Code.Di
             Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<ModelComponentsManager>>();
 
+            // Use cases
+            Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
+            Container.Bind<IRecycleGameObjectUseCase>().To<RecycleGameObjectUseCase>().AsSingle();
+
             #endregion
 
             #region Features
@@ -91,6 +100,18 @@ namespace Code.Di
                 .FromFactory<PrefabFactory<DestructionParticles>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()
                 .FromFactory<PrefabFactory<SetCard>>();
+
+            // Use cases
+            Container.Bind<ICreatePlayCardUseCase>().To<CreatePlayCardUseCase>().AsSingle();
+            Container.Bind<ICreatePlayerStateUseCase>().To<CreatePlayerStateUseCase>().AsSingle();
+            Container.Bind<IMoveCardInteractor>().To<MoveCardInteractor>().AsSingle();
+            Container.Bind<IMoveCardToNewZoneUseCase>().To<MoveCardToNewZoneUseCase>().AsSingle();
+            Container.Bind<IUpdateCardPositionUseCase>().To<UpdateCardPositionUseCase>().AsSingle();
+            Container.Bind<IPlayCardInteractor>().To<PlayCardInteractor>().AsSingle();
+            Container.Bind<IPlayCardImageUseCase>().To<PlayCardImageUseCase>().AsSingle();
+            Container.Bind<IPlayCardModelUseCase>().To<PlayCardModelUseCase>().AsSingle();
+            Container.Bind<IRemoveCardUseCase>().To<RemoveCardUseCase>().AsSingle();
+            Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
 
             #endregion
 
