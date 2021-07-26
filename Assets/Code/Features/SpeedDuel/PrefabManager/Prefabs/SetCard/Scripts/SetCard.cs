@@ -21,7 +21,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         private ModelEventHandler _modelEventHandler;
 
         private Animator _animator;
-        private string _zone;
+        private int _instanceID;
         private CurrentState _currentState;
 
         #region Constructors
@@ -41,6 +41,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         private void Awake()
         {
             _animator = GetComponent<Animator>();
+            _instanceID = GetInstanceID();
         }
 
         private void OnEnable()
@@ -50,7 +51,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void OnDisable()
         {
-            _zone = null;
             _currentState = CurrentState.FaceDown;
 
             UnsubscribeFromEvents();
@@ -92,9 +92,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         #endregion
 
-        private async void OnSummonEvent(string zone, string modelName, bool isMonster)
+        private async void OnSummonEvent(int instanceID, string modelName, bool isMonster)
         {
-            if (transform.gameObject.activeSelf == false)
+            if (_instanceID != instanceID || transform.gameObject.activeSelf == false)
             {
                 return;
             }
@@ -104,7 +104,6 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
                 SetMonster();
             }
 
-            _zone = zone;
             _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
             
             await GetAndDisplayCardImage(modelName);
@@ -138,9 +137,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         #region Spell/Trap Events
 
-        private void OnSpellTrapActivate(string zone)
+        private void OnSpellTrapActivate(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -149,9 +148,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             _currentState = CurrentState.SpellActivated;
         }
 
-        private void OnReturnToFaceDown(string zone)
+        private void OnReturnToFaceDown(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -160,9 +159,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             _currentState = CurrentState.FaceDown;
         }
 
-        private void OnSpellTrapRemove(string zone)
+        private void OnSpellTrapRemove(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -179,33 +178,31 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
         
-        private void SetMonsterEvent(string zone)
+        private void SetMonsterEvent(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
-
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
             _currentState = CurrentState.SetMonsterRevealed;
         }
 
-        private void HideSetCardImage(string zone, bool state)
+        private void HideSetCardImage(int instanceID, bool state)
         {
-            if (_zone == zone && state == false)
+            if (_instanceID == instanceID && state == false)
             {
                 _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
                 _currentState = CurrentState.FaceDown;
             }
         }
 
-        private void DestroySetMonster(string zone)
+        private void DestroySetMonster(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
-
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
         }
 

@@ -15,7 +15,7 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
         private ModelSettings _settings;
-        private string _zone;
+        private int _instanceID;
         private bool _areRenderersEnabled;
 
         #region Constructor
@@ -34,7 +34,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
         {
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-            _settings = GetComponent<ModelSettings>();            
+            _settings = GetComponent<ModelSettings>();
+
+            _instanceID = GetInstanceID();
         }
 
         private void OnEnable()
@@ -44,7 +46,6 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
         private void OnDisable()
         {
-            _zone = null;
             UnsubscribeToEvents();
         }
 
@@ -80,12 +81,14 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
 
         #endregion
 
-        private void ActivateModel(string zone)
+        private void ActivateModel(int instanceID)
         {
-            _zone = zone;
+            if(_instanceID != instanceID)
+            {
+                return;
+            }
+            
             ScaleModel();
-
-            _eventHandler.OnActivateModel -= ActivateModel;
         }
 
         private void ScaleModel()
@@ -93,9 +96,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             transform.parent.transform.localScale = _settings.ModelScale;
         }
 
-        private void SummonMonster(string zone)
+        private void SummonMonster(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -106,9 +109,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
 
-        private void Attack(string monsterID)
+        private void Attack(int instanceID)
         {
-            if (transform.GetInstanceID().ToString() != monsterID)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -121,9 +124,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
         }
 
-        private void RevealSetMonster(string zone)
+        private void RevealSetMonster(int instanceID)
         {
-            if (_zone != zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -131,9 +134,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _animator.SetBool(AnimatorParameters.DefenceBool, true);
         }
 
-        private void SetMonsterVisibility(string zone, bool state)
+        private void SetMonsterVisibility(int instanceID, bool state)
         {
-            if (zone != _zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }
@@ -142,9 +145,9 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager
             _areRenderersEnabled = state;
         }
 
-        private void DestroyMonster(string zone)
+        private void DestroyMonster(int instanceID)
         {
-            if (zone != _zone)
+            if (_instanceID != instanceID)
             {
                 return;
             }

@@ -86,7 +86,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             instantiatedModel.transform.SetParent(speedDuelField.transform);
             instantiatedModel.transform.SetPositionAndRotation(playMatZone.position, playMatZone.rotation);
-            _modelEventHandler.ActivateModel(updatedCard.ZoneType.ToString());
+            var model = instantiatedModel.transform.GetChild(0);
+            _modelEventHandler.ActivateModel(model.GetInstanceID());
 
             return instantiatedModel;
         }
@@ -98,12 +99,13 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             // so null is returned regardless of the current set card.
             newSetCardModel = null;
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SummonMonster, updatedCard.ZoneType.ToString());
+            var model = instantiatedMonsterModel.transform.GetChild(0);
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.SummonMonster, model.GetInstanceID());
             instantiatedMonsterModel.transform.position = playMatZone.position;
 
             if (!currentSetCardModel) return;
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, updatedCard.ZoneType.ToString());
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, currentSetCardModel.GetInstanceID());
             currentSetCardModel.SetActive(false);
             _dataManager.SaveGameObject(SetCardKey, currentSetCardModel);
         }
@@ -120,18 +122,20 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             // TODO: ask Subtle why/if the order here matters
             if (!currentSetCardModel)
             {
-                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, true);
+                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, setCard.GetInstanceID(), true);
 
                 // This puts the model on top of the set card rather than clipping through it.
                 instantiatedMonsterModel.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
 
-                _modelEventHandler.RaiseChangeVisibilityEvent(updatedCard.ZoneType.ToString(), true);
+                var model = instantiatedMonsterModel.transform.GetChild(0);
+                _modelEventHandler.RaiseChangeVisibilityEvent(model.GetInstanceID(), true);
             }
             else
             {
-                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, true);
+                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, setCard.GetInstanceID(), true);
 
-                _modelEventHandler.RaiseChangeVisibilityEvent(updatedCard.ZoneType.ToString(), true);
+                var model = instantiatedMonsterModel.transform.GetChild(0);
+                _modelEventHandler.RaiseChangeVisibilityEvent(model.GetInstanceID(), true);
 
                 // This puts the model on top of the set card rather than clipping through it.
                 instantiatedMonsterModel.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
@@ -155,10 +159,10 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
                     return;
                 }
 
-                _handlePlayCardModelEventsUseCase.Execute(default, updatedCard, true);
+                _handlePlayCardModelEventsUseCase.Execute(default, updatedCard, setCard.GetInstanceID(), true);
             }
 
-            _modelEventHandler.RaiseChangeVisibilityEvent(updatedCard.ZoneType.ToString(), false);
+            _modelEventHandler.RaiseChangeVisibilityEvent(setCard.GetInstanceID(), false);
         }
     }
 }

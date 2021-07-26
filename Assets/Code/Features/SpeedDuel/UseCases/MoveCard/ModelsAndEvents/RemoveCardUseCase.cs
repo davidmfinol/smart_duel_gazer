@@ -42,7 +42,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             }
             else if (setCardModel)
             {
-                RemoveSetCard(oldCard, setCardModel);
+                RemoveSetCard(setCardModel);
             }
 
             // This clears the zone, apart from the zone type.
@@ -54,20 +54,22 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             var destructionParticles = _getTransformedGameObjectUseCase.Execute(ParticlesKey, monsterModel.transform.position,
                 monsterModel.transform.rotation);
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, oldCard.ZoneType.ToString());
+            //instanceID is held by the child, the parent only acts as a container for the model
+            var model = monsterModel.transform.GetChild(0);
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, model.GetInstanceID());
 
             _recycleGameObjectUseCase.Execute(ParticlesKey, destructionParticles);
             _recycleGameObjectUseCase.Execute(oldCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, oldCard.ZoneType.ToString());
-            RemoveSetCard(oldCard, setCardModel);
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, setCardModel.GetInstanceID());
+            RemoveSetCard(setCardModel);
         }
 
-        private void RemoveSetCard(PlayCard oldCard, GameObject setCardModel)
+        private void RemoveSetCard(GameObject setCardModel)
         {
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, oldCard.ZoneType.ToString());
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, setCardModel.GetInstanceID());
             _recycleGameObjectUseCase.Execute(SetCardKey, setCardModel);
         }
     }

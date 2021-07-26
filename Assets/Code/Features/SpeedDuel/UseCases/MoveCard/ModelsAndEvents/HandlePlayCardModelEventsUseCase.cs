@@ -6,7 +6,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
     public interface IHandlePlayCardModelEventsUseCase
     {
-        void Execute(ModelEvent modelEvent, PlayCard updatedCard, bool isMonster);
+        void Execute(ModelEvent modelEvent, PlayCard updatedCard, int instanceID, bool isMonster);
     }
 
     public class HandlePlayCardModelEventsUseCase : IHandlePlayCardModelEventsUseCase
@@ -19,13 +19,13 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             _modelEventHandler = modelEventHandler;
         }
         
-        public void Execute(ModelEvent modelEvent, PlayCard updatedCard, bool isMonster)
+        public void Execute(ModelEvent modelEvent, PlayCard updatedCard, int instanceID, bool isMonster)
         {
             var cardId = updatedCard.Id.ToString();
             var zone = updatedCard.ZoneType.ToString();
 
-            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId, isMonster);
-            _modelEventHandler.RaiseEventByEventName(modelEvent, zone);
+            _modelEventHandler.RaiseSummonSetCardEvent(instanceID, cardId, isMonster);
+            _modelEventHandler.RaiseEventByEventName(modelEvent, instanceID);
         }
     }
 }

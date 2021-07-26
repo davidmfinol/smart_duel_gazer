@@ -12,20 +12,20 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
         private event Action _OnPickUpPlayfield;
         private event Action _OnDestroyPlayfield;
         
-        private event Action<string> _OnActivateModel;
-        private event Action<string> _OnSummonMonster;
-        private event Action<string> _OnDestroyMonster;
-        private event Action<string> _OnAttack;
+        private event Action<int> _OnActivateModel;
+        private event Action<int> _OnSummonMonster;
+        private event Action<int> _OnDestroyMonster;
+        private event Action<int> _OnAttack;
 
-        private event Action<string> _OnRevealSetMonster;
-        private event Action<string> _OnDestroySetMonster;
+        private event Action<int> _OnRevealSetMonster;
+        private event Action<int> _OnDestroySetMonster;
 
-        private event Action<string> _OnSpellTrapActivate;
-        private event Action<string> _OnReturnToFaceDown;
-        private event Action<string> _OnSetCardRemove;
+        private event Action<int> _OnSpellTrapActivate;
+        private event Action<int> _OnReturnToFaceDown;
+        private event Action<int> _OnSetCardRemove;
 
-        private event Action<string, bool> _OnChangeMonsterVisibility;
-        private event Action<string, string, bool> _OnSummonSetCard;
+        private event Action<int, bool> _OnChangeMonsterVisibility;
+        private event Action<int, string, bool> _OnSummonSetCard;
         private event Action<SkinnedMeshRenderer[]> _OnMonsterRemoval;
 
         #region Event Accessors
@@ -45,57 +45,57 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
             add => _OnDestroyPlayfield += value;
             remove => _OnDestroyPlayfield -= value;
         }
-        public event Action<string> OnActivateModel
+        public event Action<int> OnActivateModel
         {
             add => _OnActivateModel += value;
             remove => _OnActivateModel -= value;
         }
-        public event Action<string> OnSummonMonster 
+        public event Action<int> OnSummonMonster 
         { 
             add => _OnSummonMonster += value;
             remove => _OnSummonMonster -= value;
         }
-        public event Action<string> OnDestroyMonster 
+        public event Action<int> OnDestroyMonster 
         { 
             add => _OnDestroyMonster += value;
             remove => _OnDestroyMonster -= value;
         }
-        public event Action<string> OnAttack
+        public event Action<int> OnAttack
         {
             add => _OnAttack += value;
             remove => _OnAttack -= value;
         }
-        public event Action<string> OnRevealSetMonster
+        public event Action<int> OnRevealSetMonster
         {
             add => _OnRevealSetMonster += value;
             remove => _OnRevealSetMonster -= value;
         }
-        public event Action<string> OnDestroySetMonster
+        public event Action<int> OnDestroySetMonster
         {
             add => _OnDestroySetMonster += value;
             remove => _OnDestroySetMonster -= value;
         }
-        public event Action<string> OnSpellTrapActivate
+        public event Action<int> OnSpellTrapActivate
         {
             add => _OnSpellTrapActivate += value;
             remove => _OnSpellTrapActivate -= value;
         }
-        public event Action<string> OnReturnToFaceDown
+        public event Action<int> OnReturnToFaceDown
         {
             add => _OnReturnToFaceDown += value;
             remove => _OnReturnToFaceDown -= value;
         }
-        public event Action<string> OnSetCardRemove
+        public event Action<int> OnSetCardRemove
         {
             add => _OnSetCardRemove += value;
             remove => _OnSetCardRemove -= value;
         }
-        public event Action<string, bool> OnChangeMonsterVisibility 
+        public event Action<int, bool> OnChangeMonsterVisibility 
         {
             add => _OnChangeMonsterVisibility += value;
             remove => _OnChangeMonsterVisibility -= value;
         }
-        public event Action<string, string, bool> OnSummonSetCard
+        public event Action<int, string, bool> OnSummonSetCard
         {
             add => _OnSummonSetCard += value;
             remove => _OnSummonSetCard -= value;
@@ -129,50 +129,50 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler
 
         #region Model Events
 
-        public void ActivateModel(string zone)
+        public void ActivateModel(int instanceID)
         {
-            _OnActivateModel?.Invoke(zone);
+            _OnActivateModel?.Invoke(instanceID);
         }
         
-        public void RaiseEventByEventName(ModelEvent eventName, string zoneOrMonsterID)
+        public void RaiseEventByEventName(ModelEvent eventName, int instanceID)
         {
             switch (eventName)
             {
                 case ModelEvent.SummonMonster:
-                    _OnSummonMonster?.Invoke(zoneOrMonsterID);
+                    _OnSummonMonster?.Invoke(instanceID);
                     break;
                 case ModelEvent.DestroyMonster:
-                    _OnDestroyMonster?.Invoke(zoneOrMonsterID);
+                    _OnDestroyMonster?.Invoke(instanceID);
                     break;
                 case ModelEvent.RevealSetMonster:
-                    _OnRevealSetMonster?.Invoke(zoneOrMonsterID);
+                    _OnRevealSetMonster?.Invoke(instanceID);
                     break;
                 case ModelEvent.DestroySetMonster:
-                    _OnDestroySetMonster?.Invoke(zoneOrMonsterID);
+                    _OnDestroySetMonster?.Invoke(instanceID);
                     break;
                 case ModelEvent.SpellTrapActivate:
-                    _OnSpellTrapActivate?.Invoke(zoneOrMonsterID);
+                    _OnSpellTrapActivate?.Invoke(instanceID);
                     break;
                 case ModelEvent.SetCardRemove:
-                    _OnSetCardRemove?.Invoke(zoneOrMonsterID);
+                    _OnSetCardRemove?.Invoke(instanceID);
                     break;
                 case ModelEvent.ReturnToFaceDown:
-                    _OnReturnToFaceDown?.Invoke(zoneOrMonsterID);
+                    _OnReturnToFaceDown?.Invoke(instanceID);
                     break;
                 case ModelEvent.Attack:
-                    _OnAttack?.Invoke(zoneOrMonsterID);
+                    _OnAttack?.Invoke(instanceID);
                     break;
             }
         }
 
-        public void RaiseSummonSetCardEvent(string zoneOrMonsterID, string modelName, bool isMonster)
+        public void RaiseSummonSetCardEvent(int instanceID, string modelName, bool isMonster)
         {
-            _OnSummonSetCard?.Invoke(zoneOrMonsterID, modelName, isMonster);
+            _OnSummonSetCard?.Invoke(instanceID, modelName, isMonster);
         }
         
-        public void RaiseChangeVisibilityEvent(string zoneOrMonsterID, bool state)
+        public void RaiseChangeVisibilityEvent(int instanceID, bool state)
         {
-            _OnChangeMonsterVisibility?.Invoke(zoneOrMonsterID, state);
+            _OnChangeMonsterVisibility?.Invoke(instanceID, state);
         }
 
         public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers)

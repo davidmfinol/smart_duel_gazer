@@ -8,10 +8,10 @@ namespace AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler
         public void ActivatePlayfield(GameObject playfield);
         public void PickupPlayfield();
         public void DestroyPlayfield();
-        public void ActivateModel(string zone);
-        public void RaiseEventByEventName(ModelEvent eventNames, string zone);
-        public void RaiseChangeVisibilityEvent(string zone, bool state);
+        public void ActivateModel(int instanceID);
+        public void RaiseEventByEventName(ModelEvent eventNames, int instanceID);
+        public void RaiseChangeVisibilityEvent(int instanceID, bool state);
         public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
-        public void RaiseSummonSetCardEvent(string zone, string modelName, bool isMonster);
+        public void RaiseSummonSetCardEvent(int instanceID, string modelName, bool isMonster);
     }
 }

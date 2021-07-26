@@ -60,8 +60,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                     return;
                 }
 
-                var objectID = hit.transform.GetInstanceID().ToString();
-                _modelEventHandler.RaiseEventByEventName(ModelEvent.Attack, objectID);
+                var instanceID = hit.transform.GetInstanceID();
+                _modelEventHandler.RaiseEventByEventName(ModelEvent.Attack, instanceID);
             }
 
 #endif
@@ -81,8 +81,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
                 return;
             }
 
-            var objectID = hit.transform.GetInstanceID().ToString();
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.Attack, objectID);
+            var instanceID = hit.transform.GetInstanceID();
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.Attack, instanceID);
         }
     }
 }
