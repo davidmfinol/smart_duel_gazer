@@ -1,4 +1,5 @@
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using UnityEngine;
@@ -12,9 +13,6 @@ namespace Code.Features.SpeedDuel.PrefabManager
     /// </summary>
     public class SpeedDuelPrefabManager : MonoBehaviour
     {
-        private const string ParticlesKey = "Particles";
-        private const string SetCardKey = "SetCard";
-
         private const int AmountToInstantiate = 16;
 
         [SerializeField] private GameObject _particles;
@@ -43,12 +41,11 @@ namespace Code.Features.SpeedDuel.PrefabManager
 
         private void Awake()
         {
-            InstantiatePrefabs(SetCardKey, AmountToInstantiate);
-            InstantiatePrefabs(ParticlesKey, AmountToInstantiate);
+            InstantiatePrefabs(GameObjectKeys.SetCardKey, AmountToInstantiate);
+            InstantiatePrefabs(GameObjectKeys.ParticlesKey, AmountToInstantiate);
 
             // TODO: pre-instantiate models from deck:
-            // Recommend sending over deck information (ie. which/how many models) in order to have them ready
-            // when the duel starts. This would be for multiplayer, it's not really needed currently.
+            // DeckLists of duelists are available when a duel starts via a DuelRoom object
         }
 
         #endregion
@@ -57,11 +54,13 @@ namespace Code.Features.SpeedDuel.PrefabManager
         {
             for (var i = 0; i < amount; i++)
             {
-                var gameObject = CreateGameObject(key);
-                gameObject.transform.SetParent(transform);
-                _dataManager.SaveGameObject(key, gameObject);
+                var go = CreateGameObject(key);
+                if (go == null) continue;
 
-                gameObject.SetActive(false);
+                go.transform.SetParent(transform);
+                go.SetActive(false);
+
+                _dataManager.SaveGameObject(key, go);
             }
         }
 
@@ -69,8 +68,8 @@ namespace Code.Features.SpeedDuel.PrefabManager
         {
             return key switch
             {
-                SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
-                ParticlesKey => _particleFactory.Create(_particles).transform.gameObject,
+                GameObjectKeys.SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
+                GameObjectKeys.ParticlesKey => _particleFactory.Create(_particles).transform.gameObject,
                 _ => null,
             };
         }

@@ -1,3 +1,4 @@
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.Models.ModelEventsHandler.Entities;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
@@ -14,8 +15,6 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
     public class PlayCardImageUseCase : IPlayCardImageUseCase
     {
-        private const string SetCardKey = "SetCard";
-
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
 
@@ -31,7 +30,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCardModel = zone.SetCardModel
                 ? zone.SetCardModel
-                : _getTransformedGameObjectUseCase.Execute(SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
             var modelEvent = GetModelEvent(zone, updatedCard);
             var isMonster = updatedCard.CardPosition.IsDefence();

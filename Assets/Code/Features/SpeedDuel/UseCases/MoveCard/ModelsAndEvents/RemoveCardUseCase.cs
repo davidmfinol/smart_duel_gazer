@@ -1,3 +1,4 @@
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.Models.ModelEventsHandler;
 using Code.Core.Models.ModelEventsHandler.Entities;
@@ -14,9 +15,6 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
     public class RemoveCardUseCase : IRemoveCardUseCase
     {
-        private const string SetCardKey = "SetCard";
-        private const string ParticlesKey = "Particles";
-
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IRecycleGameObjectUseCase _recycleGameObjectUseCase;
         private readonly ModelEventHandler _modelEventHandler;
@@ -51,12 +49,12 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         private void RemoveMonsterModel(PlayCard oldCard, GameObject monsterModel, GameObject setCardModel)
         {
-            var destructionParticles = _getTransformedGameObjectUseCase.Execute(ParticlesKey, monsterModel.transform.position,
-                monsterModel.transform.rotation);
+            var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey,
+                monsterModel.transform.position, monsterModel.transform.rotation);
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, oldCard.ZoneType.ToString());
 
-            _recycleGameObjectUseCase.Execute(ParticlesKey, destructionParticles);
+            _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
             _recycleGameObjectUseCase.Execute(oldCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;
@@ -68,7 +66,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private void RemoveSetCard(PlayCard oldCard, GameObject setCardModel)
         {
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, oldCard.ZoneType.ToString());
-            _recycleGameObjectUseCase.Execute(SetCardKey, setCardModel);
+            _recycleGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, setCardModel);
         }
     }
 }

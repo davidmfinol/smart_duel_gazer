@@ -1,4 +1,5 @@
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.General.Extensions;
 using Code.Core.Logger;
@@ -21,7 +22,6 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
     public class PlayCardModelUseCase : IPlayCardModelUseCase
     {
         private const string Tag = "PlayCardModelUseCase";
-        private const string SetCardKey = "SetCard";
 
         private readonly IDataManager _dataManager;
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
@@ -110,7 +110,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, updatedCard.ZoneType.ToString());
             currentSetCardModel.SetActive(false);
-            _dataManager.SaveGameObject(SetCardKey, currentSetCardModel);
+            _dataManager.SaveGameObject(GameObjectKeys.SetCardKey, currentSetCardModel);
         }
 
         private void HandleFaceUpDefencePosition(PlayCard updatedCard, GameObject instantiatedMonsterModel, Transform playMatZone,
@@ -118,7 +118,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
             newSetCardModel = setCard;
 
@@ -148,7 +148,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
             newSetCardModel = setCard;
 
