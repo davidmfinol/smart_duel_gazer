@@ -20,11 +20,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
     public class SmartDuelEventHandler : MonoBehaviour
     {
         private const string Tag = "SmartDuelEventHandler";
-        
+        private const int TokenId = 73915052;
+
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
+        private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
         private IAppLogger _logger;
 
@@ -42,6 +44,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IScreenService screenService,
             IDialogService dialogService,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
+            ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
             IAppLogger logger)
         {
@@ -49,6 +52,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _dataManager = dataManager;
             _dialogService = dialogService;
             _createPlayerStateUseCase = createPlayerStateUseCase;
+            _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
             _logger = logger;
 
@@ -145,9 +149,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
                     HandlePlayCardEvent(data);
                     break;
 
-                /*case SmartDuelEventConstants.CardRemoveAction:
+                case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(data);
-                    return;*/
+                    return;
             }
         }
 
@@ -155,18 +159,37 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _logger.Log(Tag, $"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
 
+            if (data.CardPosition == null)
+            {
+                return;
+            }
+
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()
                 .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
 
             if (playCard == null)
             {
-                // TODO: handle token
+                var tokenCount = playerState.GetCards().Count(card => card.Id == TokenId);
+                playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount);
             }
 
             var newZone = playerState.GetZones().FirstOrDefault(zone => zone.ZoneType == data.ZoneType);
             var updatedPlayerState =
-                _moveCardInteractor.Execute(playerState, playCard, data.CardPosition, newZone, _speedDuelField);
+                _moveCardInteractor.Execute(playerState, playCard, data.CardPosition.Value, newZone, _speedDuelField);
+            UpdateSpeedDuelState(playerState, updatedPlayerState);
+        }
+
+        private void HandleRemoveCardEvent(CardEventData data)
+        {
+            _logger.Log(Tag, $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            
+            var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
+            var playCard = playerState.GetCards()
+                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            
+            var updatedPlayerState =
+                _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
             UpdateSpeedDuelState(playerState, updatedPlayerState);
         }
 

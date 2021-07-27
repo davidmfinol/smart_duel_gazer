@@ -98,10 +98,11 @@ namespace Code.Di
             Container.Bind<IMoveCardInteractor>().To<MoveCardInteractor>().AsSingle();
             Container.Bind<IMoveCardToNewZoneUseCase>().To<MoveCardToNewZoneUseCase>().AsSingle();
             Container.Bind<IUpdateCardPositionUseCase>().To<UpdateCardPositionUseCase>().AsSingle();
+            Container.Bind<IRemoveCardUseCase>().To<RemoveCardUseCase>().AsSingle();
             Container.Bind<IPlayCardInteractor>().To<PlayCardInteractor>().AsSingle();
             Container.Bind<IPlayCardImageUseCase>().To<PlayCardImageUseCase>().AsSingle();
             Container.Bind<IPlayCardModelUseCase>().To<PlayCardModelUseCase>().AsSingle();
-            Container.Bind<IRemoveCardUseCase>().To<RemoveCardUseCase>().AsSingle();
+            Container.Bind<IRemoveCardModelUseCase>().To<RemoveCardModelUseCase>().AsSingle();
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
 
             #endregion

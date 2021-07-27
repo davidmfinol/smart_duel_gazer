@@ -17,14 +17,14 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard
     public class MoveCardToNewZoneUseCase : IMoveCardToNewZoneUseCase
     {
         private readonly IPlayCardInteractor _playCardInteractor;
-        private readonly IRemoveCardUseCase _removeCardUseCase;
+        private readonly IRemoveCardModelUseCase _removeCardModelUseCase;
 
         public MoveCardToNewZoneUseCase(
             IPlayCardInteractor playCardInteractor,
-            IRemoveCardUseCase removeCardUseCase)
+            IRemoveCardModelUseCase removeCardModelUseCase)
         {
             _playCardInteractor = playCardInteractor;
-            _removeCardUseCase = removeCardUseCase;
+            _removeCardModelUseCase = removeCardModelUseCase;
         }
 
         public IEnumerable<Zone> Execute(PlayerState playerState, PlayCard oldCard, CardPosition position,
@@ -63,7 +63,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard
 
         private Zone RemoveCardFromSingleCardZone(SingleCardZone zone, PlayCard oldCard)
         {
-            return _removeCardUseCase.Execute(zone, oldCard);
+            return _removeCardModelUseCase.Execute(zone, oldCard);
         }
 
         private Zone AddCardToZone(Zone zone, PlayCard updatedCard, GameObject speedDuelField, PlayerState playerState)

@@ -11,10 +11,10 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
 
         [JsonProperty("zoneName")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public ZoneType ZoneType { get; set; }
+        public ZoneType? ZoneType { get; set; }
 
         [JsonProperty("cardPosition")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public CardPosition CardPosition { get; set; }
+        public CardPosition? CardPosition { get; set; }
     }
 }

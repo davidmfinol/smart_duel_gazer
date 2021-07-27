@@ -5,7 +5,8 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
         FaceUp = 1,
         FaceDown = 2,
         FaceUpDefence = 3,
-        FaceDownDefence = 4
+        FaceDownDefence = 4,
+        Destroy = 5 // Used for removing tokens
     }
 
     public static class CardPositionExtensions

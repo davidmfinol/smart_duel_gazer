@@ -8,18 +8,18 @@ using UnityEngine;
 
 namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
-    public interface IRemoveCardUseCase
+    public interface IRemoveCardModelUseCase
     {
         Zone Execute(SingleCardZone zone, PlayCard oldCard);
     }
 
-    public class RemoveCardUseCase : IRemoveCardUseCase
+    public class RemoveCardModelUseCase : IRemoveCardModelUseCase
     {
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IRecycleGameObjectUseCase _recycleGameObjectUseCase;
         private readonly ModelEventHandler _modelEventHandler;
 
-        public RemoveCardUseCase(
+        public RemoveCardModelUseCase(
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IRecycleGameObjectUseCase recycleGameObjectUseCase,
             ModelEventHandler modelEventHandler)
