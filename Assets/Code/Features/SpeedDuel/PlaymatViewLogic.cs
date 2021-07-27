@@ -1,21 +1,17 @@
-using Zenject;
+using Code.Core.Models.ModelEventsHandler;
+using Code.UI_Components.Constants;
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.UIComponents.Constants;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
+namespace Code.Features.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject _menus;
-        [SerializeField]
-        private Slider _scaleSlider;
-        [SerializeField]
-        private Slider _rotationSlider;
-        [SerializeField]
-        private Toggle _toggleView;
+        [SerializeField] private GameObject _menus;
+        [SerializeField] private Slider _scaleSlider;
+        [SerializeField] private Slider _rotationSlider;
+        [SerializeField] private Toggle _toggleView;
 
         private ModelEventHandler _modelEventHandler;
 
@@ -27,7 +23,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         #region Constructor
 
         [Inject]
-        public void Construct(ModelEventHandler modelEventHandler)
+        public void Construct(
+            ModelEventHandler modelEventHandler)
         {
             _modelEventHandler = modelEventHandler;
         }
@@ -78,14 +75,14 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             {
                 _scaleSlider.maxValue = scale;
             }
-            
+
             _scaleSlider.value = scale;
             _rotationSlider.value = rotation;
 
             _scaleSlider.interactable = true;
             _rotationSlider.interactable = true;
         }
-        
+
         public void ScalePlaymat(float scale)
         {
             _playmatShell.transform.localScale = new Vector3(scale, scale, scale);
@@ -107,7 +104,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void ShowSettingsMenu(bool state)
         {
-            foreach (Animator animator in _animators)
+            foreach (var animator in _animators)
             {
                 animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
             }
@@ -115,18 +112,21 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void HidePlaymat(bool state)
         {
-            foreach (MeshRenderer item in _renderers)
+            foreach (var item in _renderers)
             {
                 item.enabled = state;
             }
         }
+        
+        // TODO: @Subtle can these be removed? They're not used.
 
         public void DeletePlaymat()
         {
-            foreach (Animator animator in _animators)
+            foreach (var animator in _animators)
             {
                 animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             }
+
             _playmatAnimator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             _toggleView.isOn = false;
         }

@@ -1,17 +1,13 @@
 using System;
-using System.Collections;
 using System.Linq;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers;
-using Code.Core.SmartDuelServer.Interface;
-using Code.Core.SmartDuelServer.Interface.Entities;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
+using Code.Core.DataManager;
+using Code.Core.Dialog;
+using Code.Core.Logger;
+using Code.Core.Screen;
+using Code.Core.SmartDuelServer;
+using Code.Core.SmartDuelServer.Entities;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
@@ -23,21 +19,18 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public class SmartDuelEventHandler : MonoBehaviour
     {
-        private const float RemoveCardDurationInSeconds = 7;
-
-        private const string SetCardKey = "SetCard";
-        private const string ParticlesKey = "Particles";
+        private const string Tag = "SmartDuelEventHandler";
+        private const int TokenId = 73915052;
 
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
-        private ModelEventHandler _modelEventHandler;
-        private ModelComponentsManager.Factory _modelFactory;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
+        private IAppLogger _logger;
 
-        private Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
+        private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
         private SpeedDuelState _speedDuelState;
         private IDisposable _smartDuelEventSubscription;
         private GameObject _speedDuelField;
@@ -50,20 +43,18 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IDataManager dataManager,
             IScreenService screenService,
             IDialogService dialogService,
-            ModelEventHandler modelEventHandler,
-            ModelComponentsManager.Factory modelFactory,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
             ICreatePlayCardUseCase createPlayCardUseCase,
-            IMoveCardInteractor moveCardInteractor)
+            IMoveCardInteractor moveCardInteractor,
+            IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _dialogService = dialogService;
-            _modelEventHandler = modelEventHandler;
-            _modelFactory = modelFactory;
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
+            _logger = logger;
 
             screenService.UseAutoOrientation();
 
@@ -114,12 +105,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
-            Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
+            _logger.Log(Tag, $"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
 
             FetchSpeedDuelFieldIfNecessary();
             if (_speedDuelField == null)
             {
-                Debug.LogWarning("Speed Duel Field isn't placed yet");
+                _logger.Warning(Tag, "Speed Duel Field isn't placed yet");
                 return;
             }
 
@@ -158,15 +149,20 @@ namespace Code.Features.SpeedDuel.EventHandlers
                     HandlePlayCardEvent(data);
                     break;
 
-                /*case SmartDuelEventConstants.CardRemoveAction:
+                case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(data);
-                    return;*/
+                    return;
             }
         }
 
         private void HandlePlayCardEvent(CardEventData data)
         {
-            Debug.Log($"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            _logger.Log(Tag, $"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+
+            if (data.CardPosition == null)
+            {
+                return;
+            }
 
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()
@@ -174,11 +170,26 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             if (playCard == null)
             {
-                // TODO: handle token
+                var tokenCount = playerState.GetCards().Count(card => card.Id == TokenId);
+                playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount);
             }
 
             var newZone = playerState.GetZones().FirstOrDefault(zone => zone.ZoneType == data.ZoneType);
-            var updatedPlayerState = _moveCardInteractor.Execute(playerState, playCard, data.CardPosition, newZone, _speedDuelField);
+            var updatedPlayerState =
+                _moveCardInteractor.Execute(playerState, playCard, data.CardPosition.Value, newZone, _speedDuelField);
+            UpdateSpeedDuelState(playerState, updatedPlayerState);
+        }
+
+        private void HandleRemoveCardEvent(CardEventData data)
+        {
+            _logger.Log(Tag, $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            
+            var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
+            var playCard = playerState.GetCards()
+                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            
+            var updatedPlayerState =
+                _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
             UpdateSpeedDuelState(playerState, updatedPlayerState);
         }
 
@@ -228,15 +239,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         }
 
         #endregion
-
-        private IEnumerator RecycleGameObject(string key, GameObject model)
-        {
-            yield return new WaitForSeconds(RemoveCardDurationInSeconds);
-
-            model.SetActive(false);
-
-            _dataManager.SaveGameObject(key.RemoveCloneSuffix(), model);
-        }
 
         #endregion
     }

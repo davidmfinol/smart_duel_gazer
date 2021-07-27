@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using UnityEngine;
 
 namespace Code.Features.SpeedDuel.Models.Zones
 {
     public class SingleCardZone : Zone
     {
-        public PlayCard Card { get; private set; }
+        private PlayCard Card { get; set; }
         public GameObject SetCardModel { get; private set; }
         public GameObject MonsterModel { get; private set; }
 
@@ -24,7 +24,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
             };
         }
 
-        public override IEnumerable<PlayCard> GetCards()
+        public virtual IEnumerable<PlayCard> GetCards()
         {
             return Card == null ? new List<PlayCard>() : new List<PlayCard> {Card};
         }

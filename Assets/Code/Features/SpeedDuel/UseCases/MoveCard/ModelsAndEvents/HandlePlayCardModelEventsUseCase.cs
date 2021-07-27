@@ -1,5 +1,5 @@
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
+using Code.Core.Models.ModelEventsHandler;
+using Code.Core.Models.ModelEventsHandler.Entities;
 using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents

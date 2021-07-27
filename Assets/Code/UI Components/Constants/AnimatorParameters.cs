@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
+namespace Code.UI_Components.Constants
 {
     public static class AnimatorParameters
     {

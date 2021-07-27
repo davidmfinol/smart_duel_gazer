@@ -1,4 +1,4 @@
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel.UseCases

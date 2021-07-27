@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AssemblyCSharp.Assets.Code.Core.General.Extensions
+namespace Code.Core.General.Extensions
 {
     public static class GameObjectExtensions
     {

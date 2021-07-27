@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.RoomEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel.UseCases
@@ -10,12 +10,12 @@ namespace Code.Features.SpeedDuel.UseCases
     {
         PlayerState Execute(Duelist duelist, bool isOpponent);
     }
-    
+
     public class CreatePlayerStateUseCase : ICreatePlayerStateUseCase
     {
         private const string UserPlayMatZonesPath = "UserPlayMat/Zones";
         private const string OpponentPlayMatZonesPath = "OpponentPlayMat/Zones";
-        
+
         private readonly ICreatePlayCardUseCase _createPlayCardUseCase;
 
         public CreatePlayerStateUseCase(
@@ -23,7 +23,7 @@ namespace Code.Features.SpeedDuel.UseCases
         {
             _createPlayCardUseCase = createPlayCardUseCase;
         }
-        
+
         public PlayerState Execute(Duelist duelist, bool isOpponent)
         {
             var playCards = new List<PlayCard>();
@@ -34,7 +34,7 @@ namespace Code.Features.SpeedDuel.UseCases
                 const ZoneType zoneType = ZoneType.Deck;
 
                 var playCard = _createPlayCardUseCase.Execute(cardId, copyNumber, zoneType);
-                
+
                 playCards.Add(playCard);
             }
 

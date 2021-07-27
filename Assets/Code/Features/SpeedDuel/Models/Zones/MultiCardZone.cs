@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 
 namespace Code.Features.SpeedDuel.Models.Zones
 {
@@ -20,7 +20,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
             };
         }
 
-        public override IEnumerable<PlayCard> GetCards()
+        public virtual IEnumerable<PlayCard> GetCards()
         {
             return Cards;
         }

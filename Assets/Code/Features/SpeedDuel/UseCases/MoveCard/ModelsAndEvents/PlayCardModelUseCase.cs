@@ -1,10 +1,12 @@
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
-using Code.Core.DataManager.Interface.GameObject.UseCases;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
+using Code.Core.DataManager.GameObjects.UseCases;
+using Code.Core.General.Extensions;
+using Code.Core.Logger;
+using Code.Core.Models.ModelComponentsManager;
+using Code.Core.Models.ModelEventsHandler;
+using Code.Core.Models.ModelEventsHandler.Entities;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;
@@ -19,26 +21,29 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
     public class PlayCardModelUseCase : IPlayCardModelUseCase
     {
-        private const string SetCardKey = "SetCard";
+        private const string Tag = "PlayCardModelUseCase";
 
         private readonly IDataManager _dataManager;
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
         private readonly ModelEventHandler _modelEventHandler;
         private readonly ModelComponentsManager.Factory _modelFactory;
+        private readonly IAppLogger _logger;
 
         public PlayCardModelUseCase(
             IDataManager dataManager,
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IHandlePlayCardModelEventsUseCase handlePlayCardModelEventsUseCase,
             ModelEventHandler modelEventHandler,
-            ModelComponentsManager.Factory modelFactory)
+            ModelComponentsManager.Factory modelFactory,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _handlePlayCardModelEventsUseCase = handlePlayCardModelEventsUseCase;
             _modelEventHandler = modelEventHandler;
             _modelFactory = modelFactory;
+            _logger = logger;
         }
 
         public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
@@ -78,7 +83,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private GameObject InstantiateModel(PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
             GameObject speedDuelField)
         {
-            Debug.Log($"InstantiateModel(monsterModel: {monsterModel}, playMatZone: {playMatZone})");
+            _logger.Log(Tag, $"InstantiateModel(monsterModel: {monsterModel}, playMatZone: {playMatZone})");
 
             var instantiatedModel = monsterModel.IsClone()
                 ? monsterModel
@@ -107,7 +112,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, currentSetCardModel.GetInstanceID());
             currentSetCardModel.SetActive(false);
-            _dataManager.SaveGameObject(SetCardKey, currentSetCardModel);
+            _dataManager.SaveGameObject(GameObjectKeys.SetCardKey, currentSetCardModel);
         }
 
         private void HandleFaceUpDefencePosition(PlayCard updatedCard, GameObject instantiatedMonsterModel, Transform playMatZone,
@@ -115,7 +120,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
             newSetCardModel = setCard;
 
@@ -147,7 +152,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
             newSetCardModel = setCard;
 
@@ -155,7 +160,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             {
                 if (!setCard)
                 {
-                    Debug.LogWarning("The setCard queue is empty :(");
+                    _logger.Warning(Tag, "The setCard queue is empty :(");
                     return;
                 }
 

@@ -1,4 +1,8 @@
-using Zenject;
+using System.Collections.Generic;
+using Code.Core.DataManager;
+using Code.Core.General.Extensions;
+using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.PrefabManager;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -8,19 +12,17 @@ using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
 using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager;
 using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
+namespace Code.Features.SpeedDuel.EventHandlers
 {
     public class PlacementEventHandler : MonoBehaviour
     {
         private const string PlayfieldKey = "Playfield";
 
-        [SerializeField]
-        private GameObject _playfieldPrefab;
-        [SerializeField]
-        private GameObject _placementIndicator;
-        [SerializeField]
-        private Camera _mainCamera;
+        [SerializeField] private GameObject _playfieldPrefab;
+        [SerializeField] private GameObject _placementIndicator;
+        [SerializeField] private Camera _mainCamera;
 
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
@@ -36,7 +38,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         #region Properties
 
-        public GameObject SpeedDuelField { get => _speedDuelField; }
+        public GameObject SpeedDuelField
+        {
+            get => _speedDuelField;
+        }
 
         #endregion
 
@@ -44,7 +49,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         [Inject]
         public void Construct(IDataManager dataManager,
-                              ModelEventHandler modelEventHandler)
+            ModelEventHandler modelEventHandler)
         {
             _dataManager = dataManager;
             _modelEventHandler = modelEventHandler;
@@ -140,6 +145,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
                 _placementIndicator.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
                 return;
             }
+
             _placementIndicator.SetActive(false);
         }
 
@@ -153,7 +159,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 _speedDuelField = Instantiate(_playfieldPrefab, _placementPose.position, _placementPose.rotation);
                 _prefabManager.transform.SetParent(_speedDuelField.transform);
-                _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position, _speedDuelField.transform.rotation);
+                _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
+                    _speedDuelField.transform.rotation);
                 _modelEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
@@ -161,7 +168,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
             {
                 playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
                 _modelEventHandler.ActivatePlayfield(_speedDuelField);
-            }    
+            }
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
@@ -185,15 +192,16 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.EventHandlers
 
         private float GetCameraOrientation(ARPlane plane)
         {
-            var cameraOriantation = _mainCamera.transform.rotation.y;
+            var cameraOrientation = _mainCamera.transform.rotation.y;
 
-            if (cameraOriantation.IsWithinRange(45, 135) ||
-                cameraOriantation.IsWithinRange(225, 315) ||
-                cameraOriantation.IsWithinRange(-45, -135) ||
-                cameraOriantation.IsWithinRange(-225, -315))
+            if (cameraOrientation.IsWithinRange(45, 135) ||
+                cameraOrientation.IsWithinRange(225, 315) ||
+                cameraOrientation.IsWithinRange(-45, -135) ||
+                cameraOrientation.IsWithinRange(-225, -315))
             {
                 return plane.size.y;
             }
+
             return plane.size.x;
         }
 

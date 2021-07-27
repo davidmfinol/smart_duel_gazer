@@ -1,10 +1,10 @@
-using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
+using Code.Core.Navigation;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using UniRx;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.General
+namespace Code.UI_Components.General
 {
     public class ReturnToMainMenu : MonoBehaviour
     {
