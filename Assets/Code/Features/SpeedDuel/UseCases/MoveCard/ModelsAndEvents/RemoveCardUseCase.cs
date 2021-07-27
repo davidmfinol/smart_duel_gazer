@@ -1,6 +1,6 @@
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
-using Code.Core.DataManager.Interface.GameObject.UseCases;
+using Code.Core.DataManager.GameObjects.UseCases;
+using Code.Core.Models.ModelEventsHandler;
+using Code.Core.Models.ModelEventsHandler.Entities;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;

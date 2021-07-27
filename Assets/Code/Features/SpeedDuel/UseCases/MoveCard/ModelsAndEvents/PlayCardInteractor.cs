@@ -1,4 +1,4 @@
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
+using Code.Core.DataManager;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;

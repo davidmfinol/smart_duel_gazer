@@ -1,21 +1,21 @@
-using Zenject;
-using UnityEngine;
 using System.Collections.Generic;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 using System.Threading.Tasks;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using Code.Core.DataManager;
+using Code.Core.General.Extensions;
+using Code.Core.Models.ModelEventsHandler;
+using Code.UI_Components.Constants;
+using UnityEngine;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
+namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 {
     [RequireComponent(typeof(Animator))]
     public class SetCard : MonoBehaviour
     {
-        [SerializeField]
-        private Renderer _image;
-        [SerializeField]
-        private List<Texture> _errorImages = new List<Texture>();
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        
+        [SerializeField] private Renderer _image;
+        [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
@@ -27,8 +27,9 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         #region Constructors
 
         [Inject]
-        public void Construct(IDataManager dataManager,
-                              ModelEventHandler modelEventHandler)
+        public void Construct(
+            IDataManager dataManager,
+            ModelEventHandler modelEventHandler)
         {
             _dataManager = dataManager;
             _modelEventHandler = modelEventHandler;
@@ -69,7 +70,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
             _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
-            
+
 
             _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
             _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
@@ -98,7 +99,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             {
                 return;
             }
-            
+
             if (isMonster)
             {
                 SetMonster();
@@ -106,7 +107,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
             _zone = zone;
             _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
-            
+
             await GetAndDisplayCardImage(modelName);
             _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
         }
@@ -115,7 +116,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void ActivatePlayfield(GameObject playfield)
         {
-            switch (_currentState) 
+            switch (_currentState)
             {
                 case CurrentState.FaceDown:
                     _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
@@ -175,10 +176,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         #region Set Monster Events
 
         private void SetMonster()
-        {           
+        {
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-        
+
         private void SetMonsterEvent(string zone)
         {
             if (_zone != zone)
@@ -224,13 +225,13 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
                 return;
             }
 
-            _image.material.SetTexture("_MainTex", image);
+            _image.material.SetTexture(MainTex, image);
         }
 
         private void SetRandomErrorImage()
         {
             var randomNum = Random.Range(0, _errorImages.Count);
-            _image.material.SetTexture("_MainTex", _errorImages[randomNum]);
+            _image.material.SetTexture(MainTex, _errorImages[randomNum]);
         }
 
         #endregion
@@ -239,7 +240,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         {
         }
 
-        public enum CurrentState
+        private enum CurrentState
         {
             FaceDown,
             SpellActivated,

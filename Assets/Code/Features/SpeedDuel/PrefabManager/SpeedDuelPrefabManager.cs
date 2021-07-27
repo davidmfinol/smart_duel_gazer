@@ -1,10 +1,10 @@
-using Zenject;
+using Code.Core.DataManager;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
+namespace Code.Features.SpeedDuel.PrefabManager
 {
     /// <summary>
     /// Used for pre-instantiating prefabs that can be reused.
@@ -17,10 +17,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
 
         private const int AmountToInstantiate = 16;
 
-        [SerializeField]
-        private GameObject _particles;
-        [SerializeField]
-        private GameObject _setCard;
+        [SerializeField] private GameObject _particles;
+        [SerializeField] private GameObject _setCard;
 
         private IDataManager _dataManager;
         private SetCard.Factory _setCardFactory;
@@ -60,7 +58,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
             for (var i = 0; i < amount; i++)
             {
                 var gameObject = CreateGameObject(key);
-                gameObject.transform.SetParent(transform);                
+                gameObject.transform.SetParent(transform);
                 _dataManager.SaveGameObject(key, gameObject);
 
                 gameObject.SetActive(false);

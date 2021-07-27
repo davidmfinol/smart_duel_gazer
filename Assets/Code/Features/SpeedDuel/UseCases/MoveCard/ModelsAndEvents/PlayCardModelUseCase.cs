@@ -1,10 +1,10 @@
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelComponentsManager;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
-using Code.Core.DataManager.Interface.GameObject.UseCases;
-using Code.Core.SmartDuelServer.Interface.Entities.EventData.CardEvents;
+using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.UseCases;
+using Code.Core.General.Extensions;
+using Code.Core.Models.ModelComponentsManager;
+using Code.Core.Models.ModelEventsHandler;
+using Code.Core.Models.ModelEventsHandler.Entities;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;

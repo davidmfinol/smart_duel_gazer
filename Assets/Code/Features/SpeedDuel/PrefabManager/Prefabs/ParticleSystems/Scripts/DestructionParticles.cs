@@ -1,8 +1,8 @@
-using Zenject;
+using Code.Core.Models.ModelEventsHandler;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
+namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
 {
     public class DestructionParticles : MonoBehaviour
     {
@@ -12,7 +12,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Pa
         #region Constructor
 
         [Inject]
-        public void Construct(ModelEventHandler modelEventHandler)
+        public void Construct(
+            ModelEventHandler modelEventHandler)
         {
             _eventHandler = modelEventHandler;
         }
@@ -40,11 +41,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Pa
             _eventHandler.OnMonsterRemoval -= OnMonsterDestruction;
         }
 
-        private void SetMeshShape(SkinnedMeshRenderer _skinnedMesh)
+        private void SetMeshShape(SkinnedMeshRenderer skinnedMesh)
         {
             var shape = _particleSystem.shape;
             shape.shapeType = ParticleSystemShapeType.SkinnedMeshRenderer;
-            shape.skinnedMeshRenderer = _skinnedMesh;
+            shape.skinnedMeshRenderer = skinnedMesh;
         }
 
         public class Factory : PlaceholderFactory<GameObject, DestructionParticles>
