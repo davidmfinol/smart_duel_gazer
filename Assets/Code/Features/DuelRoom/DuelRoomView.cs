@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
+using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
@@ -21,6 +22,8 @@ namespace Code.Features.DuelRoom
 {
     public class DuelRoomView : MonoBehaviour
     {
+        private const string Tag = "DuelRoomView";
+        
         [SerializeField] private GameObject loadingState;
 
         [SerializeField] private GameObject enterRoomNameState;
@@ -44,6 +47,7 @@ namespace Code.Features.DuelRoom
         private IDialogService _dialogService;
         private ISmartDuelServer _smartDuelServer;
         private IDelayProvider _delayProvider;
+        private IAppLogger _logger;
 
         private IDisposable _smartDuelEventSubscription;
         private DuelRoomState _currentState;
@@ -60,13 +64,15 @@ namespace Code.Features.DuelRoom
             IDialogService dialogService,
             IScreenService screenService,
             ISmartDuelServer smartDuelServer,
-            IDelayProvider delayProvider)
+            IDelayProvider delayProvider,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _navigationService = navigationService;
             _dialogService = dialogService;
             _smartDuelServer = smartDuelServer;
             _delayProvider = delayProvider;
+            _logger = logger;
 
             screenService.UsePortraitOrientation();
             InitSmartDuelEventSubscription();
@@ -99,7 +105,7 @@ namespace Code.Features.DuelRoom
 
         private void UpdateDuelRoomState(DuelRoomState state)
         {
-            Debug.Log($"UpdateDuelRoomState(state: {state})");
+            _logger.Log(Tag, $"UpdateDuelRoomState(state: {state})");
 
             _currentState = state;
 
@@ -228,7 +234,7 @@ namespace Code.Features.DuelRoom
 
         private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
-            Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
+            _logger.Log(Tag, $"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
 
             switch (e.Scope)
             {

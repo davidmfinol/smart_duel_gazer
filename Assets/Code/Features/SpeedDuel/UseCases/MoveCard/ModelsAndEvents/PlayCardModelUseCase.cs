@@ -1,6 +1,7 @@
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.General.Extensions;
+using Code.Core.Logger;
 using Code.Core.Models.ModelComponentsManager;
 using Code.Core.Models.ModelEventsHandler;
 using Code.Core.Models.ModelEventsHandler.Entities;
@@ -19,6 +20,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
     public class PlayCardModelUseCase : IPlayCardModelUseCase
     {
+        private const string Tag = "PlayCardModelUseCase";
         private const string SetCardKey = "SetCard";
 
         private readonly IDataManager _dataManager;
@@ -26,19 +28,22 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
         private readonly ModelEventHandler _modelEventHandler;
         private readonly ModelComponentsManager.Factory _modelFactory;
+        private readonly IAppLogger _logger;
 
         public PlayCardModelUseCase(
             IDataManager dataManager,
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IHandlePlayCardModelEventsUseCase handlePlayCardModelEventsUseCase,
             ModelEventHandler modelEventHandler,
-            ModelComponentsManager.Factory modelFactory)
+            ModelComponentsManager.Factory modelFactory,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _handlePlayCardModelEventsUseCase = handlePlayCardModelEventsUseCase;
             _modelEventHandler = modelEventHandler;
             _modelFactory = modelFactory;
+            _logger = logger;
         }
 
         public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
@@ -78,7 +83,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private GameObject InstantiateModel(PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
             GameObject speedDuelField)
         {
-            Debug.Log($"InstantiateModel(monsterModel: {monsterModel}, playMatZone: {playMatZone})");
+            _logger.Log(Tag, $"InstantiateModel(monsterModel: {monsterModel}, playMatZone: {playMatZone})");
 
             var instantiatedModel = monsterModel.IsClone()
                 ? monsterModel
@@ -151,7 +156,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             {
                 if (!setCard)
                 {
-                    Debug.LogWarning("The setCard queue is empty :(");
+                    _logger.Warning(Tag, "The setCard queue is empty :(");
                     return;
                 }
 

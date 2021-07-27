@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
+using Code.Core.Logger;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
@@ -18,11 +19,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public class SmartDuelEventHandler : MonoBehaviour
     {
+        private const string Tag = "SmartDuelEventHandler";
+        
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private IMoveCardInteractor _moveCardInteractor;
+        private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
         private SpeedDuelState _speedDuelState;
@@ -38,13 +42,15 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IScreenService screenService,
             IDialogService dialogService,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
-            IMoveCardInteractor moveCardInteractor)
+            IMoveCardInteractor moveCardInteractor,
+            IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _dialogService = dialogService;
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _moveCardInteractor = moveCardInteractor;
+            _logger = logger;
 
             screenService.UseAutoOrientation();
 
@@ -95,12 +101,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void OnSmartDuelEventReceived(SmartDuelEvent e)
         {
-            Debug.Log($"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
+            _logger.Log(Tag, $"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
 
             FetchSpeedDuelFieldIfNecessary();
             if (_speedDuelField == null)
             {
-                Debug.LogWarning("Speed Duel Field isn't placed yet");
+                _logger.Warning(Tag, "Speed Duel Field isn't placed yet");
                 return;
             }
 
@@ -147,7 +153,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void HandlePlayCardEvent(CardEventData data)
         {
-            Debug.Log($"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
+            _logger.Log(Tag, $"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
 
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()

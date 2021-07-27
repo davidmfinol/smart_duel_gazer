@@ -6,6 +6,7 @@ using Code.Core.DataManager.GameObjects;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Textures;
 using Code.Core.Dialog;
+using Code.Core.Logger;
 using Code.Core.Models.ModelComponentsManager;
 using Code.Core.Models.ModelEventsHandler;
 using Code.Core.Navigation;
@@ -22,6 +23,7 @@ using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
+using Code.Wrappers.WrapperLogger;
 using Code.Wrappers.WrapperPlayerPrefs;
 using Code.Wrappers.WrapperResources;
 using Code.Wrappers.WrapperWebSocket;
@@ -53,6 +55,10 @@ namespace Code.Di
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
             Container.Bind<IDuelRoomDataManager>().To<DuelRoomDataManager>().AsSingle();
 
+            // Use cases
+            Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
+            Container.Bind<IRecycleGameObjectUseCase>().To<RecycleGameObjectUseCase>().AsSingle();
+
             // API providers
             Container.Bind<IYgoProDeckApiProvider>().To<YgoProDeckApiProvider>().AsSingle();
 
@@ -64,15 +70,16 @@ namespace Code.Di
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
             Container.Bind<IDuelRoomStorageProvider>().To<DuelRoomStorageProvider>().AsSingle();
 
+            // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
+            // Models
             Container.Bind<ModelEventHandler>().AsSingle();
             Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<ModelComponentsManager>>();
 
-            // Use cases
-            Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
-            Container.Bind<IRecycleGameObjectUseCase>().To<RecycleGameObjectUseCase>().AsSingle();
+            // Logger
+            Container.Bind<IAppLogger>().To<AppLogger>().AsSingle();
 
             #endregion
 
@@ -104,6 +111,8 @@ namespace Code.Di
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
+
+            Container.Bind<ILoggerProvider>().To<LoggerProvider>().AsSingle();
 
             #endregion
         }

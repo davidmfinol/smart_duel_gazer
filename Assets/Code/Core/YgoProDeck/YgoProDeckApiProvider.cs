@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Code.Core.Config.Providers;
+using Code.Core.Logger;
 using UnityEngine;
 using UnityEngine.Networking;
 using Zenject;
@@ -13,17 +14,22 @@ namespace Code.Core.YGOProDeck
     
     public class YgoProDeckApiProvider : IYgoProDeckApiProvider
     {
+        private const string Tag = "YgoProDeckApiProvider";
+        private const string ImageBaseUrl = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
+        
         // One second divided by 60 Hertz.
         private const int AsyncOperationStatusCheckDelayInMs = 1000 / 60;
-        private const string ImageBaseUrl = "https://storage.googleapis.com/ygoprodeck.com/pics/{0}.jpg";
 
         private readonly IDelayProvider _delayProvider;
+        private readonly IAppLogger _logger;
 
         [Inject]
         public YgoProDeckApiProvider(
-            IDelayProvider delayProvider)
+            IDelayProvider delayProvider,
+            IAppLogger logger)
         {
             _delayProvider = delayProvider;
+            _logger = logger;
         }
 
         public async Task<Texture> GetCardImage(string cardId)
@@ -39,7 +45,7 @@ namespace Code.Core.YGOProDeck
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.Log($"An error occurred while fetching the card of {cardId}: {request.result}");
+                _logger.Warning(Tag, $"An error occurred while fetching the card of {cardId}: {request.result}");
                 return null;
             }
 

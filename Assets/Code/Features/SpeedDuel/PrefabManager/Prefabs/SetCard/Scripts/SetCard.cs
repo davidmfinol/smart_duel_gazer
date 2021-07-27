@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Code.Core.DataManager;
 using Code.Core.General.Extensions;
+using Code.Core.Logger;
 using Code.Core.Models.ModelEventsHandler;
 using Code.UI_Components.Constants;
 using UnityEngine;
@@ -12,13 +13,16 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
     [RequireComponent(typeof(Animator))]
     public class SetCard : MonoBehaviour
     {
+        private const string Tag = "SetCard";
+
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-        
+
         [SerializeField] private Renderer _image;
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
+        private IAppLogger _logger;
 
         private Animator _animator;
         private string _zone;
@@ -29,10 +33,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [Inject]
         public void Construct(
             IDataManager dataManager,
-            ModelEventHandler modelEventHandler)
+            ModelEventHandler modelEventHandler,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _modelEventHandler = modelEventHandler;
+            _logger = logger;
         }
 
         #endregion
@@ -216,7 +222,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private async Task GetAndDisplayCardImage(string cardId)
         {
-            Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})", this);
+            _logger.Log(Tag, $"GetAndDisplayCardImage(cardId: {cardId})");
 
             var image = await _dataManager.GetCardImage(cardId.RemoveCloneSuffix());
             if (image == null)

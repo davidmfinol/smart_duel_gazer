@@ -1,6 +1,6 @@
-﻿using Code.Core.SmartDuelServer.Entities;
+﻿using Code.Core.Logger;
+using Code.Core.SmartDuelServer.Entities;
 using Dpoch.SocketIO;
-using UnityEngine;
 
 namespace Code.Wrappers.WrapperWebSocket
 {
@@ -10,16 +10,22 @@ namespace Code.Wrappers.WrapperWebSocket
         void EmitEvent(string eventName, string json);
         void Dispose();
     }
-    
+
     public class WebSocketProvider : IWebSocketProvider
     {
+        private const string Tag = "WebSocketProvider";
+
         private readonly SocketIO _socket;
+        private readonly IAppLogger _logger;
 
         private ISmartDuelEventReceiver _receiver;
 
-        public WebSocketProvider(SocketIO socket)
+        public WebSocketProvider(
+            SocketIO socket,
+            IAppLogger logger)
         {
             _socket = socket;
+            _logger = logger;
         }
 
         public void Init(ISmartDuelEventReceiver receiver)
@@ -35,22 +41,22 @@ namespace Code.Wrappers.WrapperWebSocket
 
         public void EmitEvent(string eventName, string json)
         {
-            Debug.Log($"EmitEvent(eventName: {eventName})");
-            
+            _logger.Log(Tag, $"EmitEvent(eventName: {eventName})");
+
             _socket.Emit(eventName, json);
         }
 
         public void Dispose()
         {
-            Debug.Log("Dispose()");
-            
+            _logger.Log(Tag, "Dispose()");
+
             _socket.Close();
         }
 
         private void OnEventReceived(string scope, string action, SocketIOEvent e = null)
         {
-            Debug.Log($"OnEventReceived(scope: {scope}, action: {action})");
-            
+            _logger.Log(Tag, $"OnEventReceived(scope: {scope}, action: {action})");
+
             _receiver?.OnEventReceived(scope, action, e?.Data[0]);
         }
 
@@ -76,7 +82,7 @@ namespace Code.Wrappers.WrapperWebSocket
         private void RegisterCardHandlers()
         {
             const string scope = SmartDuelEventConstants.CardScope;
-            
+
             RegisterHandler(scope, SmartDuelEventConstants.CardPlayAction);
             RegisterHandler(scope, SmartDuelEventConstants.CardRemoveAction);
         }
@@ -85,10 +91,7 @@ namespace Code.Wrappers.WrapperWebSocket
         {
             var eventName = scope == SmartDuelEventConstants.GlobalScope ? action : $"{scope}:{action}";
 
-            _socket.On(eventName, e =>
-            {
-                OnEventReceived(scope, action, e);
-            }); 
+            _socket.On(eventName, e => { OnEventReceived(scope, action, e); });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Code.Core.Logger;
 using Code.Core.SmartDuelServer.Entities;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
@@ -23,7 +24,10 @@ namespace Code.Core.SmartDuelServer
     
     public class SmartDuelServer : ISmartDuelServer, ISmartDuelEventReceiver
     {
+        private const string Tag = "SmartDuelServer";
+        
         private readonly IWebSocketFactory _webSocketFactory;
+        private readonly IAppLogger _logger;
 
         private IWebSocketProvider _socket;
 
@@ -36,9 +40,12 @@ namespace Code.Core.SmartDuelServer
         private ReplaySubject<SmartDuelEvent> _cardEvents = new ReplaySubject<SmartDuelEvent>();
         public IObservable<SmartDuelEvent> CardEvents => _cardEvents;
 
-        public SmartDuelServer(IWebSocketFactory webSocketFactory)
+        public SmartDuelServer(
+            IWebSocketFactory webSocketFactory,
+            IAppLogger logger)
         {
             _webSocketFactory = webSocketFactory;
+            _logger = logger;
         }
 
         public void Init()
@@ -87,7 +94,7 @@ namespace Code.Core.SmartDuelServer
 
         private void HandleGlobalEvent(string action)
         {
-            Debug.Log($"HandleGlobalEvent(action: {action})");
+            _logger.Log(Tag, $"HandleGlobalEvent(action: {action})");
             
             try
             {
@@ -96,13 +103,13 @@ namespace Code.Core.SmartDuelServer
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                _logger.Exception(Tag, "An error occurred while handling a global event", e);
             }
         }
 
         private void HandleRoomEvent(string action, JToken json)
         {
-            Debug.Log($"HandleRoomEvent(action: {action})");
+            _logger.Log(Tag, $"HandleRoomEvent(action: {action})");
             
             try
             {
@@ -112,13 +119,13 @@ namespace Code.Core.SmartDuelServer
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                _logger.Exception(Tag, "An error occurred while handling a room event", e);
             }
         }
 
         private void HandleCardEvent(string action, JToken json)
         {
-            Debug.Log($"HandleCardEvent(action: {action})");
+            _logger.Log(Tag, $"HandleCardEvent(action: {action})");
             
             try
             {
@@ -128,7 +135,7 @@ namespace Code.Core.SmartDuelServer
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                _logger.Exception(Tag, "An error occurred while handling a card event", e);
             }
         }
 
