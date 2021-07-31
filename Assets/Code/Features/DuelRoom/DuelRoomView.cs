@@ -210,7 +210,10 @@ namespace Code.Features.DuelRoom
             _smartDuelServer.EmitEvent(new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomGetDuelistsAction,
-                new RoomEventData(_roomName)));
+                new RoomEventData
+                {
+                    RoomName = _roomName
+                }));
         }
 
         private void SendSpectateRoomEvent()
@@ -218,7 +221,10 @@ namespace Code.Features.DuelRoom
             _smartDuelServer.EmitEvent(new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomSpectateAction,
-                new RoomEventData(_roomName)));
+                new RoomEventData
+                {
+                    RoomName = _roomName
+                }));
         }
 
         private void SendLeaveRoomEvent()
