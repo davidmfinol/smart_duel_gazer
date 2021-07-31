@@ -16,6 +16,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IPlayCardImageUseCase _playCardImageUseCase;
         private readonly IPlayCardModelUseCase _playCardModelUseCase;
 
+        #region Constructor
+
         public PlayCardInteractor(
             IDataManager dataManager,
             IPlayCardImageUseCase playCardImageUseCase,
@@ -25,6 +27,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             _playCardImageUseCase = playCardImageUseCase;
             _playCardModelUseCase = playCardModelUseCase;
         }
+
+        #endregion
 
         public Zone Execute(PlayerState playerState, SingleCardZone zone, PlayCard updatedCard, GameObject speedDuelField)
         {

@@ -3,12 +3,12 @@ using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.General.Extensions;
 using Code.Core.Logger;
-using Code.Core.Models.ModelComponentsManager;
-using Code.Core.Models.ModelEventsHandler;
-using Code.Core.Models.ModelEventsHandler.Entities;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
+using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using UnityEngine;
 
 namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
@@ -27,14 +27,18 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
         private readonly ModelEventHandler _modelEventHandler;
+        private readonly SetCardEventHandler _setCardEventHandler;
         private readonly ModelComponentsManager.Factory _modelFactory;
         private readonly IAppLogger _logger;
+
+        #region Constructor
 
         public PlayCardModelUseCase(
             IDataManager dataManager,
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IHandlePlayCardModelEventsUseCase handlePlayCardModelEventsUseCase,
             ModelEventHandler modelEventHandler,
+            SetCardEventHandler setCardEventHandler,
             ModelComponentsManager.Factory modelFactory,
             IAppLogger logger)
         {
@@ -42,21 +46,24 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _handlePlayCardModelEventsUseCase = handlePlayCardModelEventsUseCase;
             _modelEventHandler = modelEventHandler;
+            _setCardEventHandler = setCardEventHandler;
             _modelFactory = modelFactory;
             _logger = logger;
         }
 
+        #endregion
+
         public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
             GameObject speedDuelField)
         {
-            var instantiatedMonsterModel = GetInstantiatedModel(zone, updatedCard, playMatZone, monsterModel, speedDuelField);
+            var instantiatedMonsterModel = GetInstantiatedModel(zone, playMatZone, monsterModel, speedDuelField);
             var currentSetCardModel = zone.SetCardModel;
 
             GameObject newSetCardModel = null;
             switch (updatedCard.CardPosition)
             {
                 case CardPosition.FaceUp:
-                    HandleFaceUpPosition(updatedCard, instantiatedMonsterModel, playMatZone, currentSetCardModel,
+                    HandleFaceUpPosition(instantiatedMonsterModel, playMatZone, currentSetCardModel,
                         out newSetCardModel);
                     break;
                 case CardPosition.FaceUpDefence:
@@ -64,7 +71,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
                         out newSetCardModel);
                     break;
                 case CardPosition.FaceDownDefence:
-                    HandleFaceDownDefencePosition(updatedCard, playMatZone, currentSetCardModel,
+                    HandleFaceDownDefencePosition(updatedCard, playMatZone, currentSetCardModel, instantiatedMonsterModel,
                         out newSetCardModel);
                     break;
             }
@@ -72,16 +79,15 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             return zone.CopyWith(updatedCard, newSetCardModel, instantiatedMonsterModel);
         }
 
-        private GameObject GetInstantiatedModel(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone,
-            GameObject monsterModel, GameObject speedDuelField)
+        private GameObject GetInstantiatedModel(SingleCardZone zone, Transform playMatZone, GameObject monsterModel, 
+            GameObject speedDuelField)
         {
             return zone.MonsterModel
                 ? zone.MonsterModel
-                : InstantiateModel(updatedCard, playMatZone, monsterModel, speedDuelField);
+                : InstantiateModel(playMatZone, monsterModel, speedDuelField);
         }
 
-        private GameObject InstantiateModel(PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
-            GameObject speedDuelField)
+        private GameObject InstantiateModel(Transform playMatZone, GameObject monsterModel, GameObject speedDuelField)
         {
             _logger.Log(Tag, $"InstantiateModel(monsterModel: {monsterModel}, playMatZone: {playMatZone})");
 
@@ -91,26 +97,27 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             instantiatedModel.transform.SetParent(speedDuelField.transform);
             instantiatedModel.transform.SetPositionAndRotation(playMatZone.position, playMatZone.rotation);
-            var model = instantiatedModel.transform.GetChild(0);
-            _modelEventHandler.ActivateModel(model.GetInstanceID());
+
+            var modelID = instantiatedModel.GetInstanceIDForModel();
+            _modelEventHandler.Activate(modelID);
 
             return instantiatedModel;
         }
 
-        private void HandleFaceUpPosition(PlayCard updatedCard, GameObject instantiatedMonsterModel, Transform playMatZone,
-            GameObject currentSetCardModel, out GameObject newSetCardModel)
+        private void HandleFaceUpPosition(GameObject instantiatedMonsterModel, Transform playMatZone, GameObject currentSetCardModel, 
+            out GameObject newSetCardModel)
         {
             // If the monster is in face up position, there is no need for a set card,
             // so null is returned regardless of the current set card.
             newSetCardModel = null;
 
-            var model = instantiatedMonsterModel.transform.GetChild(0);
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SummonMonster, model.GetInstanceID());
+            var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.SummonMonster, modelID);
             instantiatedMonsterModel.transform.position = playMatZone.position;
 
             if (!currentSetCardModel) return;
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, currentSetCardModel.GetInstanceID());
+            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.SetCardRemove, currentSetCardModel.GetInstanceID());
             currentSetCardModel.SetActive(false);
             _dataManager.SaveGameObject(GameObjectKeys.SetCardKey, currentSetCardModel);
         }
@@ -124,35 +131,38 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             newSetCardModel = setCard;
 
-            // TODO: ask Subtle why/if the order here matters
+            // TODO: clean up this function
             if (!currentSetCardModel)
             {
-                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, setCard.GetInstanceID(), true);
+                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.ShowSetCard, updatedCard, setCard.GetInstanceIDForSetCard(), true);
 
-                // This puts the model on top of the set card rather than clipping through it.
-                instantiatedMonsterModel.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
+                instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
 
-                var model = instantiatedMonsterModel.transform.GetChild(0);
-                _modelEventHandler.RaiseChangeVisibilityEvent(model.GetInstanceID(), true);
+                var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
+                _modelEventHandler.RaiseChangeVisibilityEvent(modelID, true);
+                _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, modelID);
             }
             else
             {
-                _handlePlayCardModelEventsUseCase.Execute(ModelEvent.RevealSetMonster, updatedCard, setCard.GetInstanceID(), true);
+                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.ShowSetCard, updatedCard, setCard.GetInstanceIDForSetCard(), true);
 
-                var model = instantiatedMonsterModel.transform.GetChild(0);
-                _modelEventHandler.RaiseChangeVisibilityEvent(model.GetInstanceID(), true);
+                var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
+                _modelEventHandler.RaiseChangeVisibilityEvent(modelID, true);
+                _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, modelID);
 
-                // This puts the model on top of the set card rather than clipping through it.
-                instantiatedMonsterModel.transform.position = setCard.transform.GetChild(0).GetChild(0).position;
+                instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
             }
         }
 
         private void HandleFaceDownDefencePosition(PlayCard updatedCard, Transform playMatZone, GameObject currentSetCardModel,
-            out GameObject newSetCardModel)
+            GameObject instantiatedMonsterModel, out GameObject newSetCardModel)
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
                 : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
+
+            var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
+            var setCardID = setCard.GetInstanceIDForSetCard();
 
             newSetCardModel = setCard;
 
@@ -160,14 +170,16 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             {
                 if (!setCard)
                 {
+                    //TODO: Create function to instantiate new SetCards
                     _logger.Warning(Tag, "The setCard queue is empty :(");
                     return;
                 }
 
-                _handlePlayCardModelEventsUseCase.Execute(default, updatedCard, setCard.GetInstanceID(), true);
-            }
+                _handlePlayCardModelEventsUseCase.Execute(default, updatedCard, setCardID, true);
+            }            
 
-            _modelEventHandler.RaiseChangeVisibilityEvent(setCard.GetInstanceID(), false);
+            _modelEventHandler.RaiseChangeVisibilityEvent(modelID, false);
+            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.HideSetMonster, setCardID);
         }
     }
 }

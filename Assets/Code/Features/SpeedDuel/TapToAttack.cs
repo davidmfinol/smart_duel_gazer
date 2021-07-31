@@ -1,7 +1,7 @@
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.Core.Models.Interface.ModelEventsHandler.Entities;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
+using Code.Wrappers.WrapperPlayerPrefs;
 using UnityEngine;
 using Zenject;
 
@@ -9,6 +9,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 {
     public class TapToAttack : MonoBehaviour
     {
+        //TODO: Move to storage provider
         private IPlayerPrefsProvider _playerPrefsProvider;
         private ModelEventHandler _modelEventHandler;
 
@@ -37,10 +38,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         private void Update()
         {
-            if (!_playerPrefsProvider.GetBool(_settingsKey))
-            {
-                return;
-            }
+            //TODO: Add this back to the provider
+            //if (!_playerPrefsProvider.GetBool(_settingsKey))
+            //{
+            //    return;
+            //}
 
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
@@ -48,6 +50,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
             #region EditorCode
+
 #if UNITY_EDITOR
 
             if (Input.GetMouseButtonUp(0))
@@ -65,6 +68,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             }
 
 #endif
+
             #endregion
 
         }

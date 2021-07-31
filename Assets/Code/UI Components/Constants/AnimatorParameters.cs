@@ -20,6 +20,7 @@ namespace Code.UI_Components.Constants
         public static readonly int DefenceBool = Animator.StringToHash("IsDefence");
         public static readonly int RotatePlatformBool = Animator.StringToHash("Rotate");
         public static readonly int MainMenuRotateBool = Animator.StringToHash("MainMenuRotate");
+        public static readonly int AllowDestroyBool = Animator.StringToHash("AllowDestroy");
 
         public static readonly int PlatformDoubleSpeedFloat = Animator.StringToHash("DoubleSpeed");
 

@@ -1,7 +1,8 @@
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
-using Code.Core.Models.ModelEventsHandler;
-using Code.Core.Models.ModelEventsHandler.Entities;
+using Code.Core.General.Extensions;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;
@@ -18,16 +19,23 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IRecycleGameObjectUseCase _recycleGameObjectUseCase;
         private readonly ModelEventHandler _modelEventHandler;
+        private readonly SetCardEventHandler _setCardEventHandler;
+
+        #region Constructor
 
         public RemoveCardModelUseCase(
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IRecycleGameObjectUseCase recycleGameObjectUseCase,
-            ModelEventHandler modelEventHandler)
+            ModelEventHandler modelEventHandler,
+            SetCardEventHandler setCardEventHandler)
         {
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _recycleGameObjectUseCase = recycleGameObjectUseCase;
             _modelEventHandler = modelEventHandler;
+            _setCardEventHandler = setCardEventHandler;
         }
+
+        #endregion
 
         public Zone Execute(SingleCardZone zone, PlayCard oldCard)
         {
@@ -52,22 +60,21 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey,
                 monsterModel.transform.position, monsterModel.transform.rotation);
 
-            //instanceID is held by the child, the parent only acts as a container for the model
-            var model = monsterModel.transform.GetChild(0);
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, model.GetInstanceID());
+            var modelID = monsterModel.GetInstanceIDForModel();
+            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, modelID);
 
             _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
             _recycleGameObjectUseCase.Execute(oldCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;
 
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroySetMonster, setCardModel.GetInstanceID());
+            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.DestroySetMonster, setCardModel.GetInstanceIDForSetCard());
             RemoveSetCard(setCardModel);
         }
 
         private void RemoveSetCard(GameObject setCardModel)
         {
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SetCardRemove, setCardModel.GetInstanceID());
+            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.SetCardRemove, setCardModel.GetInstanceIDForSetCard());
             _recycleGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, setCardModel);
         }
     }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Code.Core.DataManager;
 using Code.Core.General.Extensions;
 using Code.Core.Logger;
-using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.EventHandlers;
 using Code.UI_Components.Constants;
 using UnityEngine;
 using Zenject;
@@ -21,8 +21,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
-        private ModelEventHandler _modelEventHandler;
         private IAppLogger _logger;
+        private SetCardEventHandler _setCardEventHandler;
+        private PlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
         private int _instanceID;
@@ -32,13 +33,15 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,
-            ModelEventHandler modelEventHandler,
-            IAppLogger logger)
+            IDataManager dataManager,            
+            IAppLogger logger,
+            SetCardEventHandler modelEventHandler,
+            PlayfieldEventHandler playfieldEventHandler)
         {
             _dataManager = dataManager;
-            _modelEventHandler = modelEventHandler;
             _logger = logger;
+            _setCardEventHandler = modelEventHandler;
+            _playfieldEventHandler = playfieldEventHandler;
         }
 
         #endregion
@@ -48,7 +51,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void Awake()
         {
             _animator = GetComponent<Animator>();
-            _instanceID = GetInstanceID();
+            _instanceID = gameObject.GetInstanceID();
         }
 
         private void OnEnable()
@@ -69,32 +72,32 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void SubscribeToEvents()
         {
-            _modelEventHandler.OnSummonSetCard += OnSummonEvent;
+            _setCardEventHandler.OnSummonSetCard += OnSummonEvent;
 
-            _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
-            _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
-            _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
-            _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
+            _setCardEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
+            _setCardEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
+            _setCardEventHandler.OnSetCardRemove += OnSpellTrapRemove;
+            _setCardEventHandler.OnShowSetCard += SetMonsterEvent;
+            _setCardEventHandler.OnDestroySetMonster += DestroySetMonster;
+            _setCardEventHandler.OnHideSetMonster += HideSetCardImage;
 
-
-            _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
-            _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _playfieldEventHandler.OnPickupPlayfield += PickupPlayfield;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
+            _setCardEventHandler.OnSummonSetCard -= OnSummonEvent;
 
-            _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
-            _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
-            _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster -= SetMonsterEvent;
-            _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
-            _modelEventHandler.OnChangeMonsterVisibility -= HideSetCardImage;
+            _setCardEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
+            _setCardEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
+            _setCardEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
+            _setCardEventHandler.OnShowSetCard -= SetMonsterEvent;
+            _setCardEventHandler.OnDestroySetMonster -= DestroySetMonster;
+            _setCardEventHandler.OnHideSetMonster -= HideSetCardImage;
 
-            _modelEventHandler.OnActivatePlayfield -= ActivatePlayfield;
-            _modelEventHandler.OnPickupPlayfield -= PickupPlayfield;
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnPickupPlayfield -= PickupPlayfield;
         }
 
         #endregion
@@ -111,10 +114,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                 SetMonster();
             }
 
-            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
+            _setCardEventHandler.OnSummonSetCard -= OnSummonEvent;
+            _animator.SetBool(AnimatorParameters.AllowDestroyBool, false);
 
             await GetAndDisplayCardImage(modelName);
-            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
         }
 
         #region Playfield Events
@@ -195,13 +198,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _currentState = CurrentState.SetMonsterRevealed;
         }
 
-        private void HideSetCardImage(int instanceID, bool state)
+        private void HideSetCardImage(int instanceID)
         {
-            if (_instanceID == instanceID && state == false)
-            {
-                _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
-                _currentState = CurrentState.FaceDown;
-            }
+            if (_instanceID != instanceID)  return;
+
+            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+            _currentState = CurrentState.FaceDown;
         }
 
         private void DestroySetMonster(int instanceID)
@@ -210,7 +212,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             {
                 return;
             }
-            _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+            _animator.SetBool(AnimatorParameters.AllowDestroyBool, true);
         }
 
         #endregion

@@ -1,7 +1,8 @@
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
-using Code.Core.Models.ModelEventsHandler.Entities;
+using Code.Core.General.Extensions;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
 
+        #region Constructor
+
         public PlayCardImageUseCase(
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IHandlePlayCardModelEventsUseCase handlePlayCardModelEventsUseCase)
@@ -25,6 +28,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _handlePlayCardModelEventsUseCase = handlePlayCardModelEventsUseCase;
         }
+
+        #endregion
 
         public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone)
         {
@@ -34,12 +39,12 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             var modelEvent = GetModelEvent(zone, updatedCard);
             var isMonster = updatedCard.CardPosition.IsDefence();
-            _handlePlayCardModelEventsUseCase.Execute(modelEvent, updatedCard, setCardModel.GetInstanceID(), isMonster);
+            _handlePlayCardModelEventsUseCase.Execute(modelEvent, updatedCard, setCardModel.GetInstanceIDForSetCard(), isMonster);
 
             return zone.CopyWith(updatedCard, setCardModel);
         }
 
-        private static ModelEvent GetModelEvent(SingleCardZone zone, PlayCard updatedCard)
+        private static SetCardEvent GetModelEvent(SingleCardZone zone, PlayCard updatedCard)
         {
             if (!zone.SetCardModel && updatedCard.CardPosition == CardPosition.FaceDown)
             {
@@ -48,10 +53,10 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             return updatedCard.CardPosition switch
             {
-                CardPosition.FaceUp => ModelEvent.SpellTrapActivate,
-                CardPosition.FaceDown => ModelEvent.ReturnToFaceDown,
-                CardPosition.FaceUpDefence => ModelEvent.RevealSetMonster,
-                CardPosition.FaceDownDefence => default,
+                CardPosition.FaceUp => SetCardEvent.SpellTrapActivate,
+                CardPosition.FaceDown => SetCardEvent.ReturnToFaceDown,
+                CardPosition.FaceUpDefence => SetCardEvent.ShowSetCard,
+                CardPosition.FaceDownDefence => SetCardEvent.HideSetMonster,
                 _ => default
             };
         }

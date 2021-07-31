@@ -1,10 +1,10 @@
-using Code.Core.Models.ModelComponentsManager.Entities;
-using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities;
 using Code.UI_Components.Constants;
 using UnityEngine;
 using Zenject;
 
-namespace Code.Core.Models.ModelComponentsManager
+namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 {
     public interface IModelComponentsManager
     {
@@ -15,7 +15,8 @@ namespace Code.Core.Models.ModelComponentsManager
     [RequireComponent(typeof(Animator)), RequireComponent(typeof(ModelSettings))]
     public class ModelComponentsManager : MonoBehaviour, IModelComponentsManager
     {
-        private ModelEventHandler _eventHandler;
+        private ModelEventHandler _modelEventHandler;
+        private PlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
@@ -26,9 +27,11 @@ namespace Code.Core.Models.ModelComponentsManager
         #region Constructor
 
         [Inject]
-        public void Construct(ModelEventHandler modelEventHandler)
+        public void Construct(ModelEventHandler modelEventHandler,
+                              PlayfieldEventHandler playfieldEventHandler)
         {
-            _eventHandler = modelEventHandler;
+            _modelEventHandler = modelEventHandler;
+            _playfieldEventHandler = playfieldEventHandler;
         }
 
         #endregion
@@ -41,7 +44,7 @@ namespace Code.Core.Models.ModelComponentsManager
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             _settings = GetComponent<ModelSettings>();
 
-            _instanceID = GetInstanceID();
+            _instanceID = transform.GetInstanceID();
         }
 
         private void OnEnable()
@@ -60,28 +63,28 @@ namespace Code.Core.Models.ModelComponentsManager
 
         public void SubscribeToEvents()
         {
-            _eventHandler.OnActivateModel += ActivateModel;
-            _eventHandler.OnSummonMonster += SummonMonster;
-            _eventHandler.OnRevealSetMonster += RevealSetMonster;
-            _eventHandler.OnChangeMonsterVisibility += SetMonsterVisibility;
-            _eventHandler.OnDestroyMonster += DestroyMonster;
+            _modelEventHandler.OnActivateModel += ActivateModel;
+            _modelEventHandler.OnSummonMonster += SummonMonster;
+            _modelEventHandler.OnRevealSetMonster += RevealSetMonster;
+            _modelEventHandler.OnChangeMonsterVisibility += SetMonsterVisibility;
+            _modelEventHandler.OnDestroyMonster += DestroyMonster;
+            _modelEventHandler.OnAttack += Attack;
 
-            _eventHandler.OnActivatePlayfield += ActivatePlayfield;
-            _eventHandler.OnPickupPlayfield += PickupPlayfield;
-            _eventHandler.OnAttack += Attack;
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _playfieldEventHandler.OnPickupPlayfield += PickupPlayfield;            
         }
 
         public void UnsubscribeToEvents()
         {
-            _eventHandler.OnActivateModel -= ActivateModel;
-            _eventHandler.OnSummonMonster -= SummonMonster;
-            _eventHandler.OnRevealSetMonster -= RevealSetMonster;
-            _eventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
-            _eventHandler.OnDestroyMonster -= DestroyMonster;
+            _modelEventHandler.OnActivateModel -= ActivateModel;
+            _modelEventHandler.OnSummonMonster -= SummonMonster;
+            _modelEventHandler.OnRevealSetMonster -= RevealSetMonster;
+            _modelEventHandler.OnChangeMonsterVisibility -= SetMonsterVisibility;
+            _modelEventHandler.OnDestroyMonster -= DestroyMonster;
+            _modelEventHandler.OnAttack -= Attack;
 
-            _eventHandler.OnActivatePlayfield -= ActivatePlayfield;
-            _eventHandler.OnPickupPlayfield -= PickupPlayfield;
-            _eventHandler.OnAttack -= Attack;
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnPickupPlayfield -= PickupPlayfield;
         }
 
         #endregion
@@ -168,9 +171,9 @@ namespace Code.Core.Models.ModelComponentsManager
 
         private void ActivateParticlesAndRemoveModel()
         {
-            _eventHandler.RaiseMonsterRemovalEvent(_renderers);
+            _modelEventHandler.RaiseMonsterRemovalEvent(_renderers);
             _renderers.SetRendererVisibility(false);
-            _eventHandler.OnDestroyMonster -= DestroyMonster;
+            _modelEventHandler.OnDestroyMonster -= DestroyMonster;
         }
 
         private void ActivatePlayfield(GameObject playfield)

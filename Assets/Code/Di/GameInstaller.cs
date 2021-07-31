@@ -7,8 +7,6 @@ using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Textures;
 using Code.Core.Dialog;
 using Code.Core.Logger;
-using Code.Core.Models.ModelComponentsManager;
-using Code.Core.Models.ModelEventsHandler;
 using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
@@ -18,6 +16,8 @@ using Code.Core.Storage.GameObject;
 using Code.Core.Storage.Texture;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection.Helpers;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
@@ -73,11 +73,6 @@ namespace Code.Di
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
 
-            // Models
-            Container.Bind<ModelEventHandler>().AsSingle();
-            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
-                .FromFactory<PrefabFactory<ModelComponentsManager>>();
-
             // Logger
             Container.Bind<IAppLogger>().To<AppLogger>().AsSingle();
 
@@ -87,8 +82,16 @@ namespace Code.Di
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
 
+            // Event Handlers
+            Container.Bind<ModelEventHandler>().AsSingle();
+            Container.Bind<PlayfieldEventHandler>().AsSingle();
+            Container.Bind<SetCardEventHandler>().AsSingle();
+
+            // Prefabs
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
+            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
+                .FromFactory<PrefabFactory<ModelComponentsManager>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()
                 .FromFactory<PrefabFactory<SetCard>>();
 

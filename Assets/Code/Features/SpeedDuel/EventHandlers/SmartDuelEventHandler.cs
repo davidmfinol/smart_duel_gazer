@@ -234,6 +234,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 return;
             }
 
+            //TODO: Only one line of this message is shown
             var winnerMessage = $"{winnerId} won the duel!";
             _dialogService.ShowToast(winnerMessage);
         }

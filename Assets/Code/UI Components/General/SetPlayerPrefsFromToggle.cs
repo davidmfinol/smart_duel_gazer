@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using Zenject;
-using AssemblyCSharp.Assets.Code.Core.Storage.Impl.Providers.PlayerPrefs.Interface;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
+using Code.Wrappers.WrapperPlayerPrefs;
 
 namespace AssemblyCSharp.Assets.Code.UIComponents.General
 {
@@ -34,12 +34,12 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
             _toggle = GetComponent<Toggle>();
             _toggleKey = _settingsKey.ToString();
 
-            if (!_playerPrefsProvider.HasKey(_toggleKey))
-            {
-                _playerPrefsProvider.SetBool(_toggleKey, true);
-            }
+            //if (!_playerPrefsProvider.HasKey(_toggleKey))
+            //{
+            //    _playerPrefsProvider.SetBool(_toggleKey, true);
+            //}
 
-            _toggle.isOn = _playerPrefsProvider.GetBool(_toggleKey);
+            //_toggle.isOn = _playerPrefsProvider.GetBool(_toggleKey);
 
             RegisterClickListeners();
         }
@@ -59,7 +59,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
                 return;
             }
 
-            _playerPrefsProvider.SetBool(_toggleKey, isEnabled);
+            //_playerPrefsProvider.SetBool(_toggleKey, isEnabled);
         }
     }
 }
