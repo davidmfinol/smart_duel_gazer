@@ -1,43 +1,45 @@
-using Zenject;
+using Code.Core.Models.ModelEventsHandler;
+using Code.UI_Components.Constants;
 using UnityEngine;
 using UnityEngine.UI;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.UIComponents.Constants;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
+namespace Code.Features.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject _menus;
-        [SerializeField]
-        private GameObject _bottomMenu;
-        [SerializeField]
-        private Slider _scaleSlider;
-        [SerializeField]
-        private Toggle _toggleView;
+        [SerializeField] private GameObject _menus;
+        [SerializeField] private Slider _scaleSlider;
+        [SerializeField] private Slider _rotationSlider;
+        [SerializeField] private Toggle _toggleView;
 
         private ModelEventHandler _modelEventHandler;
 
         private GameObject _playmatShell;
-        private MeshRenderer[] _renderers;
+        private Animator _playmatAnimator;
         private Animator[] _animators;
+        private MeshRenderer[] _renderers;
 
         #region Constructor
 
         [Inject]
-        public void Construct(ModelEventHandler modelEventHandler)
+        public void Construct(
+            ModelEventHandler modelEventHandler)
         {
             _modelEventHandler = modelEventHandler;
         }
 
         #endregion
 
+        #region LifeCycle
+
         private void Awake()
         {
             _modelEventHandler.OnActivatePlayfield += ActivatePlayfieldMenus;
-            _modelEventHandler.OnRemovePlayfield += RemovePlayfieldMenus;
+            _modelEventHandler.OnPickupPlayfield += RemovePlayfieldMenus;
         }
+
+        #endregion
 
         private void ActivatePlayfieldMenus(GameObject playfield)
         {
@@ -45,33 +47,45 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
             _renderers = _playmatShell.GetComponentsInChildren<MeshRenderer>();
 
             _menus.SetActive(true);
+            SetSliderValues();
 
             if (_animators == null)
             {
                 _animators = GetComponentsInChildren<Animator>();
+                _playmatAnimator = _playmatShell.GetComponentInChildren<Animator>();
+                return;
             }
+
+            _playmatAnimator.SetTrigger(AnimatorParameters.ActivatePlayfieldTrigger);
         }
 
         private void RemovePlayfieldMenus()
         {
+            _scaleSlider.interactable = false;
+            _rotationSlider.interactable = false;
             _menus.SetActive(false);
         }
 
-        public void SetScaleStartPosition(float startPosition) => _scaleSlider.value = startPosition;
+        private void SetSliderValues()
+        {
+            var scale = _playmatShell.transform.localScale.x;
+            var rotation = _playmatShell.transform.localRotation.y;
+
+            if (scale > 10f)
+            {
+                _scaleSlider.maxValue = scale;
+            }
+
+            _scaleSlider.value = scale;
+            _rotationSlider.value = rotation;
+
+            _scaleSlider.interactable = true;
+            _rotationSlider.interactable = true;
+        }
 
         public void ScalePlaymat(float scale)
         {
-            var mappedScale = MapScaleValueToSliderValue(scale, _scaleSlider.minValue, _scaleSlider.maxValue, 0.1f, 5f);
-            _playmatShell.transform.localScale = new Vector3(mappedScale, mappedScale, mappedScale);
-        }
-
-        private float MapScaleValueToSliderValue(float value,
-                                                 float originalMin,
-                                                 float originalMax,
-                                                 float newMin,
-                                                 float newMax)
-        {
-            return (value - originalMin) / (originalMax - originalMin) * (newMax - newMin) + newMin;
+            _playmatShell.transform.localScale = new Vector3(scale, scale, scale);
         }
 
         public void RotatePlaymat(float rotation) => _playmatShell.transform.rotation = Quaternion.Euler(0, rotation, 0);
@@ -80,17 +94,17 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
         {
             if (state)
             {
-                _playmatShell.transform.rotation = Quaternion.Euler(0, 180, 0);
+                _playmatShell.transform.localRotation = Quaternion.Euler(0, 180, 0);
                 return;
             }
 
-            _playmatShell.transform.rotation = Quaternion.Euler(0, 0, 0);
+            _playmatShell.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
 
         public void ShowSettingsMenu(bool state)
         {
-            foreach (Animator animator in _animators)
+            foreach (var animator in _animators)
             {
                 animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
             }
@@ -98,19 +112,22 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel
 
         public void HidePlaymat(bool state)
         {
-            foreach (MeshRenderer item in _renderers)
+            foreach (var item in _renderers)
             {
                 item.enabled = state;
             }
         }
+        
+        // TODO: @Subtle can these be removed? They're not used.
 
         public void DeletePlaymat()
         {
-            foreach (Animator animator in _animators)
+            foreach (var animator in _animators)
             {
                 animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             }
-            _playmatShell.GetComponentInChildren<Animator>().SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
+
+            _playmatAnimator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             _toggleView.isOn = false;
         }
 

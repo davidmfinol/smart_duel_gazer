@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace AssemblyCSharp.Assets.Code.Features.Connection.Helpers
+namespace Code.Features.Connection.Helpers
 {
     public class ConnectionFormValidators
     {

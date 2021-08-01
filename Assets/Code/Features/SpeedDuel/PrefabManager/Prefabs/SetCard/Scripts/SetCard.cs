@@ -1,36 +1,44 @@
-using Zenject;
-using UnityEngine;
 using System.Collections.Generic;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.Models.Impl.ModelEventsHandler;
-using AssemblyCSharp.Assets.Code.UIComponents.Constants;
 using System.Threading.Tasks;
-using AssemblyCSharp.Assets.Code.Core.General.Extensions;
+using Code.Core.DataManager;
+using Code.Core.General.Extensions;
+using Code.Core.Logger;
+using Code.Core.Models.ModelEventsHandler;
+using Code.UI_Components.Constants;
+using UnityEngine;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
+namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 {
     [RequireComponent(typeof(Animator))]
     public class SetCard : MonoBehaviour
     {
-        [SerializeField]
-        private Renderer _image;
-        [SerializeField]
-        private List<Texture> _errorImages = new List<Texture>();
+        private const string Tag = "SetCard";
+
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+
+        [SerializeField] private Renderer _image;
+        [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
         private ModelEventHandler _modelEventHandler;
+        private IAppLogger _logger;
 
         private Animator _animator;
         private string _zone;
+        private CurrentState _currentState;
 
         #region Constructors
 
         [Inject]
-        public void Construct(IDataManager dataManager,
-                              ModelEventHandler modelEventHandler)
+        public void Construct(
+            IDataManager dataManager,
+            ModelEventHandler modelEventHandler,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _modelEventHandler = modelEventHandler;
+            _logger = logger;
         }
 
         #endregion
@@ -50,7 +58,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         private void OnDisable()
         {
             _zone = null;
-            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+            _currentState = CurrentState.FaceDown;
 
             UnsubscribeFromEvents();
         }
@@ -61,44 +69,79 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private void SubscribeToEvents()
         {
-            _modelEventHandler.OnSummonSetCard += OnSummonSetCard;
+            _modelEventHandler.OnSummonSetCard += OnSummonEvent;
+
             _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster += RevealSetMonster;
+            _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
-            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
+
+
+            _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
+            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
+
             _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
             _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
             _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster -= RevealSetMonster;
+            _modelEventHandler.OnRevealSetMonster -= SetMonsterEvent;
             _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
             _modelEventHandler.OnChangeMonsterVisibility -= HideSetCardImage;
+
+            _modelEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _modelEventHandler.OnPickupPlayfield -= PickupPlayfield;
         }
 
         #endregion
 
-        private async void OnSummonSetCard(string zone, string modelName, bool isMonster)
+        private async void OnSummonEvent(string zone, string modelName, bool isMonster)
         {
             if (transform.gameObject.activeSelf == false)
             {
                 return;
             }
-            
+
             if (isMonster)
             {
                 SetMonster();
             }
 
-            _modelEventHandler.OnSummonSetCard -= OnSummonSetCard;
             _zone = zone;
+            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
+
             await GetAndDisplayCardImage(modelName);
+            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
         }
+
+        #region Playfield Events
+
+        private void ActivatePlayfield(GameObject playfield)
+        {
+            switch (_currentState)
+            {
+                case CurrentState.FaceDown:
+                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+                    break;
+                case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+                    break;
+                case CurrentState.SetMonsterRevealed:
+                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+                    break;
+            }
+        }
+
+        private void PickupPlayfield()
+        {
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
+        }
+
+        #endregion
 
         #region Spell/Trap Events
 
@@ -110,6 +153,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+            _currentState = CurrentState.SpellActivated;
         }
 
         private void OnReturnToFaceDown(string zone)
@@ -120,6 +164,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
+            _currentState = CurrentState.FaceDown;
         }
 
         private void OnSpellTrapRemove(string zone)
@@ -137,11 +182,11 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
         #region Set Monster Events
 
         private void SetMonster()
-        {           
+        {
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-        
-        private void RevealSetMonster(string zone)
+
+        private void SetMonsterEvent(string zone)
         {
             if (_zone != zone)
             {
@@ -149,6 +194,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             }
 
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+            _currentState = CurrentState.SetMonsterRevealed;
         }
 
         private void HideSetCardImage(string zone, bool state)
@@ -156,6 +202,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
             if (_zone == zone && state == false)
             {
                 _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+                _currentState = CurrentState.FaceDown;
             }
         }
 
@@ -175,7 +222,7 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
 
         private async Task GetAndDisplayCardImage(string cardId)
         {
-            Debug.Log($"GetAndDisplayCardImage(cardId: {cardId})", this);
+            _logger.Log(Tag, $"GetAndDisplayCardImage(cardId: {cardId})");
 
             var image = await _dataManager.GetCardImage(cardId.RemoveCloneSuffix());
             if (image == null)
@@ -184,19 +231,26 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.Se
                 return;
             }
 
-            _image.material.SetTexture("_MainTex", image);
+            _image.material.SetTexture(MainTex, image);
         }
 
         private void SetRandomErrorImage()
         {
             var randomNum = Random.Range(0, _errorImages.Count);
-            _image.material.SetTexture("_MainTex", _errorImages[randomNum]);
+            _image.material.SetTexture(MainTex, _errorImages[randomNum]);
         }
 
         #endregion
 
         public class Factory : PlaceholderFactory<GameObject, SetCard>
         {
+        }
+
+        private enum CurrentState
+        {
+            FaceDown,
+            SpellActivated,
+            SetMonsterRevealed,
         }
     }
 }

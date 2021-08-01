@@ -1,10 +1,11 @@
-using Zenject;
+using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using UnityEngine;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
-using AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
+using Zenject;
 
-namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
+namespace Code.Features.SpeedDuel.PrefabManager
 {
     /// <summary>
     /// Used for pre-instantiating prefabs that can be reused.
@@ -12,15 +13,10 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
     /// </summary>
     public class SpeedDuelPrefabManager : MonoBehaviour
     {
-        private const string ParticlesKey = "Particles";
-        private const string SetCardKey = "SetCard";
+        private const int AmountToInstantiate = 16;
 
-        private const int AmountToInstantiate = 8;
-
-        [SerializeField]
-        private GameObject _particles;
-        [SerializeField]
-        private GameObject _setCard;
+        [SerializeField] private GameObject _particles;
+        [SerializeField] private GameObject _setCard;
 
         private IDataManager _dataManager;
         private SetCard.Factory _setCardFactory;
@@ -45,25 +41,26 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
 
         private void Awake()
         {
-            InstantiatePrefabs(SetCardKey, AmountToInstantiate);
-            InstantiatePrefabs(ParticlesKey, AmountToInstantiate);
+            InstantiatePrefabs(GameObjectKeys.SetCardKey, AmountToInstantiate);
+            InstantiatePrefabs(GameObjectKeys.ParticlesKey, AmountToInstantiate);
 
             // TODO: pre-instantiate models from deck:
-            // Recommend sending over deck information (ie. which/how many models) in order to have them ready
-            // when the duel starts. This would be for multiplayer, it's not really needed currently.
+            // DeckLists of duelists are available when a duel starts via a DuelRoom object
         }
 
         #endregion
 
         private void InstantiatePrefabs(string key, int amount)
         {
-            for (int i = 0; i < amount; i++)
+            for (var i = 0; i < amount; i++)
             {
-                var gameObject = CreateGameObject(key);
-                gameObject.transform.SetParent(transform);                
-                _dataManager.SaveGameObject(key, gameObject);
+                var go = CreateGameObject(key);
+                if (go == null) continue;
 
-                gameObject.SetActive(false);
+                go.transform.SetParent(transform);
+                go.SetActive(false);
+
+                _dataManager.SaveGameObject(key, go);
             }
         }
 
@@ -71,8 +68,8 @@ namespace AssemblyCSharp.Assets.Code.Features.SpeedDuel.PrefabManager
         {
             return key switch
             {
-                SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
-                ParticlesKey => _particleFactory.Create(_particles).transform.gameObject,
+                GameObjectKeys.SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
+                GameObjectKeys.ParticlesKey => _particleFactory.Create(_particles).transform.gameObject,
                 _ => null,
             };
         }

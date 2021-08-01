@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
+namespace Code.UI_Components.Constants
 {
     public static class AnimatorParameters
     {
@@ -14,6 +14,8 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
         public static readonly int RevealSetMonsterTrigger = Animator.StringToHash("RevealSetMonster");
         public static readonly int HideSetMonsterImageTrigger = Animator.StringToHash("HideSetMonsterImage");
         public static readonly int PlayMonsterAttack1Trigger = Animator.StringToHash("Attack1");
+        public static readonly int PickUpPlayfieldTrigger = Animator.StringToHash("PickUpPlayfield");
+        public static readonly int FadeInSetCardTrigger = Animator.StringToHash("FadeIn");
 
         public static readonly int DefenceBool = Animator.StringToHash("IsDefence");
         public static readonly int RotatePlatformBool = Animator.StringToHash("Rotate");
@@ -25,7 +27,9 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
 
         #region UI Animations
 
+        public static readonly int ActivatePlayfieldTrigger = Animator.StringToHash("ActivatePlayfield");
         public static readonly int RemovePlayfieldTrigger = Animator.StringToHash("RemovePlayfield");
+
         public static readonly int OpenPlayfieldMenuBool = Animator.StringToHash("OpenPlayfieldMenu");
         public static readonly int PrefabMenuBool = Animator.StringToHash("PrefabMenuEnter");
         

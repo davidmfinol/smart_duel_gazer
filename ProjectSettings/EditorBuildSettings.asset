@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Connection Scene.unity
     guid: b8e5010263c5048bfad847b968a33615
   - enabled: 1
+    path: Assets/Scenes/Duel Room Scene.unity
+    guid: 991cb406cbe194363afe5db72f2768f0
+  - enabled: 1
     path: Assets/Scenes/Speed Duel Scene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:

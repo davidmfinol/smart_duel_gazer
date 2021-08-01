@@ -1,27 +1,24 @@
+using Code.Core.DataManager;
+using Code.Core.DataManager.Connections.Entities;
+using Code.Core.Dialog;
+using Code.Core.Navigation;
+using Code.Core.Screen;
+using Code.Features.Connection.Helpers;
+using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using Zenject;
-using UniRx;
-using AssemblyCSharp.Assets.Code.Features.Connection.Helpers;
-using AssemblyCSharp.Assets.Code.Core.Navigation.Interface;
-using AssemblyCSharp.Assets.Code.Core.Dialog.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface;
-using AssemblyCSharp.Assets.Code.Core.Screen.Interface;
-using AssemblyCSharp.Assets.Code.Core.DataManager.Interface.Connection.Entities;
 
-namespace AssemblyCSharp.Assets.Code.Features.Connection
+namespace Code.Features.Connection
 {
     public class ConnectionView : MonoBehaviour
     {
-        [SerializeField]
-        private TMP_InputField _ipAddressInputField;
+        [SerializeField] private TMP_InputField _ipAddressInputField;
 
-        [SerializeField]
-        private TMP_InputField _portInputField;
+        [SerializeField] private TMP_InputField _portInputField;
 
-        [SerializeField]
-        private Button _speedDuelButton;
+        [SerializeField] private Button _speedDuelButton;
 
         private ConnectionFormValidators _connectionFormValidators;
         private INavigationService _navigationService;
@@ -63,7 +60,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             _speedDuelButton.onClick.AsObservable().Subscribe(_ => OnConnectButtonPressed());
         }
 
-        public void OnConnectButtonPressed()
+        private void OnConnectButtonPressed()
         {
             var isFormValid = ValidateForm();
             if (!isFormValid)
@@ -72,7 +69,7 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             }
 
             SaveConnectionInfo();
-            ShowSpeedDuelScene();
+            ShowDuelRoomScene();
         }
 
         private bool ValidateForm()
@@ -110,9 +107,9 @@ namespace AssemblyCSharp.Assets.Code.Features.Connection
             _dataManager.SaveConnectionInfo(connectionInfo);
         }
 
-        private void ShowSpeedDuelScene()
+        private void ShowDuelRoomScene()
         {
-            _navigationService.ShowSpeedDuelScene();
+            _navigationService.ShowDuelRoomScene();
         }
 
         #endregion
