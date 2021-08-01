@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
+using Code.Core.Dialog.Entities;
 using Code.Core.Logger;
+using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
@@ -25,6 +27,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
+        private INavigationService _navigationService;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
@@ -43,6 +46,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IDataManager dataManager,
             IScreenService screenService,
             IDialogService dialogService,
+            INavigationService navigationService,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
@@ -51,6 +55,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _dialogService = dialogService;
+            _navigationService = navigationService;
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
@@ -183,11 +188,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void HandleRemoveCardEvent(CardEventData data)
         {
             _logger.Log(Tag, $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
-            
+
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()
                 .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
-            
+
             var updatedPlayerState =
                 _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
             UpdateSpeedDuelState(playerState, updatedPlayerState);
@@ -234,8 +239,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 return;
             }
 
-            var winnerMessage = $"{winnerId} won the duel!";
-            _dialogService.ShowToast(winnerMessage);
+            _dialogService.ShowDialog(new DialogConfig
+            {
+                Title = "Duel is over",
+                Description = $"{winnerId} won the duel!",
+                PositiveText = "Continue"
+            });
+            
+            _navigationService.ShowConnectionScene();
         }
 
         #endregion
