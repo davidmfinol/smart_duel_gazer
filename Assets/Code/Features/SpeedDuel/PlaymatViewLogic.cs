@@ -134,7 +134,7 @@ namespace Code.Features.SpeedDuel
 
         private void DestroyPlaymat()
         {
-            _playfieldEventHandler.DestroyPlayfield();
+            _playfieldEventHandler.RemovePlayfield();
         }
     }
 }

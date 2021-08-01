@@ -54,7 +54,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void Awake()
         {
             GetObjectReferences();
-            _playfieldEventHandler.OnDestroyPlayfield += OnPlaymatDestroyed;
+            _playfieldEventHandler.OnRemovePlayfield += OnPlaymatDestroyed;
         }
 
         private void Update()
@@ -64,7 +64,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void OnDestroy()
         {
-            _playfieldEventHandler.OnDestroyPlayfield -= OnPlaymatDestroyed;
+            _playfieldEventHandler.OnRemovePlayfield -= OnPlaymatDestroyed;
             _dataManager.RemoveGameObject(PlayfieldKey);
         }
 

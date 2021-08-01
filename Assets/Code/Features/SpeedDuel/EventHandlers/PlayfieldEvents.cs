@@ -6,14 +6,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
     {
         public void ActivatePlayfield(UnityEngine.GameObject playfield);
         public void PickupPlayfield();
-        public void DestroyPlayfield();
+        public void RemovePlayfield();
     }
 
     public class PlayfieldEventHandler : IPlayfieldEventHandler
     {
         private event Action<UnityEngine.GameObject> _OnActivatePlayfield;
         private event Action _OnPickUpPlayfield;
-        private event Action _OnDestroyPlayfield;
+        private event Action _OnRemovePlayfield;
 
         #region Event Accessors
 
@@ -27,10 +27,10 @@ namespace Code.Features.SpeedDuel.EventHandlers
             add => _OnPickUpPlayfield += value;
             remove => _OnPickUpPlayfield -= value;
         }
-        public event Action OnDestroyPlayfield
+        public event Action OnRemovePlayfield
         {
-            add => _OnDestroyPlayfield += value;
-            remove => _OnDestroyPlayfield -= value;
+            add => _OnRemovePlayfield += value;
+            remove => _OnRemovePlayfield -= value;
         }
 
         #endregion
@@ -45,9 +45,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _OnPickUpPlayfield?.Invoke();
         }
 
-        public void DestroyPlayfield()
+        public void RemovePlayfield()
         {
-            _OnDestroyPlayfield?.Invoke();
+            _OnRemovePlayfield?.Invoke();
         }
     }
 }

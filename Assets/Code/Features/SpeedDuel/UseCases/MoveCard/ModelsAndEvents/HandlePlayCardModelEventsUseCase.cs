@@ -27,8 +27,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var cardId = updatedCard.Id.ToString();
 
-            _setCardEventHandler.RaiseSummonSetCardEvent(instanceID, cardId, isMonster);
-            _setCardEventHandler.RaiseEventByEventName(setCardEvent, instanceID);
+            _setCardEventHandler.Summon(instanceID, cardId, isMonster);
+            _setCardEventHandler.Action(setCardEvent, instanceID);
         }
     }
 }

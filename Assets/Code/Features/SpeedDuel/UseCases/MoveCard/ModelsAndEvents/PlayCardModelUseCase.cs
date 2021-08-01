@@ -112,12 +112,12 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             newSetCardModel = null;
 
             var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.SummonMonster, modelID);
+            _modelEventHandler.Summon(modelID);
             instantiatedMonsterModel.transform.position = playMatZone.position;
 
             if (!currentSetCardModel) return;
 
-            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.SetCardRemove, currentSetCardModel.GetInstanceID());
+            _setCardEventHandler.Remove(currentSetCardModel.GetInstanceID());
             currentSetCardModel.SetActive(false);
             _dataManager.SaveGameObject(GameObjectKeys.SetCardKey, currentSetCardModel);
         }
@@ -134,21 +134,21 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             // TODO: clean up this function
             if (!currentSetCardModel)
             {
-                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.ShowSetCard, updatedCard, setCard.GetInstanceIDForSetCard(), true);
+                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.RevealSetCardImage, updatedCard, setCard.GetInstanceIDForSetCard(), true);
 
                 instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
 
                 var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
                 _modelEventHandler.RaiseChangeVisibilityEvent(modelID, true);
-                _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, modelID);
+                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID);
             }
             else
             {
-                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.ShowSetCard, updatedCard, setCard.GetInstanceIDForSetCard(), true);
+                _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.RevealSetCardImage, updatedCard, setCard.GetInstanceIDForSetCard(), true);
 
                 var modelID = instantiatedMonsterModel.GetInstanceIDForModel();
                 _modelEventHandler.RaiseChangeVisibilityEvent(modelID, true);
-                _modelEventHandler.RaiseEventByEventName(ModelEvent.RevealSetMonster, modelID);
+                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID);
 
                 instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
             }
@@ -179,7 +179,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             }            
 
             _modelEventHandler.RaiseChangeVisibilityEvent(modelID, false);
-            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.HideSetMonster, setCardID);
+            _setCardEventHandler.Action(SetCardEvent.HideSetCardImage, setCardID);
         }
     }
 }

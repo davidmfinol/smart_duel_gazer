@@ -5,90 +5,50 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface ISetCardEventHandler
     {
-        public void RaiseEventByEventName(SetCardEvent eventName, int instanceID);
-        public void RaiseSummonSetCardEvent(int instanceID, string modelName, bool isMonster);
+        public void Summon(int instanceID, string modelName, bool isMonster);
+        public void Action(SetCardEvent eventName, int instanceID);
+        public void Remove(int instanceID);
     }
 
     public class SetCardEventHandler : ISetCardEventHandler
     {
-        private event Action<int> _OnShowSetCard;
-        private event Action<int> _OnHideSetMonster;
-        private event Action<int> _OnDestroySetMonster;
-
-        private event Action<int> _OnSpellTrapActivate;
-        private event Action<int> _OnReturnToFaceDown;
-        private event Action<int> _OnSetCardRemove;
-
         private event Action<int, string, bool> _OnSummonSetCard;
+        private event Action<SetCardEvent, int> _OnAction;
+        private event Action<int> _OnSetCardRemove;
 
         #region Event Accessors
 
-        public event Action<int> OnShowSetCard
+        public event Action<int, string, bool> OnSummonSetCard
         {
-            add => _OnShowSetCard += value;
-            remove => _OnShowSetCard -= value;
-        }        
-        public event Action<int> OnHideSetMonster
-        {
-            add => _OnHideSetMonster += value;
-            remove => _OnHideSetMonster -= value;
+            add => _OnSummonSetCard += value;
+            remove => _OnSummonSetCard -= value;
         }
-        public event Action<int> OnDestroySetMonster
+        public event Action<SetCardEvent, int> OnAction
         {
-            add => _OnDestroySetMonster += value;
-            remove => _OnDestroySetMonster -= value;
-        }
-        public event Action<int> OnSpellTrapActivate
-        {
-            add => _OnSpellTrapActivate += value;
-            remove => _OnSpellTrapActivate -= value;
-        }
-        public event Action<int> OnReturnToFaceDown
-        {
-            add => _OnReturnToFaceDown += value;
-            remove => _OnReturnToFaceDown -= value;
+            add => _OnAction += value;
+            remove => _OnAction -= value;
         }
         public event Action<int> OnSetCardRemove
         {
             add => _OnSetCardRemove += value;
             remove => _OnSetCardRemove -= value;
         }
-        public event Action<int, string, bool> OnSummonSetCard
-        {
-            add => _OnSummonSetCard += value;
-            remove => _OnSummonSetCard -= value;
-        }
 
         #endregion
 
-        public void RaiseEventByEventName(SetCardEvent eventName, int instanceID)
-        {
-            switch (eventName)
-            {
-                case SetCardEvent.ShowSetCard:
-                    _OnShowSetCard?.Invoke(instanceID);
-                    break;
-                case SetCardEvent.HideSetMonster:
-                    _OnHideSetMonster?.Invoke(instanceID);
-                    break;
-                case SetCardEvent.DestroySetMonster:
-                    _OnDestroySetMonster?.Invoke(instanceID);
-                    break;
-                case SetCardEvent.SpellTrapActivate:
-                    _OnSpellTrapActivate?.Invoke(instanceID);
-                    break;
-                case SetCardEvent.SetCardRemove:
-                    _OnSetCardRemove?.Invoke(instanceID);
-                    break;
-                case SetCardEvent.ReturnToFaceDown:
-                    _OnReturnToFaceDown?.Invoke(instanceID);
-                    break;
-            }
-        }
-
-        public void RaiseSummonSetCardEvent(int instanceID, string modelName, bool isMonster)
+        public void Summon(int instanceID, string modelName, bool isMonster)
         {
             _OnSummonSetCard?.Invoke(instanceID, modelName, isMonster);
+        }
+
+        public void Action(SetCardEvent eventName, int instanceID)
+        {
+            _OnAction?.Invoke(eventName, instanceID);
+        }
+
+        public void Remove(int instanceID)
+        {
+            _OnSetCardRemove?.Invoke(instanceID);
         }
     }
 }

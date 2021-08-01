@@ -7,14 +7,14 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
         DestroyMonster,
         MonsterDestruction,
         Attack,
-        RevealSetMonster,
+        RevealSetMonsterModel,
     }
 
     public enum SetCardEvent
     {
         SummonSetCard,
-        ShowSetCard,
-        HideSetMonster,
+        RevealSetCardImage,
+        HideSetCardImage,
         DestroySetMonster,
         SpellTrapActivate,
         SetCardRemove,

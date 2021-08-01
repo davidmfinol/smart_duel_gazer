@@ -23,7 +23,7 @@ namespace Code.Features.SpeedDuel.Models
                 Id,
                 CopyNumber,
                 zoneType != default ? zoneType : ZoneType,
-                cardPosition != default ? cardPosition : CardPosition) ;
+                cardPosition != default ? cardPosition : CardPosition);
         }
     }
 }

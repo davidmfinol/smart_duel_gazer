@@ -55,8 +55,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             {
                 CardPosition.FaceUp => SetCardEvent.SpellTrapActivate,
                 CardPosition.FaceDown => SetCardEvent.ReturnToFaceDown,
-                CardPosition.FaceUpDefence => SetCardEvent.ShowSetCard,
-                CardPosition.FaceDownDefence => SetCardEvent.HideSetMonster,
+                CardPosition.FaceUpDefence => SetCardEvent.RevealSetCardImage,
+                CardPosition.FaceDownDefence => SetCardEvent.HideSetCardImage,
                 _ => default
             };
         }

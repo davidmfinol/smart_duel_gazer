@@ -5,6 +5,7 @@ using Code.Core.DataManager.DuelRooms;
 using Code.Core.DataManager.GameObjects;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Textures;
+using Code.Core.DataManager.UserSettings;
 using Code.Core.Dialog;
 using Code.Core.Logger;
 using Code.Core.Navigation;
@@ -14,6 +15,7 @@ using Code.Core.Storage.Connection;
 using Code.Core.Storage.DuelRoom;
 using Code.Core.Storage.GameObject;
 using Code.Core.Storage.Texture;
+using Code.Core.Storage.UserSettings;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection.Helpers;
 using Code.Features.SpeedDuel.EventHandlers;
@@ -54,6 +56,7 @@ namespace Code.Di
             Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
             Container.Bind<IDuelRoomDataManager>().To<DuelRoomDataManager>().AsSingle();
+            Container.Bind<IUserSettingsDataManager>().To<UserSettingsDataManager>().AsSingle();
 
             // Use cases
             Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
@@ -69,6 +72,7 @@ namespace Code.Di
             Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
             Container.Bind<IDuelRoomStorageProvider>().To<DuelRoomStorageProvider>().AsSingle();
+            Container.Bind<IUserSettingsStorageProvider>().To<UserSettingsStorageProvider>().AsSingle();
 
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();

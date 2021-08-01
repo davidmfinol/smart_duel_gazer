@@ -378,7 +378,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playfieldPrefab: {fileID: 5832322887851411820, guid: 083ac975799f2b74c953f057f7101bf7, type: 3}
   _placementIndicator: {fileID: 633987594}
-  _mainCamera: {fileID: 1577749884}
 --- !u!1 &301659725
 GameObject:
   m_ObjectHideFlags: 0
@@ -1137,7 +1136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60abefd111bc12f458d09456b9ce25a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsKey: 0
+  _settingsKey: 0
 --- !u!114 &826204157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,7 +1274,6 @@ GameObject:
   m_Component:
   - component: {fileID: 957963883}
   - component: {fileID: 957963884}
-  - component: {fileID: 957963885}
   m_Layer: 0
   m_Name: PrefabManager
   m_TagString: Untagged
@@ -1311,18 +1309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _particles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
   _setCard: {fileID: 5233387070911847034, guid: 9055234d2df24ad4ea34b214b7f14c82, type: 3}
---- !u!114 &957963885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 957963882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa6c881af01390848a459dafda0b8ef6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &972666675
 GameObject:
   m_ObjectHideFlags: 0
@@ -3817,7 +3803,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -59.00006}
+  m_AnchoredPosition: {x: 0, y: -59}
   m_SizeDelta: {x: 243.99997, y: 79.22421}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6449482834886372209

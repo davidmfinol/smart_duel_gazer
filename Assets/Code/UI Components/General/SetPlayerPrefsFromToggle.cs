@@ -3,16 +3,16 @@ using UnityEngine.UI;
 using UniRx;
 using Zenject;
 using AssemblyCSharp.Assets.Code.UIComponents.Constants;
-using Code.Wrappers.WrapperPlayerPrefs;
+using Code.Core.DataManager;
 
 namespace AssemblyCSharp.Assets.Code.UIComponents.General
 {
-    public class SetPlayerPrefsFromToggle : MonoBehaviour
+    public class SetUserSettingsFromToggle : MonoBehaviour
     {
         [SerializeField]
-        private Settings _settingsKey;
+        private SettingsItems _settingsItem;
 
-        private IPlayerPrefsProvider _playerPrefsProvider;
+        private IDataManager _dataManager;
 
         private Toggle _toggle;
         private string _toggleKey;
@@ -20,9 +20,9 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
         #region Constructors
 
         [Inject]
-        public void Construct(IPlayerPrefsProvider playerPrefsProvider)
+        public void Construct(IDataManager dataManager)
         {
-            _playerPrefsProvider = playerPrefsProvider;
+            _dataManager = dataManager;
         }
 
         #endregion
@@ -32,14 +32,14 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
         private void Awake()
         {
             _toggle = GetComponent<Toggle>();
-            _toggleKey = _settingsKey.ToString();
+            _toggleKey = _settingsItem.ToString();
 
-            //if (!_playerPrefsProvider.HasKey(_toggleKey))
-            //{
-            //    _playerPrefsProvider.SetBool(_toggleKey, true);
-            //}
+            if (!_dataManager.HasKey(_toggleKey))
+            {
+                _dataManager.SetBool(_toggleKey, true);
+            }
 
-            //_toggle.isOn = _playerPrefsProvider.GetBool(_toggleKey);
+            _toggle.isOn = _dataManager.GetBool(_toggleKey);
 
             RegisterClickListeners();
         }
@@ -53,13 +53,9 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
 
         private void SetPreferencesUsingToggleValue(bool isEnabled)
         {
-            if (_toggleKey == null)
-            {
-                Debug.LogError($"No Key Has Been Set!", this);
-                return;
-            }
+            if (_toggleKey == null) return;
 
-            //_playerPrefsProvider.SetBool(_toggleKey, isEnabled);
+            _dataManager.SetBool(_toggleKey, isEnabled);
         }
     }
 }

@@ -61,20 +61,19 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
                 monsterModel.transform.position, monsterModel.transform.rotation);
 
             var modelID = monsterModel.GetInstanceIDForModel();
-            _modelEventHandler.RaiseEventByEventName(ModelEvent.DestroyMonster, modelID);
+            _modelEventHandler.Remove(modelID);
 
             _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
             _recycleGameObjectUseCase.Execute(oldCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;
 
-            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.DestroySetMonster, setCardModel.GetInstanceIDForSetCard());
             RemoveSetCard(setCardModel);
         }
 
         private void RemoveSetCard(GameObject setCardModel)
         {
-            _setCardEventHandler.RaiseEventByEventName(SetCardEvent.SetCardRemove, setCardModel.GetInstanceIDForSetCard());
+            _setCardEventHandler.Remove(setCardModel.GetInstanceIDForSetCard());
             _recycleGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, setCardModel);
         }
     }

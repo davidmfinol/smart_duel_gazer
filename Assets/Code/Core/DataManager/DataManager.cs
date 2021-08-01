@@ -4,13 +4,14 @@ using Code.Core.DataManager.Connections.Entities;
 using Code.Core.DataManager.DuelRooms;
 using Code.Core.DataManager.GameObjects;
 using Code.Core.DataManager.Textures;
+using Code.Core.DataManager.UserSettings;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using UnityEngine;
 using Zenject;
 
 namespace Code.Core.DataManager
 {
-    public interface IDataManager : IConnectionDataManager, IGameObjectDataManager, ITextureDataManager, IDuelRoomDataManager
+    public interface IDataManager : IConnectionDataManager, IGameObjectDataManager, ITextureDataManager, IDuelRoomDataManager, IUserSettingsDataManager
     {
     }
     
@@ -20,18 +21,21 @@ namespace Code.Core.DataManager
         private readonly IGameObjectDataManager _gameObjectDataManager;
         private readonly ITextureDataManager _textureDataManager;
         private readonly IDuelRoomDataManager _duelRoomDataManager;
+        private readonly IUserSettingsDataManager _userSettingsDataManager;
 
         [Inject]
         public DataManager(
             IConnectionDataManager connectionDataManager,
             IGameObjectDataManager gameObjectDataManager,
             ITextureDataManager textureDataManager,
-            IDuelRoomDataManager duelRoomDataManager)
+            IDuelRoomDataManager duelRoomDataManager,
+            IUserSettingsDataManager userSettingsDataManager)
         {
             _connectionDataManager = connectionDataManager;
             _gameObjectDataManager = gameObjectDataManager;
             _textureDataManager = textureDataManager;
             _duelRoomDataManager = duelRoomDataManager;
+            _userSettingsDataManager = userSettingsDataManager;
         }
 
         #region Connection
@@ -91,6 +95,35 @@ namespace Code.Core.DataManager
         public void SaveDuelRoom(DuelRoom room)
         {
             _duelRoomDataManager.SaveDuelRoom(room);
+        }
+
+        #endregion
+
+        #region User Settings
+
+        public bool HasKey(string key)
+        {
+            return _userSettingsDataManager.HasKey(key);
+        }
+        
+        public string GetString(string key)
+        {
+            return _userSettingsDataManager.GetString(key);
+        }
+
+        public void SetString(string key, string value)
+        {
+            _userSettingsDataManager.SetString(key, value);
+        }
+
+        public bool GetBool(string key)
+        {
+            return _userSettingsDataManager.GetBool(key);
+        }
+
+        public void SetBool(string key, bool value)
+        {
+            _userSettingsDataManager.SetBool(key, value);
         }
 
         #endregion
