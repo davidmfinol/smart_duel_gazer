@@ -2,6 +2,8 @@
     "name": "CodeAssembly",
     "rootNamespace": "",
     "references": [
+        "GUID:d86cf2ea6d0cb4d8598467f0d0271bc7",
+        "GUID:fcfe32140634f49559f986101d2a2909",
         "GUID:e77f424fc0a334e8c9ef27182fb9068d",
         "GUID:029d29e33458148f784ef2991271b9bf",
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",

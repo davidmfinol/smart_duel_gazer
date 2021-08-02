@@ -6,7 +6,7 @@ namespace Code.Core.Dialog
 {
     public interface IDialogService
     {
-        bool ShowDialog(DialogConfig config);
+        void ShowDialog(DialogConfig config);
         void ShowToast(string message);
     }
 
@@ -23,9 +23,9 @@ namespace Code.Core.Dialog
             _toastProvider = toastProvider;
         }
 
-        public bool ShowDialog(DialogConfig config)
+        public void ShowDialog(DialogConfig config)
         {
-            return _dialogProvider.ShowDialog(config);
+            _dialogProvider.ShowDialog(config);
         }
 
         public void ShowToast(string message)

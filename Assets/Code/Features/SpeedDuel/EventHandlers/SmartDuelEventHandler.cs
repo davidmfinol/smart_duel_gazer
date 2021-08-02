@@ -243,10 +243,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 Title = "Duel is over",
                 Description = $"{winnerId} won the duel!",
-                PositiveText = "Continue"
+                PositiveText = "Continue",
+                PositiveAction = () =>_navigationService.ShowConnectionScene()
             });
-            
-            _navigationService.ShowConnectionScene();
         }
 
         #endregion

@@ -152,6 +152,20 @@
       "dependencies": {},
       "hash": "486af8b260b7cda4866ab6c336d8397338ab9c45"
     },
+    "nrjwolf.games.easyandroidalerts": {
+      "version": "https://github.com/Nrjwolf/unity-android-easy-native-alerts.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "020cb6153b480d3eee8b59434ed68bfb10f2c68f"
+    },
+    "nrjwolf.games.iosnativealerts": {
+      "version": "git+https://github.com/Nrjwolf/unity-ios-easy-native-alert",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "bf7185d8cb9007ecf29e9040b3063e30d7215092"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

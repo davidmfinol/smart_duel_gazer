@@ -1,3 +1,5 @@
+using System;
+
 namespace Code.Core.Dialog.Entities
 {
     public class DialogConfig
@@ -5,6 +7,6 @@ namespace Code.Core.Dialog.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public string PositiveText { get; set; }
-        public string NegativeText { get; set; } = string.Empty;
+        public Action PositiveAction { get; set; }
     }
 }

@@ -113,7 +113,7 @@ namespace Code.Di
             Container.Bind<ILoggerProvider>().To<LoggerProvider>().AsSingle();
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IResourcesProvider>().To<ResourcesProvider>().AsSingle();
-            Container.Bind<IToastProvider>().To<ToastProvider>();
+            Container.Bind<IToastProvider>().To<ToastProvider>().AsSingle();
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
