@@ -16,8 +16,7 @@ namespace Code.Core.Storage.Connection
         private const string ConnectionInfoKey = "connectionInfo";
 
         private readonly IPlayerPrefsProvider _playerPrefsProvider;
-
-        [Inject]
+        
         public ConnectionStorageProvider(
             IPlayerPrefsProvider playerPrefsProvider)
         {
