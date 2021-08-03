@@ -4,18 +4,10 @@ using UnityEngine;
 
 namespace Code.Features.SpeedDuel.EventHandlers
 {
-    //public interface IModelEventHandler
-    //{       
-    //    public void Activate(int instanceID);
-    //    public void RaiseEventByEventName(ModelEvent eventNames, int instanceID);
-    //    public void RaiseChangeVisibilityEvent(int instanceID, bool state);
-    //    public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
-    //}
-
     public interface IModelEventHandler
     {
         public void Summon(int instanceID);
-        public void Action(ModelEvent eventName, int instanceID);
+        public void Action(ModelEvent eventName, int instanceID, bool state);
         public void Remove(int instanceID);
     }
 
@@ -23,10 +15,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
     {
         private event Action<int> _OnActivateModel;
         private event Action<int> _OnSummon;
-        private event Action<ModelEvent, int> _OnAction;
+        private event Action<ModelEvent, int, bool> _OnAction;
         private event Action<int> _OnRemove;
 
-        private event Action<int, bool> _OnChangeMonsterVisibility;
         private event Action<SkinnedMeshRenderer[]> _OnMonsterRemoval;
 
         #region Event Accessors
@@ -41,7 +32,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             add => _OnSummon += value;
             remove => _OnSummon -= value;
         }
-        public event Action<ModelEvent, int> OnAction
+        public event Action<ModelEvent, int, bool> OnAction
         {
             add => _OnAction += value;
             remove => _OnAction -= value;
@@ -50,12 +41,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             add => _OnRemove += value;
             remove => _OnRemove -= value;
-        }
-        public event Action<int, bool> OnChangeMonsterVisibility 
-        {
-            add => _OnChangeMonsterVisibility += value;
-            remove => _OnChangeMonsterVisibility -= value;
-        }        
+        }       
         public event Action<SkinnedMeshRenderer[]> OnMonsterRemoval 
         { 
             add => _OnMonsterRemoval += value;
@@ -74,14 +60,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _OnSummon?.Invoke(instanceID);
         }
         
-        public void Action(ModelEvent eventName, int instanceID)
+        public void Action(ModelEvent eventName, int instanceID, bool state = true)
         {
-            _OnAction?.Invoke(eventName, instanceID);
-        }
-        
-        public void RaiseChangeVisibilityEvent(int instanceID, bool state)
-        {
-            _OnChangeMonsterVisibility?.Invoke(instanceID, state);
+            _OnAction?.Invoke(eventName, instanceID, state);
         }
 
         public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers)

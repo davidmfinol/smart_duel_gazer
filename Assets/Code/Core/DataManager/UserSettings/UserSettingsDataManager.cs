@@ -1,50 +1,36 @@
 using Code.Core.Storage.UserSettings;
-using Zenject;
 
 namespace Code.Core.DataManager.UserSettings
 {
     public interface IUserSettingsDataManager
     {
-        bool HasKey(string key);
-        bool GetBool(string key);
-        string GetString(string key);
-        void SetBool(string key, bool value);
-        void SetString(string key, string value);
+        void SetToggleSetting(string settingName, bool value);
+        bool IsToggleSettingEnabled(string settingName);
     }
 
     public class UserSettingsDataManager : IUserSettingsDataManager
     {
         private IUserSettingsStorageProvider _userSettingsStorageProvider;
 
-        [Inject]
-        public void Construct(IUserSettingsStorageProvider userSettingsStorageProvider)
+        public UserSettingsDataManager(
+            IUserSettingsStorageProvider userSettingsStorageProvider)
         {
             _userSettingsStorageProvider = userSettingsStorageProvider;
         }
 
-        public bool HasKey(string key)
+        public void SetToggleSetting(string settingName, bool value)
         {
-            return _userSettingsStorageProvider.HasKey(key);
-        }
-        
-        public string GetString(string key)
-        {
-            return _userSettingsStorageProvider.GetString(key);
+            _userSettingsStorageProvider.SetBool(settingName, value);
         }
 
-        public void SetString(string key, string value)
+        public bool IsToggleSettingEnabled(string settingName)
         {
-            _userSettingsStorageProvider.SetString(key, value);
-        }
+            if (!_userSettingsStorageProvider.HasKey(settingName))
+            {
+                return false;
+            }
 
-        public bool GetBool(string key)
-        {
-            return _userSettingsStorageProvider.GetBool(key);
-        }
-
-        public void SetBool(string key, bool value)
-        {
-            _userSettingsStorageProvider.SetBool(key, value);
+            return _userSettingsStorageProvider.GetBool(settingName);
         }
     }
 }

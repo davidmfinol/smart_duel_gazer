@@ -101,29 +101,14 @@ namespace Code.Core.DataManager
 
         #region User Settings
 
-        public bool HasKey(string key)
+        public void SetToggleSetting(string settingName, bool value)
         {
-            return _userSettingsDataManager.HasKey(key);
-        }
-        
-        public string GetString(string key)
-        {
-            return _userSettingsDataManager.GetString(key);
+            _userSettingsDataManager.SetToggleSetting(settingName, value);
         }
 
-        public void SetString(string key, string value)
+        public bool IsToggleSettingEnabled(string settingName)
         {
-            _userSettingsDataManager.SetString(key, value);
-        }
-
-        public bool GetBool(string key)
-        {
-            return _userSettingsDataManager.GetBool(key);
-        }
-
-        public void SetBool(string key, bool value)
-        {
-            _userSettingsDataManager.SetBool(key, value);
+            return _userSettingsDataManager.IsToggleSettingEnabled(settingName);
         }
 
         #endregion

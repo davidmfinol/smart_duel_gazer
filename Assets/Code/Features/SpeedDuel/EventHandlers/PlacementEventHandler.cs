@@ -40,8 +40,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
         #region Constructors
 
         [Inject]
-        public void Construct(IDataManager dataManager,
-                              PlayfieldEventHandler playfieldEventHandler)
+        public void Construct(
+            IDataManager dataManager,
+            PlayfieldEventHandler playfieldEventHandler)
         {
             _dataManager = dataManager;
             _playfieldEventHandler = playfieldEventHandler;
@@ -82,9 +83,10 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
 
             #region Editor
+
             #if UNITY_EDITOR
 
-            // Use Spacebar to place playfield if in Editor. Good for quick tests
+            // Use Spacebar to place playfield if in Editor
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
@@ -93,6 +95,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             }
 
             #endif
+
             #endregion
 
             if (_objectIsPlaced)

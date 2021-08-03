@@ -34,12 +34,7 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
             _toggle = GetComponent<Toggle>();
             _toggleKey = _settingsItem.ToString();
 
-            if (!_dataManager.HasKey(_toggleKey))
-            {
-                _dataManager.SetBool(_toggleKey, true);
-            }
-
-            _toggle.isOn = _dataManager.GetBool(_toggleKey);
+            _toggle.isOn = _dataManager.IsToggleSettingEnabled(_toggleKey);
 
             RegisterClickListeners();
         }
@@ -48,14 +43,14 @@ namespace AssemblyCSharp.Assets.Code.UIComponents.General
 
         private void RegisterClickListeners()
         {
-            _toggle.OnValueChangedAsObservable().Subscribe(_ => SetPreferencesUsingToggleValue(_toggle.isOn));
+            _toggle.OnValueChangedAsObservable().Subscribe(SetPreferencesUsingToggleValue);
         }
 
         private void SetPreferencesUsingToggleValue(bool isEnabled)
         {
             if (_toggleKey == null) return;
 
-            _dataManager.SetBool(_toggleKey, isEnabled);
+            _dataManager.SetToggleSetting(_toggleKey, isEnabled);
         }
     }
 }

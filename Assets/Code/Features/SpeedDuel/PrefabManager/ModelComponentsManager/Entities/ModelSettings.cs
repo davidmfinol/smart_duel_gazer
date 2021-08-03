@@ -6,6 +6,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
     {
         [SerializeField]
         private Vector3 _modelScale;
-        public Vector3 ModelScale { get => _modelScale; }
+        public Vector3 ModelScale => _modelScale;
     }
 }

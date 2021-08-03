@@ -10,27 +10,9 @@ namespace Code.Core.General.Extensions
             return value.name.ToLowerInvariant().Contains("clone");
         }
 
-        
-        /// <summary>
-        /// Returns the instance ID of the GameObject that holds the 'ModelCompenentsManager' Script. This Instance
-        /// ID is used to activate the model's animator.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns>int InstanceID</returns>
-        public static int GetInstanceIDForModel(this GameObject model)
+        public static bool IsIntendedGameObject(this GameObject value, int objectInstanceID, int targetInstanceID)
         {
-            return model.transform.GetChild(0).GetInstanceID();
-        }
-
-        /// <summary>
-        /// Returns the Instance ID of the GameObject that holds the 'SetCard' script. This Instance ID is used to
-        /// activate the setCard's animator.
-        /// </summary>
-        /// <param name="setCard"></param>
-        /// <returns>int InstanceID</returns>
-        public static int GetInstanceIDForSetCard(this GameObject setCard)
-        {
-            return setCard.GetInstanceID();
+            return objectInstanceID == targetInstanceID && value.activeSelf;
         }
 
         /// <summary>

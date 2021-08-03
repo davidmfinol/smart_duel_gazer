@@ -60,7 +60,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey,
                 monsterModel.transform.position, monsterModel.transform.rotation);
 
-            var modelID = monsterModel.GetInstanceIDForModel();
+            var modelID = monsterModel.GetInstanceID();
             _modelEventHandler.Remove(modelID);
 
             _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
@@ -73,7 +73,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         private void RemoveSetCard(GameObject setCardModel)
         {
-            _setCardEventHandler.Remove(setCardModel.GetInstanceIDForSetCard());
+            _setCardEventHandler.Remove(setCardModel.GetInstanceID());
             _recycleGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, setCardModel);
         }
     }

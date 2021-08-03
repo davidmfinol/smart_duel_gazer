@@ -1,3 +1,4 @@
+using Code.Core.General.Extensions;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities;
@@ -22,8 +23,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         #region Constructor
 
         [Inject]
-        public void Construct(ModelEventHandler modelEventHandler,
-                              PlayfieldEventHandler playfieldEventHandler)
+        public void Construct(
+            ModelEventHandler modelEventHandler,
+            PlayfieldEventHandler playfieldEventHandler)
         {
             _modelEventHandler = modelEventHandler;
             _playfieldEventHandler = playfieldEventHandler;
@@ -39,7 +41,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             _settings = GetComponent<ModelSettings>();
 
-            _instanceID = transform.GetInstanceID();
+            //Gets InstanceID of parent Game Object
+            _instanceID = transform.parent.gameObject.GetInstanceID();
             SubscribeToEvents();
         }
 
@@ -52,7 +55,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnActivateModel += ActivateModel;
             _modelEventHandler.OnSummon += SummonMonster;
             _modelEventHandler.OnAction += Action;
-            _modelEventHandler.OnChangeMonsterVisibility += ChangeMonsterVisibility;
             _modelEventHandler.OnRemove += RemoveMonster;
 
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
@@ -65,7 +67,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void ActivateModel(int instanceID)
         {
-            if (_instanceID != instanceID || gameObject.activeSelf == false) return;
+            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
 
             // Scale model based on ModelSettings
             transform.parent.transform.localScale = _settings.ModelScale;
@@ -73,7 +75,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void SummonMonster(int instanceID)
         {
-            if (_instanceID != instanceID || gameObject.activeSelf == false) return;
+            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
 
             _renderers.SetRendererVisibility(true);
             _areRenderersEnabled = true;
@@ -81,10 +83,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
 
-        private void Action(ModelEvent eventName, int instanceID)
+        private void Action(ModelEvent eventName, int instanceID, bool state)
         {
-            if (instanceID != _instanceID || gameObject.activeSelf == false) return;
-            
+            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
+
             switch (eventName)
             {
                 case ModelEvent.Attack:
@@ -93,15 +95,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
                 case ModelEvent.RevealSetMonsterModel:
                     RevealSetMonsterModel();
                     break;
+                case ModelEvent.ChangeMonsterVisibility:
+                    ChangeMonsterVisibility(state);
+                    break;
             }
-        }
-
-        private void ChangeMonsterVisibility(int instanceID, bool state)
-        {
-            if (_instanceID != instanceID || gameObject.activeSelf == false) return;
-
-            _renderers.SetRendererVisibility(state);
-            _areRenderersEnabled = state;
         }
 
         private void RemoveMonster(int instanceID)
@@ -139,10 +136,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void Attack()
         {
-            if (_animator.GetBool("IsDefence"))
-            {
-                return;
-            }
+            var isInDefence = _animator.GetBool(AnimatorParameters.DefenceBool);
+            if (isInDefence) return;
 
             _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
         }
@@ -150,6 +145,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private void RevealSetMonsterModel()
         {
             _animator.SetBool(AnimatorParameters.DefenceBool, true);
+        }
+
+        private void ChangeMonsterVisibility(bool state)
+        {
+            _renderers.SetRendererVisibility(state);
+            _areRenderersEnabled = state;
         }
 
         private void ActivateParticlesAndRemoveModel()

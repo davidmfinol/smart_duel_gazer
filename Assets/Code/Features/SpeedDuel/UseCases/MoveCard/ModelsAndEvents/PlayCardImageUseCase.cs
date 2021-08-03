@@ -39,7 +39,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             var modelEvent = GetModelEvent(zone, updatedCard);
             var isMonster = updatedCard.CardPosition.IsDefence();
-            _handlePlayCardModelEventsUseCase.Execute(modelEvent, updatedCard, setCardModel.GetInstanceIDForSetCard(), isMonster);
+            _handlePlayCardModelEventsUseCase.Execute(modelEvent, updatedCard, setCardModel.GetInstanceID(), isMonster);
 
             return zone.CopyWith(updatedCard, setCardModel);
         }
