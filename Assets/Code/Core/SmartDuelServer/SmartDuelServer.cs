@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using UniRx;
-using UnityEngine;
 
 namespace Code.Core.SmartDuelServer
 {
@@ -78,6 +77,8 @@ namespace Code.Core.SmartDuelServer
 
         public void OnEventReceived(string scope, string action, JToken json)
         {
+            _logger.Log(Tag, $"OnEventReceived(scope: {scope}, action: {action}, json: {json})");
+            
             switch (scope)
             {
                 case SmartDuelEventConstants.GlobalScope:

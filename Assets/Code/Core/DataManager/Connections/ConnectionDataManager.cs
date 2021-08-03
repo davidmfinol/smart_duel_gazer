@@ -14,8 +14,7 @@ namespace Code.Core.DataManager.Connections
     public class ConnectionDataManager : IConnectionDataManager
     {
         private readonly IConnectionStorageProvider _connectionStorageProvider;
-
-        [Inject]
+        
         public ConnectionDataManager(
             IConnectionStorageProvider connectionStorageProvider)
         {

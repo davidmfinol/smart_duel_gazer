@@ -25,9 +25,11 @@ using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
+using Code.Wrappers.WrapperDialog;
 using Code.Wrappers.WrapperLogger;
 using Code.Wrappers.WrapperPlayerPrefs;
 using Code.Wrappers.WrapperResources;
+using Code.Wrappers.WrapperToast;
 using Code.Wrappers.WrapperWebSocket;
 using Dpoch.SocketIO;
 using UnityEngine;
@@ -66,8 +68,6 @@ namespace Code.Di
             Container.Bind<IYgoProDeckApiProvider>().To<YgoProDeckApiProvider>().AsSingle();
 
             // Storage providers
-            Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
-            Container.Bind<IResourcesProvider>().To<ResourcesProvider>().AsSingle();
             Container.Bind<IConnectionStorageProvider>().To<ConnectionStorageProvider>().AsSingle();
             Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
@@ -116,11 +116,14 @@ namespace Code.Di
 
             #region Wrappers
 
+            Container.Bind<IDialogProvider>().To<DialogProvider>().AsSingle();
+            Container.Bind<ILoggerProvider>().To<LoggerProvider>().AsSingle();
+            Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
+            Container.Bind<IResourcesProvider>().To<ResourcesProvider>().AsSingle();
+            Container.Bind<IToastProvider>().To<ToastProvider>().AsSingle();
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
-
-            Container.Bind<ILoggerProvider>().To<LoggerProvider>().AsSingle();
 
             #endregion
         }
