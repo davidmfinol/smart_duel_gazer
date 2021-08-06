@@ -1,7 +1,7 @@
-namespace AssemblyCSharp.Assets.Code.UIComponents.Constants
+namespace Code.UI_Components.Constants
 {    
     public enum SettingsItems
     {
-        Settings,
+        Settings
     }
 }

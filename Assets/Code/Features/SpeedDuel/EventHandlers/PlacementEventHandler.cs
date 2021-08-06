@@ -158,7 +158,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
                     _speedDuelField.transform.rotation);
                 _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
-                return;
             }
             else
             {

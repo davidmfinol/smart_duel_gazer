@@ -1,11 +1,11 @@
+using Code.Core.DataManager;
+using Code.UI_Components.Constants;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
 using Zenject;
-using AssemblyCSharp.Assets.Code.UIComponents.Constants;
-using Code.Core.DataManager;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.General
+namespace Code.UI_Components.General
 {
     public class SetUserSettingsFromToggle : MonoBehaviour
     {

@@ -10,7 +10,7 @@ namespace Code.Core.DataManager.UserSettings
 
     public class UserSettingsDataManager : IUserSettingsDataManager
     {
-        private IUserSettingsStorageProvider _userSettingsStorageProvider;
+        private readonly IUserSettingsStorageProvider _userSettingsStorageProvider;
 
         public UserSettingsDataManager(
             IUserSettingsStorageProvider userSettingsStorageProvider)
@@ -25,12 +25,7 @@ namespace Code.Core.DataManager.UserSettings
 
         public bool IsToggleSettingEnabled(string settingName)
         {
-            if (!_userSettingsStorageProvider.HasKey(settingName))
-            {
-                return false;
-            }
-
-            return _userSettingsStorageProvider.GetBool(settingName);
+            return _userSettingsStorageProvider.HasKey(settingName) && _userSettingsStorageProvider.GetBool(settingName);
         }
     }
 }

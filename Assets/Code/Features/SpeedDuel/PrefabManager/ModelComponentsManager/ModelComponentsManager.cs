@@ -50,7 +50,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #region Event Subscriptions
 
-        public void SubscribeToEvents()
+        private void SubscribeToEvents()
         {
             _modelEventHandler.OnActivateModel += ActivateModel;
             _modelEventHandler.OnSummon += SummonMonster;
@@ -172,7 +172,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
     {
         public static void SetRendererVisibility(this SkinnedMeshRenderer[] renderers, bool visibility)
         {
-            foreach (SkinnedMeshRenderer item in renderers)
+            foreach (var item in renderers)
             {
                 item.enabled = visibility;
             }

@@ -118,7 +118,6 @@ namespace Code.Features.SpeedDuel
             }
         }
         
-        // TODO: @Subtle can these be removed? They're not used.
         // These are being called via an animator event to allow time for animations before removing the playmat
 
         public void DeletePlaymat()
