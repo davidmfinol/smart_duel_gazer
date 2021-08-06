@@ -1,4 +1,4 @@
-using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.EventHandlers;
 using UnityEngine;
 using Zenject;
 
@@ -6,7 +6,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
 {
     public class DestructionParticles : MonoBehaviour
     {
-        private ModelEventHandler _eventHandler;
+        private ModelEventHandler _modelEventHandler;
         private ParticleSystem _particleSystem;
 
         #region Constructor
@@ -15,7 +15,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
         public void Construct(
             ModelEventHandler modelEventHandler)
         {
-            _eventHandler = modelEventHandler;
+            _modelEventHandler = modelEventHandler;
         }
 
         #endregion
@@ -29,7 +29,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
 
         private void OnEnable()
         {
-            _eventHandler.OnMonsterRemoval += OnMonsterDestruction;
+            _modelEventHandler.OnMonsterRemoval += OnMonsterDestruction;
         }
 
         #endregion
@@ -38,7 +38,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
         {
             SetMeshShape(renderers[0]);
             _particleSystem.Play();
-            _eventHandler.OnMonsterRemoval -= OnMonsterDestruction;
+            _modelEventHandler.OnMonsterRemoval -= OnMonsterDestruction;
         }
 
         private void SetMeshShape(SkinnedMeshRenderer skinnedMesh)

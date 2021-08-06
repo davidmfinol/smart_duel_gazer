@@ -5,10 +5,9 @@ using Code.Core.DataManager.DuelRooms;
 using Code.Core.DataManager.GameObjects;
 using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Textures;
+using Code.Core.DataManager.UserSettings;
 using Code.Core.Dialog;
 using Code.Core.Logger;
-using Code.Core.Models.ModelComponentsManager;
-using Code.Core.Models.ModelEventsHandler;
 using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
@@ -16,8 +15,11 @@ using Code.Core.Storage.Connection;
 using Code.Core.Storage.DuelRoom;
 using Code.Core.Storage.GameObject;
 using Code.Core.Storage.Texture;
+using Code.Core.Storage.UserSettings;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection.Helpers;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
@@ -56,6 +58,7 @@ namespace Code.Di
             Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
             Container.Bind<IDuelRoomDataManager>().To<DuelRoomDataManager>().AsSingle();
+            Container.Bind<IUserSettingsDataManager>().To<UserSettingsDataManager>().AsSingle();
 
             // Use cases
             Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
@@ -69,14 +72,10 @@ namespace Code.Di
             Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
             Container.Bind<IDuelRoomStorageProvider>().To<DuelRoomStorageProvider>().AsSingle();
+            Container.Bind<IUserSettingsStorageProvider>().To<UserSettingsStorageProvider>().AsSingle();
 
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
-
-            // Models
-            Container.Bind<ModelEventHandler>().AsSingle();
-            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
-                .FromFactory<PrefabFactory<ModelComponentsManager>>();
 
             // Logger
             Container.Bind<IAppLogger>().To<AppLogger>().AsSingle();
@@ -87,8 +86,16 @@ namespace Code.Di
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
 
+            // Event Handlers
+            Container.Bind<ModelEventHandler>().AsSingle();
+            Container.Bind<PlayfieldEventHandler>().AsSingle();
+            Container.Bind<SetCardEventHandler>().AsSingle();
+
+            // Prefabs
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
                 .FromFactory<PrefabFactory<DestructionParticles>>();
+            Container.BindFactory<GameObject, ModelComponentsManager, ModelComponentsManager.Factory>()
+                .FromFactory<PrefabFactory<ModelComponentsManager>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()
                 .FromFactory<PrefabFactory<SetCard>>();
 

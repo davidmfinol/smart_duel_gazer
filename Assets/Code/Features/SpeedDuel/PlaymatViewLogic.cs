@@ -1,4 +1,4 @@
-using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.EventHandlers;
 using Code.UI_Components.Constants;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +13,7 @@ namespace Code.Features.SpeedDuel
         [SerializeField] private Slider _rotationSlider;
         [SerializeField] private Toggle _toggleView;
 
-        private ModelEventHandler _modelEventHandler;
+        private PlayfieldEventHandler _playfieldEventHandler;
 
         private GameObject _playmatShell;
         private Animator _playmatAnimator;
@@ -24,9 +24,9 @@ namespace Code.Features.SpeedDuel
 
         [Inject]
         public void Construct(
-            ModelEventHandler modelEventHandler)
+            PlayfieldEventHandler playfieldEventHandler)
         {
-            _modelEventHandler = modelEventHandler;
+            _playfieldEventHandler = playfieldEventHandler;
         }
 
         #endregion
@@ -35,8 +35,8 @@ namespace Code.Features.SpeedDuel
 
         private void Awake()
         {
-            _modelEventHandler.OnActivatePlayfield += ActivatePlayfieldMenus;
-            _modelEventHandler.OnPickupPlayfield += RemovePlayfieldMenus;
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfieldMenus;
+            _playfieldEventHandler.OnPickupPlayfield += RemovePlayfieldMenus;
         }
 
         #endregion
@@ -119,6 +119,7 @@ namespace Code.Features.SpeedDuel
         }
         
         // TODO: @Subtle can these be removed? They're not used.
+        // These are being called via an animator event to allow time for animations before removing the playmat
 
         public void DeletePlaymat()
         {
@@ -133,7 +134,7 @@ namespace Code.Features.SpeedDuel
 
         private void DestroyPlaymat()
         {
-            _modelEventHandler.DestroyPlayfield();
+            _playfieldEventHandler.RemovePlayfield();
         }
     }
 }

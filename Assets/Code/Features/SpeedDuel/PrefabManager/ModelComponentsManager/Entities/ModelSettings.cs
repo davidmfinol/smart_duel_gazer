@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Code.Core.Models.ModelComponentsManager.Entities
+namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 {
     public class ModelSettings : MonoBehaviour
     {

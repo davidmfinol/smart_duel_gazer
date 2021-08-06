@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Code.Core.DataManager;
 using Code.Core.General.Extensions;
-using Code.Core.Models.ModelEventsHandler;
 using Code.Features.SpeedDuel.PrefabManager;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
@@ -16,16 +15,15 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         [SerializeField] private GameObject _playfieldPrefab;
         [SerializeField] private GameObject _placementIndicator;
-        [SerializeField] private Camera _mainCamera;
 
         private IDataManager _dataManager;
-        private ModelEventHandler _modelEventHandler;
+        private PlayfieldEventHandler _playfieldEventHandler;
 
+        private Camera _mainCamera;
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private GameObject _prefabManager;
         private GameObject _speedDuelField;
-        private List<ARRaycastHit> _hits;
         private Pose _placementPose;
         private bool _placementPoseIsValid = false;
         private bool _objectIsPlaced = false;
@@ -42,11 +40,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
         #region Constructors
 
         [Inject]
-        public void Construct(IDataManager dataManager,
-            ModelEventHandler modelEventHandler)
+        public void Construct(
+            IDataManager dataManager,
+            PlayfieldEventHandler playfieldEventHandler)
         {
             _dataManager = dataManager;
-            _modelEventHandler = modelEventHandler;
+            _playfieldEventHandler = playfieldEventHandler;
         }
 
         #endregion
@@ -56,7 +55,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void Awake()
         {
             GetObjectReferences();
-            _modelEventHandler.OnDestroyPlayfield += OnPlaymatDestroyed;
+            _playfieldEventHandler.OnRemovePlayfield += OnPlaymatDestroyed;
         }
 
         private void Update()
@@ -66,7 +65,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void OnDestroy()
         {
-            _modelEventHandler.OnDestroyPlayfield -= OnPlaymatDestroyed;
+            _playfieldEventHandler.OnRemovePlayfield -= OnPlaymatDestroyed;
             _dataManager.RemoveGameObject(PlayfieldKey);
         }
 
@@ -74,6 +73,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void GetObjectReferences()
         {
+            _mainCamera = Camera.main;
             _arRaycastManager = FindObjectOfType<ARRaycastManager>();
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
             _prefabManager = FindObjectOfType<SpeedDuelPrefabManager>().gameObject;
@@ -81,51 +81,56 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void UpdatePlacementIndicatorIfNecessary()
         {
-#if UNITY_EDITOR
 
-            // Use Spacebar to place playfield if in Editor. Good for quick tests
+            #region Editor
+
+            #if UNITY_EDITOR
+
+            // Use Spacebar to place playfield if in Editor
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
-                _modelEventHandler.ActivatePlayfield(_speedDuelField);
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
 
-#endif
+            #endif
+
+            #endregion
 
             if (_objectIsPlaced)
             {
                 return;
             }
 
-            _hits = UpdatePlacementPose();
+            UpdatePlacementPose(out var hits);
             UpdatePlacementIndicator();
 
             if (_placementPoseIsValid && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 PlaceObject();
-                SetPlaymatScale(_hits);
-                _modelEventHandler.ActivatePlayfield(_speedDuelField);
+                SetPlaymatScale(hits);
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
             }
         }
 
-        private List<ARRaycastHit> UpdatePlacementPose()
+        private void UpdatePlacementPose(out List<ARRaycastHit> hits)
         {
             var screenCenter = _mainCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
-            var hits = new List<ARRaycastHit>();
-            _arRaycastManager.Raycast(screenCenter, hits, TrackableType.Planes);
+            var hitsList = new List<ARRaycastHit>();
+            _arRaycastManager.Raycast(screenCenter, hitsList, TrackableType.Planes);
 
-            _placementPoseIsValid = hits.Count > 0;
+            _placementPoseIsValid = hitsList.Count > 0;
             if (_placementPoseIsValid)
             {
-                _placementPose = hits[hits.Count - 1].pose;
+                _placementPose = hitsList[hitsList.Count - 1].pose;
 
                 var cameraForward = _mainCamera.transform.forward;
                 var cameraBearing = new Vector3(cameraForward.x, 0, cameraForward.z).normalized;
                 _placementPose.rotation = Quaternion.LookRotation(cameraBearing);
             }
 
-            return hits;
+            hits = hitsList;
         }
 
         private void UpdatePlacementIndicator()
@@ -152,13 +157,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 _prefabManager.transform.SetParent(_speedDuelField.transform);
                 _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
                     _speedDuelField.transform.rotation);
-                _modelEventHandler.ActivatePlayfield(_speedDuelField);
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
             else
             {
                 playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-                _modelEventHandler.ActivatePlayfield(_speedDuelField);
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
             }
         }
 
@@ -169,7 +174,8 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 return;
             }
 
-            var scalePlane = GetCameraOrientation(_arPlaneManager.GetPlane(hits[hits.Count - 1].trackableId));
+            var plane = _arPlaneManager.GetPlane(hits[hits.Count - 1].trackableId);            
+            GetCameraOrientation(plane, out var scalePlane);
             if (scalePlane <= 0)
             {
                 return;
@@ -181,7 +187,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _arPlaneManager.enabled = false;
         }
 
-        private float GetCameraOrientation(ARPlane plane)
+        private void GetCameraOrientation(ARPlane plane, out float scalePlane)
         {
             var cameraOrientation = _mainCamera.transform.rotation.y;
 
@@ -190,10 +196,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 cameraOrientation.IsWithinRange(-45, -135) ||
                 cameraOrientation.IsWithinRange(-225, -315))
             {
-                return plane.size.y;
+                scalePlane = plane.size.y;
+                return;
             }
 
-            return plane.size.x;
+            scalePlane = plane.size.x;
         }
 
         private void OnPlaymatDestroyed()
@@ -203,7 +210,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _arPlaneManager.enabled = true;
 
             _dataManager.SaveGameObject(PlayfieldKey, _speedDuelField);
-            _modelEventHandler.PickupPlayfield();
+            _playfieldEventHandler.PickupPlayfield();
         }
     }
 }

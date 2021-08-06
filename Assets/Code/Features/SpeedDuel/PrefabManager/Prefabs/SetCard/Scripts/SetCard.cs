@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using Code.Core.DataManager;
 using Code.Core.General.Extensions;
 using Code.Core.Logger;
-using Code.Core.Models.ModelEventsHandler;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.UI_Components.Constants;
 using UnityEngine;
 using Zenject;
@@ -21,24 +22,27 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
-        private ModelEventHandler _modelEventHandler;
         private IAppLogger _logger;
+        private SetCardEventHandler _setCardEventHandler;
+        private PlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
-        private string _zone;
+        private int _instanceID;
         private CurrentState _currentState;
 
         #region Constructors
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,
-            ModelEventHandler modelEventHandler,
-            IAppLogger logger)
+            IDataManager dataManager,            
+            IAppLogger logger,
+            SetCardEventHandler modelEventHandler,
+            PlayfieldEventHandler playfieldEventHandler)
         {
             _dataManager = dataManager;
-            _modelEventHandler = modelEventHandler;
             _logger = logger;
+            _setCardEventHandler = modelEventHandler;
+            _playfieldEventHandler = playfieldEventHandler;
         }
 
         #endregion
@@ -48,19 +52,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void Awake()
         {
             _animator = GetComponent<Animator>();
-        }
-
-        private void OnEnable()
-        {
+            _instanceID = gameObject.GetInstanceID();
             SubscribeToEvents();
         }
 
         private void OnDisable()
         {
-            _zone = null;
             _currentState = CurrentState.FaceDown;
-
-            UnsubscribeFromEvents();
         }
 
         #endregion
@@ -69,56 +67,69 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void SubscribeToEvents()
         {
-            _modelEventHandler.OnSummonSetCard += OnSummonEvent;
+            _setCardEventHandler.OnSummonSetCard += OnSummon;
+            _setCardEventHandler.OnAction += OnAction;
+            _setCardEventHandler.OnSetCardRemove += OnRemove;
 
-            _modelEventHandler.OnSpellTrapActivate += OnSpellTrapActivate;
-            _modelEventHandler.OnReturnToFaceDown += OnReturnToFaceDown;
-            _modelEventHandler.OnSetCardRemove += OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster += SetMonsterEvent;
-            _modelEventHandler.OnDestroySetMonster += DestroySetMonster;
-
-
-            _modelEventHandler.OnActivatePlayfield += ActivatePlayfield;
-            _modelEventHandler.OnPickupPlayfield += PickupPlayfield;
-        }
-
-        private void UnsubscribeFromEvents()
-        {
-            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
-
-            _modelEventHandler.OnSpellTrapActivate -= OnSpellTrapActivate;
-            _modelEventHandler.OnReturnToFaceDown -= OnReturnToFaceDown;
-            _modelEventHandler.OnSetCardRemove -= OnSpellTrapRemove;
-            _modelEventHandler.OnRevealSetMonster -= SetMonsterEvent;
-            _modelEventHandler.OnDestroySetMonster -= DestroySetMonster;
-            _modelEventHandler.OnChangeMonsterVisibility -= HideSetCardImage;
-
-            _modelEventHandler.OnActivatePlayfield -= ActivatePlayfield;
-            _modelEventHandler.OnPickupPlayfield -= PickupPlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _playfieldEventHandler.OnPickupPlayfield += PickupPlayfield;
         }
 
         #endregion
 
-        private async void OnSummonEvent(string zone, string modelName, bool isMonster)
+        #region Events
+
+        private async void OnSummon(int instanceID, string modelName, bool isMonster)
         {
-            if (transform.gameObject.activeSelf == false)
-            {
-                return;
-            }
+            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
 
             if (isMonster)
             {
                 SetMonster();
             }
 
-            _zone = zone;
-            _modelEventHandler.OnSummonSetCard -= OnSummonEvent;
+            _setCardEventHandler.OnSummonSetCard -= OnSummon;
+            _animator.SetBool(AnimatorParameters.AllowDestroyBool, false);
 
             await GetAndDisplayCardImage(modelName);
-            _modelEventHandler.OnChangeMonsterVisibility += HideSetCardImage;
         }
 
-        #region Playfield Events
+        private void OnAction(SetCardEvent eventName, int instanceID)
+        {
+            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
+
+            switch (eventName)
+            {               
+                case SetCardEvent.SpellTrapActivate:
+                    SpellTrapActivate();
+                    break;
+                case SetCardEvent.ReturnToFaceDown:
+                    ReturnToFaceDown();
+                    break;
+                case SetCardEvent.RevealSetCardImage:
+                    RevealSetCardImage();
+                    break;
+                case SetCardEvent.HideSetCardImage:
+                    HideSetCardImage();
+                    break;
+            }
+        }
+
+        private void OnRemove(int instanceID)
+        {
+            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
+
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
+
+            //TODO: See if this is necessary
+            _animator.SetBool(AnimatorParameters.AllowDestroyBool, true);
+        }
+
+        #endregion
+
+        #region Functions
+
+        #region Playfield Functions
 
         private void ActivatePlayfield(GameObject playfield)
         {
@@ -143,78 +154,42 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #endregion
 
-        #region Spell/Trap Events
+        #region Spell/Trap Functions
 
-        private void OnSpellTrapActivate(string zone)
+        private void SpellTrapActivate()
         {
-            if (_zone != zone)
-            {
-                return;
-            }
-
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
             _currentState = CurrentState.SpellActivated;
         }
 
-        private void OnReturnToFaceDown(string zone)
+        private void ReturnToFaceDown()
         {
-            if (_zone != zone)
-            {
-                return;
-            }
-
             _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
             _currentState = CurrentState.FaceDown;
         }
 
-        private void OnSpellTrapRemove(string zone)
-        {
-            if (_zone != zone)
-            {
-                return;
-            }
-
-            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
-        }
-
         #endregion
 
-        #region Set Monster Events
+        #region Set Monster Functions
 
         private void SetMonster()
         {
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-
-        private void SetMonsterEvent(string zone)
+        
+        private void RevealSetCardImage()
         {
-            if (_zone != zone)
-            {
-                return;
-            }
-
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
             _currentState = CurrentState.SetMonsterRevealed;
         }
 
-        private void HideSetCardImage(string zone, bool state)
+        private void HideSetCardImage()
         {
-            if (_zone == zone && state == false)
-            {
-                _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
-                _currentState = CurrentState.FaceDown;
-            }
+            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+            _currentState = CurrentState.FaceDown;
         }
 
-        private void DestroySetMonster(string zone)
-        {
-            if (_zone != zone)
-            {
-                return;
-            }
-
-            _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
-        }
+        #endregion
 
         #endregion
 

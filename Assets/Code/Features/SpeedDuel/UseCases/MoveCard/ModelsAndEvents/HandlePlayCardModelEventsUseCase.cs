@@ -1,31 +1,34 @@
-using Code.Core.Models.ModelEventsHandler;
-using Code.Core.Models.ModelEventsHandler.Entities;
+using Code.Features.SpeedDuel.EventHandlers;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
     public interface IHandlePlayCardModelEventsUseCase
     {
-        void Execute(ModelEvent modelEvent, PlayCard updatedCard, bool isMonster);
+        void Execute(SetCardEvent modelEvent, PlayCard updatedCard, int instanceID, bool isMonster);
     }
 
     public class HandlePlayCardModelEventsUseCase : IHandlePlayCardModelEventsUseCase
     {
-        private readonly ModelEventHandler _modelEventHandler;
+        private readonly SetCardEventHandler _setCardEventHandler;
+
+        #region Constructor
 
         public HandlePlayCardModelEventsUseCase(
-            ModelEventHandler modelEventHandler)
+            SetCardEventHandler setCardEventHandler)
         {
-            _modelEventHandler = modelEventHandler;
+            _setCardEventHandler = setCardEventHandler;
         }
-        
-        public void Execute(ModelEvent modelEvent, PlayCard updatedCard, bool isMonster)
+
+        #endregion
+
+        public void Execute(SetCardEvent setCardEvent, PlayCard updatedCard, int instanceID, bool isMonster)
         {
             var cardId = updatedCard.Id.ToString();
-            var zone = updatedCard.ZoneType.ToString();
 
-            _modelEventHandler.RaiseSummonSetCardEvent(zone, cardId, isMonster);
-            _modelEventHandler.RaiseEventByEventName(modelEvent, zone);
+            _setCardEventHandler.Summon(instanceID, cardId, isMonster);
+            _setCardEventHandler.Action(setCardEvent, instanceID);
         }
     }
 }
