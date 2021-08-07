@@ -15,7 +15,8 @@ namespace Code.Core.Storage.UserSettings
     {
         private IPlayerPrefsProvider _playerPrefsProvider;
 
-        public void Construct(IPlayerPrefsProvider playerPrefsProvider)
+        public UserSettingsStorageProvider(
+            IPlayerPrefsProvider playerPrefsProvider)
         {
             _playerPrefsProvider = playerPrefsProvider;
         }
@@ -24,7 +25,7 @@ namespace Code.Core.Storage.UserSettings
         {
             return _playerPrefsProvider.HasKey(key);
         }
-        
+
         public string GetString(string key)
         {
             return _playerPrefsProvider.GetString(key);

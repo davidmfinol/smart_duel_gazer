@@ -84,22 +84,22 @@ namespace Code.Features.SpeedDuel
 
         private void RotatePlayfield(float rotation)
         {
-            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, new PlayfieldEventArgs { floatValue = rotation });
+            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, new PlayfieldEventArgs { FloatValue = rotation });
         }
 
         private void ScalePlayfield(float scale)
         {
-            _playfieldEventHandler.Action(PlayfieldEvent.Scale, new PlayfieldEventArgs { floatValue = scale });
+            _playfieldEventHandler.Action(PlayfieldEvent.Scale, new PlayfieldEventArgs { FloatValue = scale });
         }
 
         private void HidePlayfield(bool value)
         {
-            _playfieldEventHandler.Action(PlayfieldEvent.Hide, new PlayfieldEventArgs { boolValue = value });
+            _playfieldEventHandler.Action(PlayfieldEvent.Hide, new PlayfieldEventArgs { BoolValue = value });
         }
 
         private void FlipPlayfield(bool value)
         {
-            _playfieldEventHandler.Action(PlayfieldEvent.Flip, new PlayfieldEventArgs { boolValue = value });
+            _playfieldEventHandler.Action(PlayfieldEvent.Flip, new PlayfieldEventArgs { BoolValue = value });
         }
 
         private void RemovePlayfield()

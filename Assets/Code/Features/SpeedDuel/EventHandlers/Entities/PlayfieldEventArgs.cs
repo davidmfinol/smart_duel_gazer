@@ -2,7 +2,7 @@
 {
     public class PlayfieldEventArgs
     {
-        public float floatValue;
-        public bool boolValue;
+        public float FloatValue;
+        public bool BoolValue;
     }
 }

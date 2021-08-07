@@ -58,16 +58,16 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
             switch (playfieldEvent)
             {
                 case PlayfieldEvent.Rotate:
-                    RotatePlayfield(args.floatValue);
+                    RotatePlayfield(args.FloatValue);
                     break;
                 case PlayfieldEvent.Scale:
-                    ScalePlayfield(args.floatValue);
+                    ScalePlayfield(args.FloatValue);
                     break;
                 case PlayfieldEvent.Flip:
-                    FlipPlayfield(args.boolValue);
+                    FlipPlayfield(args.BoolValue);
                     break;
                 case PlayfieldEvent.Hide:
-                    HidePlayfield(args.boolValue);
+                    HidePlayfield(args.BoolValue);
                     break;
             }
         }
