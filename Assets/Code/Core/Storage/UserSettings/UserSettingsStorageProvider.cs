@@ -1,5 +1,4 @@
 using Code.Wrappers.WrapperPlayerPrefs;
-using Zenject;
 
 namespace Code.Core.Storage.UserSettings
 {
@@ -16,7 +15,6 @@ namespace Code.Core.Storage.UserSettings
     {
         private IPlayerPrefsProvider _playerPrefsProvider;
 
-        [Inject]
         public void Construct(IPlayerPrefsProvider playerPrefsProvider)
         {
             _playerPrefsProvider = playerPrefsProvider;

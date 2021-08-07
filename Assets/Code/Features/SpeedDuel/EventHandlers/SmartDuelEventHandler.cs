@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
 using Code.Core.Logger;
@@ -133,10 +134,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void FetchSpeedDuelFieldIfNecessary()
         {
-            if (_speedDuelField == null)
-            {
-                _speedDuelField = GetComponent<PlacementEventHandler>().SpeedDuelField;
-            }
+            if (_speedDuelField != null) return;
+
+            _speedDuelField = FindObjectOfType<PlacementEventHandler>().SpeedDuelField;
         }
 
         #region Handle card events
@@ -244,11 +244,23 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 Title = "Duel is over",
                 Description = $"{winnerId} won the duel!",
                 PositiveText = "Continue",
-                PositiveAction = () =>_navigationService.ShowConnectionScene()
+                PositiveAction = () => ExecuteEndOfGame()
             });
         }
 
         #endregion
+
+        //Handle Async functions that haven't completed yet
+        private void ExecuteEndOfGame()
+        {
+            _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
+
+            Destroy(_speedDuelField);
+
+            _navigationService.ShowConnectionScene();
+        }
 
         #endregion
     }

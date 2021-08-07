@@ -17,7 +17,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
         private ModelSettings _settings;
-        private int _instanceID;
+        private GameObject _parent;
         private bool _areRenderersEnabled;
 
         #region Constructor
@@ -41,9 +41,19 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             _settings = GetComponent<ModelSettings>();
 
-            //Gets InstanceID of parent Game Object
-            _instanceID = transform.parent.gameObject.GetInstanceID();
+            _parent = transform.parent.gameObject;
             SubscribeToEvents();
+        }
+
+        private void OnDestroy()
+        {
+            _modelEventHandler.OnActivateModel -= ActivateModel;
+            _modelEventHandler.OnSummon -= SummonMonster;
+            _modelEventHandler.OnAction -= Action;
+            _modelEventHandler.OnRemove -= RemoveMonster;
+
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
         #endregion
@@ -58,7 +68,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnRemove += RemoveMonster;
 
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
-            _playfieldEventHandler.OnPickupPlayfield += PickupPlayfield;            
+            _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 
         #endregion
@@ -67,15 +77,15 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void ActivateModel(int instanceID)
         {
-            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
+            if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             // Scale model based on ModelSettings
-            transform.parent.transform.localScale = _settings.ModelScale;
+            _parent.transform.localScale = _settings.ModelScale;
         }
 
         private void SummonMonster(int instanceID)
         {
-            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
+            if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             _renderers.SetRendererVisibility(true);
             _areRenderersEnabled = true;
@@ -85,7 +95,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void Action(ModelEvent eventName, int instanceID, bool state)
         {
-            if (!gameObject.IsIntendedGameObject(_instanceID, instanceID)) return;
+            if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
             {
@@ -103,7 +113,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void RemoveMonster(int instanceID)
         {
-            if (_instanceID != instanceID || gameObject.activeSelf == false) return;
+            if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             if (_animator.HasState(0, AnimatorParameters.DeathTrigger))
             {
@@ -120,13 +130,15 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #region Playfield Functions
 
-        private void ActivatePlayfield(GameObject playfield)
+        private void ActivatePlayfield()
         {
+            if (!gameObject.activeSelf) return;          
             _renderers.SetRendererVisibility(_areRenderersEnabled);
         }
 
-        private void PickupPlayfield()
+        private void RemovePlayfield()
         {
+            if (!gameObject.activeSelf) return;
             _renderers.SetRendererVisibility(false);
         }
 

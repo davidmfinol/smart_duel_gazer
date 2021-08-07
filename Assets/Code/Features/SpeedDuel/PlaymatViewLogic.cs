@@ -3,29 +3,36 @@ using Code.UI_Components.Constants;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using UniRx;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
+using Code.Core.Config.Providers;
 
 namespace Code.Features.SpeedDuel
 {
     public class PlaymatViewLogic : MonoBehaviour
     {
-        [SerializeField] private GameObject _menus;
-        [SerializeField] private Slider _scaleSlider;
+        [SerializeField] private GameObject _menus;        
+        [SerializeField] private Toggle _toggleViewToggle;
+        [SerializeField] private Toggle _hidePlaymatToggle;
+        [SerializeField] private Toggle _flipPlayfieldToggle;
+        [SerializeField] private Button _removePlayfieldButton;
         [SerializeField] private Slider _rotationSlider;
-        [SerializeField] private Toggle _toggleView;
+        [SerializeField] private Slider _scaleSlider;
 
+        private IDelayProvider _delayProvider;
         private PlayfieldEventHandler _playfieldEventHandler;
 
-        private GameObject _playmatShell;
-        private Animator _playmatAnimator;
-        private Animator[] _animators;
-        private MeshRenderer[] _renderers;
+        private Animator _animator;
+        private int ExitAnimationsTimeInMs = 700;
 
         #region Constructor
 
         [Inject]
         public void Construct(
+            IDelayProvider delayProvider,
             PlayfieldEventHandler playfieldEventHandler)
         {
+            _delayProvider = delayProvider;
             _playfieldEventHandler = playfieldEventHandler;
         }
 
@@ -35,41 +42,82 @@ namespace Code.Features.SpeedDuel
 
         private void Awake()
         {
+            _animator = GetComponent<Animator>();
+            RegisterClickListeners();
+
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfieldMenus;
-            _playfieldEventHandler.OnPickupPlayfield += RemovePlayfieldMenus;
+        }
+
+        private void OnDestroy()
+        {
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfieldMenus;
         }
 
         #endregion
 
-        private void ActivatePlayfieldMenus(GameObject playfield)
+        private void RegisterClickListeners()
         {
-            _playmatShell = playfield;
-            _renderers = _playmatShell.GetComponentsInChildren<MeshRenderer>();
+            _toggleViewToggle.OnValueChangedAsObservable().Subscribe(ShowSettingsMenu);
 
+            //Side Menu Items
+            _rotationSlider.OnValueChangedAsObservable().Subscribe(RotatePlayfield);
+            _scaleSlider.OnValueChangedAsObservable().Subscribe(ScalePlayfield);
+
+            //Bottom Menu Items
+            _hidePlaymatToggle.OnValueChangedAsObservable().Subscribe(HidePlayfield);
+            _flipPlayfieldToggle.OnValueChangedAsObservable().Subscribe(FlipPlayfield);
+            _removePlayfieldButton.OnClickAsObservable().Subscribe(_ => RemovePlayfield());
+        }
+
+        private void ActivatePlayfieldMenus()
+        {
             _menus.SetActive(true);
             SetSliderValues();
-
-            if (_animators == null)
-            {
-                _animators = GetComponentsInChildren<Animator>();
-                _playmatAnimator = _playmatShell.GetComponentInChildren<Animator>();
-                return;
-            }
-
-            _playmatAnimator.SetTrigger(AnimatorParameters.ActivatePlayfieldTrigger);
         }
 
-        private void RemovePlayfieldMenus()
+        #region UI Events
+
+        private void ShowSettingsMenu(bool value)
         {
-            _scaleSlider.interactable = false;
-            _rotationSlider.interactable = false;
-            _menus.SetActive(false);
+            _animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, value);
         }
+
+        private void RotatePlayfield(float rotation)
+        {
+            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, new PlayfieldEventArgs { floatValue = rotation });
+        }
+
+        private void ScalePlayfield(float scale)
+        {
+            _playfieldEventHandler.Action(PlayfieldEvent.Scale, new PlayfieldEventArgs { floatValue = scale });
+        }
+
+        private void HidePlayfield(bool value)
+        {
+            _playfieldEventHandler.Action(PlayfieldEvent.Hide, new PlayfieldEventArgs { boolValue = value });
+        }
+
+        private void FlipPlayfield(bool value)
+        {
+            _playfieldEventHandler.Action(PlayfieldEvent.Flip, new PlayfieldEventArgs { boolValue = value });
+        }
+
+        private void RemovePlayfield()
+        {
+            _playfieldEventHandler.RemovePlayfield();
+            _toggleViewToggle.isOn = false;
+
+            RemovePlayfieldMenus();
+        }
+
+        #endregion
 
         private void SetSliderValues()
         {
-            var scale = _playmatShell.transform.localScale.x;
-            var rotation = _playmatShell.transform.localRotation.y;
+            var playfield = FindObjectOfType<PlacementEventHandler>().SpeedDuelField;
+
+            var scale = playfield.transform.localScale.x;
+            var rotation = playfield.transform.localRotation.y;
 
             if (scale > 10f)
             {
@@ -83,57 +131,16 @@ namespace Code.Features.SpeedDuel
             _rotationSlider.interactable = true;
         }
 
-        public void ScalePlaymat(float scale)
+        private async void RemovePlayfieldMenus()
         {
-            _playmatShell.transform.localScale = new Vector3(scale, scale, scale);
-        }
+            _animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
 
-        public void RotatePlaymat(float rotation) => _playmatShell.transform.rotation = Quaternion.Euler(0, rotation, 0);
-
-        public void FlipPlaymat(bool state)
-        {
-            if (state)
-            {
-                _playmatShell.transform.localRotation = Quaternion.Euler(0, 180, 0);
-                return;
-            }
-
-            _playmatShell.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        }
-
-
-        public void ShowSettingsMenu(bool state)
-        {
-            foreach (var animator in _animators)
-            {
-                animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
-            }
-        }
-
-        public void HidePlaymat(bool state)
-        {
-            foreach (var item in _renderers)
-            {
-                item.enabled = state;
-            }
-        }
-        
-        // These are being called via an animator event to allow time for animations before removing the playmat
-
-        public void DeletePlaymat()
-        {
-            foreach (var animator in _animators)
-            {
-                animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
-            }
-
-            _playmatAnimator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
-            _toggleView.isOn = false;
-        }
-
-        private void DestroyPlaymat()
-        {
-            _playfieldEventHandler.RemovePlayfield();
+            await _delayProvider.Wait(ExitAnimationsTimeInMs);
+            _animator.ResetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
+            
+            _scaleSlider.interactable = false;
+            _rotationSlider.interactable = false;
+            _menus.SetActive(false);
         }
     }
 }

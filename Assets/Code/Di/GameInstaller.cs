@@ -21,6 +21,7 @@ using Code.Features.Connection.Helpers;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
@@ -98,6 +99,8 @@ namespace Code.Di
                 .FromFactory<PrefabFactory<ModelComponentsManager>>();
             Container.BindFactory<GameObject, SetCard, SetCard.Factory>()
                 .FromFactory<PrefabFactory<SetCard>>();
+            Container.BindFactory<GameObject, PlayfieldComponentsManager, PlayfieldComponentsManager.Factory>()
+                .FromFactory<PrefabFactory<PlayfieldComponentsManager>>();
 
             // Use cases
             Container.Bind<ICreatePlayCardUseCase>().To<CreatePlayCardUseCase>().AsSingle();

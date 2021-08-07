@@ -389,7 +389,7 @@ GameObject:
   - component: {fileID: 301659726}
   - component: {fileID: 301659727}
   m_Layer: 5
-  m_Name: Flip Playmat
+  m_Name: Flip Playfield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,20 +462,7 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1879231184}
-        m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.Features.SpeedDuel.PlaymatViewLogic,
-          Assembly-CSharp
-        m_MethodName: FlipPlaymat
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
 --- !u!1 &371503864
 GameObject:
@@ -1394,7 +1381,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.33333334}
+  m_AnchorMax: {x: 1, y: 0.3939394}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1825,20 +1812,7 @@ MonoBehaviour:
   m_Value: 4
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1879231184}
-        m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.Features.SpeedDuel.PlaymatViewLogic,
-          Assembly-CSharp
-        m_MethodName: ScalePlaymat
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1505249724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1871,8 +1845,8 @@ RectTransform:
   m_Father: {fileID: 1530899402}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.33333334}
-  m_AnchorMax: {x: 1, y: 0.33333334}
+  m_AnchorMin: {x: 0, y: 0.3939394}
+  m_AnchorMax: {x: 1, y: 0.3939394}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2358,9 +2332,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _menus: {fileID: 439207711}
-  _scaleSlider: {fileID: 1457861429}
+  _toggleViewToggle: {fileID: 1714322488955655463}
+  _hidePlaymatToggle: {fileID: 6449482835655837761}
+  _flipPlayfieldToggle: {fileID: 301659727}
+  _removePlayfieldButton: {fileID: 6449482836187114997}
   _rotationSlider: {fileID: 1939941656498817586}
-  _toggleView: {fileID: 1714322488955655463}
+  _scaleSlider: {fileID: 1457861429}
 --- !u!95 &1879231185
 Animator:
   serializedVersion: 3
@@ -2588,25 +2565,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!95 &1535277594392253093
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6417945394822488007}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 54e0aa23307057a468830c918ccbe672, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!224 &1558114321015618268
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2675,20 +2633,7 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1879231184}
-        m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel.PlaymatViewLogic,
-          Assembly-CSharp
-        m_MethodName: ShowSettingsMenu
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 0
 --- !u!224 &1733046905592055063
 RectTransform:
@@ -2762,20 +2707,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1879231184}
-        m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.Features.SpeedDuel.PlaymatViewLogic,
-          Assembly-CSharp
-        m_MethodName: RotatePlaymat
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!224 &1941124227095317554
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2824,7 +2756,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8958889687927701881}
   - component: {fileID: 1714322488955655463}
-  - component: {fileID: 3628859789219067240}
   m_Layer: 5
   m_Name: Toggle View
   m_TagString: Untagged
@@ -2958,25 +2889,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &3437392376859088634
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4522431181659178772}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4f3a948e802bcf04cb333bd56beaab1f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!222 &3548317878796705519
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3136,25 +3048,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &3628859788344980754
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6449482834886372209}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0228438c2b73e3b489df82d6803b2c2a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!222 &3628859788824408020
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3366,25 +3259,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &3628859789219067240
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300823966874534962}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4df71f92fe512ec44837952f9fed5887, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!224 &3995552938913127130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3483,7 +3357,6 @@ GameObject:
   - component: {fileID: 1733046905592055063}
   - component: {fileID: 2661940892800301646}
   - component: {fileID: 1111349260175242180}
-  - component: {fileID: 3437392376859088634}
   m_Layer: 5
   m_Name: Side Menu
   m_TagString: Untagged
@@ -3608,7 +3481,6 @@ GameObject:
   - component: {fileID: 9010596378533674497}
   - component: {fileID: 6527394074299749665}
   - component: {fileID: 2447855466580336731}
-  - component: {fileID: 1535277594392253093}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -3668,7 +3540,6 @@ GameObject:
   - component: {fileID: 6449482834886372208}
   - component: {fileID: 6449482834886372210}
   - component: {fileID: 6449482834886372211}
-  - component: {fileID: 3628859788344980754}
   m_Layer: 5
   m_Name: Bottom Menu
   m_TagString: Untagged
@@ -3835,20 +3706,7 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1879231184}
-        m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel.PlaymatViewLogic,
-          Assembly-CSharp
-        m_MethodName: HidePlaymat
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
 --- !u!224 &6449482835655837766
 RectTransform:
@@ -4158,7 +4016,7 @@ GameObject:
   - component: {fileID: 6449482836187114997}
   - component: {fileID: 8830828936020691514}
   m_Layer: 5
-  m_Name: Delete Mat
+  m_Name: Remove Playfield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4319,20 +4177,7 @@ MonoBehaviour:
   - eventID: 3
     callback:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1879231184}
-          m_TargetAssemblyTypeName: AssemblyCSharp.Assets.Code.UIComponents.SpeedDuel.PlaymatViewLogic,
-            Assembly-CSharp
-          m_MethodName: DeletePlaymat
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
 --- !u!224 &8958889687927701881
 RectTransform:
   m_ObjectHideFlags: 0
