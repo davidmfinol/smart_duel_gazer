@@ -1,8 +1,8 @@
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
 
-namespace AssemblyCSharp.Assets.Code.UIComponents.General
+namespace Code.UI_Components.General
 {
     public class ShowSettingsMenu : MonoBehaviour
     {

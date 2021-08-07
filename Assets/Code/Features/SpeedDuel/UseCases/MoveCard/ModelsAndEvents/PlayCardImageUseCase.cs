@@ -1,6 +1,5 @@
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
-using Code.Core.General.Extensions;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
