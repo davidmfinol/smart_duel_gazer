@@ -37,7 +37,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
         private SpeedDuelState _speedDuelState;
         private IDisposable _smartDuelEventSubscription;
-        private PlacementEventHandler _placementEventHandler;
         private GameObject _speedDuelField;
 
         #region Constructors
@@ -72,11 +71,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         #endregion
 
         #region Lifecycle
-
-        private void Awake()
-        {
-            _placementEventHandler = GetComponent<PlacementEventHandler>();
-        }
 
         private void OnDestroy()
         {
@@ -142,7 +136,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             if (_speedDuelField != null) return;
 
-            _speedDuelField = _placementEventHandler.SpeedDuelField;
+            _speedDuelField = FindObjectOfType<PlacementEventHandler>().SpeedDuelField;
         }
 
         #region Handle card events
@@ -259,11 +253,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
         //Handle Async functions that haven't completed yet
         private void ExecuteEndOfGame()
         {
-            _placementEventHandler.ExecuteEndOfGame();
-
             _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
             _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
             _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
+
+            Destroy(_speedDuelField);
 
             _navigationService.ShowConnectionScene();
         }

@@ -31,7 +31,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         #region Properties
 
         public GameObject SpeedDuelField  => _speedDuelField;
-        public void ExecuteEndOfGame() => ExecuteEndGame();
 
         #endregion
 
@@ -66,7 +65,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void OnDestroy()
         {
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
-            _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
         }
 
         #endregion
@@ -156,7 +154,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var playMat = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
             if (playMat == null)
             {
-                CreatePlaymat();
+                CreatePlayfield();
                 return;
             }
 
@@ -164,12 +162,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _playfieldEventHandler.ActivatePlayfield();
         }
 
-        private void CreatePlaymat()
+        private void CreatePlayfield()
         {
             _speedDuelField = _playfieldFactory.Create(_playfieldPrefab).gameObject;
             _speedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
 
-            //Move Prefab Manager to Playfield for proper card scaling
+            //Make Prefab Manager a child of Playfield for proper model scaling
             _prefabManager.transform.SetParent(_speedDuelField.transform);
             _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
                 _speedDuelField.transform.rotation);
@@ -215,11 +213,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _arPlaneManager.enabled = true;
 
             _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, _speedDuelField);
-        }
-
-        private void ExecuteEndGame()
-        {
-            Destroy(_speedDuelField);
         }
     }
 }
