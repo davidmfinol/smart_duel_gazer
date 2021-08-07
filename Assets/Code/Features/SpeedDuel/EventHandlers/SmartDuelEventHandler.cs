@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
 using Code.Core.Logger;
@@ -36,6 +37,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
         private SpeedDuelState _speedDuelState;
         private IDisposable _smartDuelEventSubscription;
+        private PlacementEventHandler _placementEventHandler;
         private GameObject _speedDuelField;
 
         #region Constructors
@@ -70,6 +72,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
         #endregion
 
         #region Lifecycle
+
+        private void Awake()
+        {
+            _placementEventHandler = GetComponent<PlacementEventHandler>();
+        }
 
         private void OnDestroy()
         {
@@ -133,10 +140,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void FetchSpeedDuelFieldIfNecessary()
         {
-            if (_speedDuelField == null)
-            {
-                _speedDuelField = GetComponent<PlacementEventHandler>().SpeedDuelField;
-            }
+            if (_speedDuelField != null) return;
+
+            _speedDuelField = _placementEventHandler.SpeedDuelField;
         }
 
         #region Handle card events
@@ -244,11 +250,23 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 Title = "Duel is over",
                 Description = $"{winnerId} won the duel!",
                 PositiveText = "Continue",
-                PositiveAction = () =>_navigationService.ShowConnectionScene()
+                PositiveAction = () => ExecuteEndOfGame()
             });
         }
 
         #endregion
+
+        //Handle Async functions that haven't completed yet
+        private void ExecuteEndOfGame()
+        {
+            _placementEventHandler.ExecuteEndOfGame();
+
+            _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
+
+            _navigationService.ShowConnectionScene();
+        }
 
         #endregion
     }

@@ -20,7 +20,18 @@ namespace Code.Wrappers.WrapperDialog
     {
         public void ShowDialog(DialogConfig config)
         {
-#if UNITY_IOS
+#if UNITY_EDITOR
+            var result = EditorUtility.DisplayDialog(
+                config.Title,
+                config.Description,
+                config.PositiveText
+            );
+
+            if (result)
+            {
+                config.PositiveAction.Invoke();
+            }
+#elif UNITY_IOS
             IOSNativeAlert.ShowAlertMessage(
                 config.Title,
                 config.Description,
@@ -32,17 +43,6 @@ namespace Code.Wrappers.WrapperDialog
                 config.Description,
                 new AlertButton(config.PositiveText, config.PositiveAction, ButtonStyle.POSITIVE)
             );
-#elif UNITY_EDITOR
-            var result = EditorUtility.DisplayDialog(
-                config.Title,
-                config.Description,
-                config.PositiveText
-            );
-
-            if (result)
-            {
-                config.PositiveAction.Invoke();
-            }
 #endif
         }
     }

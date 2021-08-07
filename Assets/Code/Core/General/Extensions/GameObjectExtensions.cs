@@ -10,9 +10,9 @@ namespace Code.Core.General.Extensions
             return value.name.ToLowerInvariant().Contains("clone");
         }
 
-        public static bool IsIntendedGameObject(this GameObject value, int objectInstanceID, int targetInstanceID)
+        public static bool ShouldModelListenToEvent(this GameObject value, int targetInstanceID)
         {
-            return objectInstanceID == targetInstanceID && value.activeSelf;
+            return value.GetInstanceID() == targetInstanceID && value.activeSelf;
         }
 
         /// <summary>

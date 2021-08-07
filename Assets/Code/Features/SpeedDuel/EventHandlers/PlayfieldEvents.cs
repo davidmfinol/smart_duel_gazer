@@ -1,31 +1,32 @@
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 using System;
 
 namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface IPlayfieldEventHandler
     {
-        public void ActivatePlayfield(UnityEngine.GameObject playfield);
-        public void PickupPlayfield();
-        public void RemovePlayfield();
+        void ActivatePlayfield();
+        void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args);
+        void RemovePlayfield();
     }
 
     public class PlayfieldEventHandler : IPlayfieldEventHandler
     {
-        private event Action<UnityEngine.GameObject> _OnActivatePlayfield;
-        private event Action _OnPickUpPlayfield;
+        private event Action _OnActivatePlayfield;
+        private event Action<PlayfieldEvent, PlayfieldEventArgs> _OnAction;
         private event Action _OnRemovePlayfield;
 
         #region Event Accessors
 
-        public event Action<UnityEngine.GameObject> OnActivatePlayfield
+        public event Action OnActivatePlayfield
         {
             add => _OnActivatePlayfield += value;
             remove => _OnActivatePlayfield -= value;
         }
-        public event Action OnPickupPlayfield
+        public event Action<PlayfieldEvent, PlayfieldEventArgs> OnAction
         {
-            add => _OnPickUpPlayfield += value;
-            remove => _OnPickUpPlayfield -= value;
+            add => _OnAction += value;
+            remove => _OnAction -= value;
         }
         public event Action OnRemovePlayfield
         {
@@ -35,14 +36,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         #endregion
 
-        public void ActivatePlayfield(UnityEngine.GameObject playfield)
+        public void ActivatePlayfield()
         {
-            _OnActivatePlayfield?.Invoke(playfield);
+            _OnActivatePlayfield?.Invoke();
         }
 
-        public void PickupPlayfield()
+        public void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args)
         {
-            _OnPickUpPlayfield?.Invoke();
+            _OnAction?.Invoke(playfieldEvent, args);
         }
 
         public void RemovePlayfield()

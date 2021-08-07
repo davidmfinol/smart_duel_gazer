@@ -27,7 +27,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private PlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
-        private int _instanceID;
         private CurrentState _currentState;
 
         #region Constructors
@@ -52,13 +51,22 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void Awake()
         {
             _animator = GetComponent<Animator>();
-            _instanceID = gameObject.GetInstanceID();
             SubscribeToEvents();
         }
 
         private void OnDisable()
         {
             _currentState = CurrentState.FaceDown;
+        }
+
+        private void OnDestroy()
+        {
+            _setCardEventHandler.OnSummonSetCard -= OnSummon;
+            _setCardEventHandler.OnAction -= OnAction;
+            _setCardEventHandler.OnSetCardRemove -= OnRemove;
+
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
         #endregion
@@ -72,7 +80,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnSetCardRemove += OnRemove;
 
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
-            _playfieldEventHandler.OnPickupPlayfield += PickupPlayfield;
+            _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 
         #endregion
@@ -81,7 +89,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private async void OnSummon(int instanceID, string modelName, bool isMonster)
         {
-            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
+            if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             if (isMonster)
             {
@@ -96,7 +104,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void OnAction(SetCardEvent eventName, int instanceID)
         {
-            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
+            if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
             {               
@@ -117,7 +125,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void OnRemove(int instanceID)
         {
-            if (_instanceID != instanceID || transform.gameObject.activeSelf == false) return;
+            if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
 
@@ -131,8 +139,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #region Playfield Functions
 
-        private void ActivatePlayfield(GameObject playfield)
+        private void ActivatePlayfield()
         {
+            if (!gameObject.activeSelf) return;
+            
             switch (_currentState)
             {
                 case CurrentState.FaceDown:
@@ -147,7 +157,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             }
         }
 
-        private void PickupPlayfield()
+        private void RemovePlayfield()
         {
             _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
         }
