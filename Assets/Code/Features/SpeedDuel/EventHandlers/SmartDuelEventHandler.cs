@@ -176,7 +176,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             if (playCard == null)
             {
                 var tokenCount = playerState.GetCards().Count(card => card.Id == TokenId);
-                playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount);
+                playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount + 1);
             }
 
             var newZone = playerState.GetZones().FirstOrDefault(zone => zone.ZoneType == data.ZoneType);
