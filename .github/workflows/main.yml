@@ -33,15 +33,14 @@ jobs:
             Library-
 
       # Test
-      # TODO: Remove Zenject tests and add our own tests
-      # - name: Run tests
-      #   uses: game-ci/unity-test-runner@v2
-      #   env:
-      #     UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-      #   with:
-      #     projectPath: ${{ matrix.projectPath }}
-      #     unityVersion: ${{ matrix.unityVersion }}
-      #     githubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       # Build
       - name: Build project
@@ -50,8 +49,8 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           versioning: Custom
-          version: 0.3.0
-          androidVersionCode: 30000
+          version: 0.4.0
+          androidVersionCode: 40000
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
