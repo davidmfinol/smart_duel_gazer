@@ -49,8 +49,8 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           versioning: Custom
-          version: 0.4.0
-          androidVersionCode: 40000
+          version: 0.5.0
+          androidVersionCode: 50000
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
