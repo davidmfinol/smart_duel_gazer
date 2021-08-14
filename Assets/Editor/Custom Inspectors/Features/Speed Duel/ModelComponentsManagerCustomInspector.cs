@@ -13,12 +13,12 @@ public class ModelComponentsManagerCustomInspector : Editor
 
         if (GUILayout.Button("Summon Object"))
         {
-            //modelComponentsManager.CallSummonMonster();
+            modelComponentsManager.CallSummonMonster();
         }
 
         if (GUILayout.Button("Remove Object"))
         {
-            //modelComponentsManager.CallRemoveMonster();
+            modelComponentsManager.CallRemoveMonster();
         }
     }
 }
