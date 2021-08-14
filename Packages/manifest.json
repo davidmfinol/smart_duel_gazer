@@ -12,6 +12,8 @@
     "com.unity.xr.arfoundation": "4.0.10",
     "com.unity.xr.arkit": "4.0.9",
     "jillejr.newtonsoft.json-for-unity": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.git#upm",
+    "nrjwolf.games.easyandroidalerts": "https://github.com/Nrjwolf/unity-android-easy-native-alerts.git",
+    "nrjwolf.games.iosnativealerts": "git+https://github.com/Nrjwolf/unity-ios-easy-native-alert",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -42,8 +44,6 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "nrjwolf.games.iosnativealerts": "git+https://github.com/Nrjwolf/unity-ios-easy-native-alert",
-    "nrjwolf.games.easyandroidalerts": "https://github.com/Nrjwolf/unity-android-easy-native-alerts.git"
+    "com.unity.modules.xr": "1.0.0"
   }
 }
