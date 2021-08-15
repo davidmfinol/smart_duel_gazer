@@ -3,12 +3,12 @@ using UnityEditor;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 
 [CustomEditor(typeof(ModelComponentsManager))]
-public class ModelComponentsManagerCustomInspector : Editor
+public class ModelComponentsManagerInspector : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        
+
         ModelComponentsManager modelComponentsManager = (ModelComponentsManager)target;
 
         if (GUILayout.Button("Summon Object"))
