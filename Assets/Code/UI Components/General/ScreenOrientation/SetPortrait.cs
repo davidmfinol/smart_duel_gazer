@@ -7,7 +7,7 @@ public class SetPortrait : MonoBehaviour
     private IScreenService _screenService;
 
     [Inject]
-    public SetPortrait(IScreenService screenService)
+    public void Construct(IScreenService screenService)
     {
         _screenService = screenService;
 
