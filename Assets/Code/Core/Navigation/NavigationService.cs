@@ -5,6 +5,7 @@ namespace Code.Core.Navigation
 {
     public interface INavigationService
     {
+        void ShowOnboardingScene();
         void ShowConnectionScene();
         void ShowDuelRoomScene();
         void ShowSpeedDuelScene();
@@ -12,6 +13,11 @@ namespace Code.Core.Navigation
     
     public class NavigationService : INavigationService
     {
+        public void ShowOnboardingScene()
+        {
+            SceneManager.LoadScene((int)Routes.Onboarding);
+        }
+        
         public void ShowConnectionScene()
         {
             SceneManager.LoadScene((int)Routes.Connection);

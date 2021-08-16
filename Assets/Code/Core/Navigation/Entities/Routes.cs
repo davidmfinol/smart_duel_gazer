@@ -2,8 +2,9 @@
 {
     public enum Routes
     {
-        Connection = 0,
-        DuelRoom = 1,
-        SpeedDuel = 2,
+        Onboarding = 0,
+        Connection = 1,
+        DuelRoom = 2,
+        SpeedDuel = 3,
     }
 }
