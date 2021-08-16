@@ -18,6 +18,7 @@ using Code.Core.Storage.Texture;
 using Code.Core.Storage.UserSettings;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection.Helpers;
+using Code.Features.Onboarding;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
@@ -86,6 +87,9 @@ namespace Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
+            
+            // ViewModels
+            Container.Bind<OnboardingViewModel>().AsTransient();
 
             // Event Handlers
             Container.Bind<ModelEventHandler>().AsSingle();
