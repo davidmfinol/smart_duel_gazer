@@ -20,6 +20,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private GameObject _parent;
         private bool _areRenderersEnabled;
 
+        #region Properties
+
+        public void CallSummonMonster() => SummonMonster(_parent.GetInstanceID());
+        public void CallRemoveMonster() => RemoveMonster(_parent.GetInstanceID());
+
+        #endregion
+
         #region Constructor
 
         [Inject]
