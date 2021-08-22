@@ -1,22 +1,24 @@
-﻿using Code.Core.Config.Providers;
+﻿using Code.Core.Config.Entities;
+using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.DataManager.Connections;
 using Code.Core.DataManager.DuelRooms;
 using Code.Core.DataManager.GameObjects;
 using Code.Core.DataManager.GameObjects.UseCases;
+using Code.Core.DataManager.Settings;
 using Code.Core.DataManager.Textures;
-using Code.Core.DataManager.UserSettings;
 using Code.Core.Dialog;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
-using Code.Core.Storage.Connection;
-using Code.Core.Storage.DuelRoom;
-using Code.Core.Storage.GameObject;
-using Code.Core.Storage.Texture;
-using Code.Core.Storage.UserSettings;
+using Code.Core.Storage.Connections;
+using Code.Core.Storage.DuelRooms;
+using Code.Core.Storage.GameObjects;
+using Code.Core.Storage.Settings;
+using Code.Core.Storage.Textures;
 using Code.Core.YGOProDeck;
+using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
 using Code.Features.Onboarding;
 using Code.Features.SpeedDuel.EventHandlers;
@@ -52,6 +54,7 @@ namespace Code.Di
             Container.Bind<INavigationService>().To<NavigationService>().AsSingle();
 
             // Config
+            Container.Bind<IAppConfig>().FromInstance(new AppConfig());
             Container.Bind<IDelayProvider>().To<DelayProvider>().AsSingle();
 
             // Data managers
@@ -60,7 +63,7 @@ namespace Code.Di
             Container.Bind<IGameObjectDataManager>().To<GameObjectDataManager>().AsSingle();
             Container.Bind<ITextureDataManager>().To<TextureDataManager>().AsSingle();
             Container.Bind<IDuelRoomDataManager>().To<DuelRoomDataManager>().AsSingle();
-            Container.Bind<IUserSettingsDataManager>().To<UserSettingsDataManager>().AsSingle();
+            Container.Bind<ISettingsDataManager>().To<SettingsDataManager>().AsSingle();
 
             // Use cases
             Container.Bind<IGetTransformedGameObjectUseCase>().To<GetTransformedGameObjectUseCase>().AsSingle();
@@ -74,7 +77,7 @@ namespace Code.Di
             Container.Bind<IGameObjectStorageProvider>().To<GameObjectStorageProvider>().AsSingle();
             Container.Bind<ITextureStorageProvider>().To<TextureStorageProvider>().AsSingle();
             Container.Bind<IDuelRoomStorageProvider>().To<DuelRoomStorageProvider>().AsSingle();
-            Container.Bind<IUserSettingsStorageProvider>().To<UserSettingsStorageProvider>().AsSingle();
+            Container.Bind<ISettingsStorageProvider>().To<SettingsStorageProvider>().AsSingle();
 
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
@@ -87,9 +90,10 @@ namespace Code.Di
             #region Features
 
             Container.Bind<ConnectionFormValidators>().AsSingle();
-            
+
             // ViewModels
             Container.Bind<OnboardingViewModel>().AsTransient();
+            Container.Bind<ConnectionViewModel>().AsTransient();
 
             // Event Handlers
             Container.Bind<ModelEventHandler>().AsSingle();

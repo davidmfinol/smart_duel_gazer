@@ -6,6 +6,6 @@ namespace Code.Features.DuelRoom.Models
         EnterRoomName,
         SelectDuelist,
         Error,
-        Waiting,
+        Waiting
     }
 }

@@ -1,4 +1,4 @@
-﻿using Code.Core.Storage.GameObject;
+﻿using Code.Core.Storage.GameObjects;
 using UnityEngine;
 using Zenject;
 

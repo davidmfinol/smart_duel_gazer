@@ -1,19 +1,21 @@
-﻿using Code.Core.Storage.Connection.Models;
+﻿using Code.Core.Storage.Connections.Models;
 using Code.Wrappers.WrapperPlayerPrefs;
 using Newtonsoft.Json;
-using Zenject;
 
-namespace Code.Core.Storage.Connection
+namespace Code.Core.Storage.Connections
 {
     public interface IConnectionStorageProvider
     {
         ConnectionInfoModel GetConnectionInfo();
         void SaveConnectionInfo(ConnectionInfoModel connectionInfo);
+        bool UseOnlineDuelRoom();
+        void SaveUseOnlineDuelRoom(bool value);
     }
     
     public class ConnectionStorageProvider : IConnectionStorageProvider
     {
         private const string ConnectionInfoKey = "connectionInfo";
+        private const string UseOnlineDuelRoomKey = "useOnlineDuelRoom";
 
         private readonly IPlayerPrefsProvider _playerPrefsProvider;
         
@@ -31,15 +33,23 @@ namespace Code.Core.Storage.Connection
             }
 
             var json = _playerPrefsProvider.GetString(ConnectionInfoKey);
-            var connectionInfo = JsonConvert.DeserializeObject<ConnectionInfoModel>(json);
-
-            return connectionInfo;
+            return JsonConvert.DeserializeObject<ConnectionInfoModel>(json);
         }
 
         public void SaveConnectionInfo(ConnectionInfoModel connectionInfo)
         {
             var json = JsonConvert.SerializeObject(connectionInfo);
             _playerPrefsProvider.SetString(ConnectionInfoKey, json);
+        }
+
+        public bool UseOnlineDuelRoom()
+        {
+            return _playerPrefsProvider.GetBool(UseOnlineDuelRoomKey);
+        }
+
+        public void SaveUseOnlineDuelRoom(bool value)
+        {
+            _playerPrefsProvider.SetBool(UseOnlineDuelRoomKey, value);
         }
     }
 }

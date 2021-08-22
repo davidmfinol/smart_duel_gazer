@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Code.Core.Storage.Connection.Models
+namespace Code.Core.Storage.Connections.Models
 {
     public class ConnectionInfoModel : IEquatable<ConnectionInfoModel>
     {

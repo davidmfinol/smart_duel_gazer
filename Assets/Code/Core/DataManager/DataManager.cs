@@ -3,15 +3,15 @@ using Code.Core.DataManager.Connections;
 using Code.Core.DataManager.Connections.Entities;
 using Code.Core.DataManager.DuelRooms;
 using Code.Core.DataManager.GameObjects;
+using Code.Core.DataManager.Settings;
 using Code.Core.DataManager.Textures;
-using Code.Core.DataManager.UserSettings;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using UnityEngine;
 using Zenject;
 
 namespace Code.Core.DataManager
 {
-    public interface IDataManager : IConnectionDataManager, IGameObjectDataManager, ITextureDataManager, IDuelRoomDataManager, IUserSettingsDataManager
+    public interface IDataManager : IConnectionDataManager, IGameObjectDataManager, ITextureDataManager, IDuelRoomDataManager, ISettingsDataManager
     {
     }
     
@@ -21,7 +21,7 @@ namespace Code.Core.DataManager
         private readonly IGameObjectDataManager _gameObjectDataManager;
         private readonly ITextureDataManager _textureDataManager;
         private readonly IDuelRoomDataManager _duelRoomDataManager;
-        private readonly IUserSettingsDataManager _userSettingsDataManager;
+        private readonly ISettingsDataManager _settingsDataManager;
 
         [Inject]
         public DataManager(
@@ -29,25 +29,35 @@ namespace Code.Core.DataManager
             IGameObjectDataManager gameObjectDataManager,
             ITextureDataManager textureDataManager,
             IDuelRoomDataManager duelRoomDataManager,
-            IUserSettingsDataManager userSettingsDataManager)
+            ISettingsDataManager settingsDataManager)
         {
             _connectionDataManager = connectionDataManager;
             _gameObjectDataManager = gameObjectDataManager;
             _textureDataManager = textureDataManager;
             _duelRoomDataManager = duelRoomDataManager;
-            _userSettingsDataManager = userSettingsDataManager;
+            _settingsDataManager = settingsDataManager;
         }
 
         #region Connection
 
-        public ConnectionInfo GetConnectionInfo()
+        public ConnectionInfo GetConnectionInfo(bool forceLocalInfo = false)
         {
-            return _connectionDataManager.GetConnectionInfo();
+            return _connectionDataManager.GetConnectionInfo(forceLocalInfo);
         }
 
         public void SaveConnectionInfo(ConnectionInfo connectionInfo)
         {
             _connectionDataManager.SaveConnectionInfo(connectionInfo);
+        }
+
+        public bool UseOnlineDuelRoom()
+        {
+            return _connectionDataManager.UseOnlineDuelRoom();
+        }
+
+        public void SaveUseOnlineDuelRoom(bool value)
+        {
+            _connectionDataManager.SaveUseOnlineDuelRoom(value);
         }
 
         #endregion
@@ -99,16 +109,16 @@ namespace Code.Core.DataManager
 
         #endregion
 
-        #region User Settings
+        #region Settings
 
-        public void SetToggleSetting(string settingName, bool value)
+        public bool IsDeveloperModeEnabled()
         {
-            _userSettingsDataManager.SetToggleSetting(settingName, value);
+            return _settingsDataManager.IsDeveloperModeEnabled();
         }
 
-        public bool IsToggleSettingEnabled(string settingName)
+        public void SaveDeveloperModelEnabled(bool value)
         {
-            return _userSettingsDataManager.IsToggleSettingEnabled(settingName);
+            _settingsDataManager.SaveDeveloperModelEnabled(value);
         }
 
         #endregion

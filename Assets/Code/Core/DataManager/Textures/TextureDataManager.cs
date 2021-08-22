@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Code.Core.Logger;
-using Code.Core.Storage.Texture;
+using Code.Core.Storage.Textures;
 using Code.Core.YGOProDeck;
 using UnityEngine;
 

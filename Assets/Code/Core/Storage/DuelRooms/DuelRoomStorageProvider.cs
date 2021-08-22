@@ -1,4 +1,4 @@
-namespace Code.Core.Storage.DuelRoom
+namespace Code.Core.Storage.DuelRooms
 {
     public interface IDuelRoomStorageProvider
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using Code.Wrappers.WrapperResources;
 using Zenject;
 
-namespace Code.Core.Storage.GameObject
+namespace Code.Core.Storage.GameObjects
 {
     public interface IGameObjectStorageProvider
     {

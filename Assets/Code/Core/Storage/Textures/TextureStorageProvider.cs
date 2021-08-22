@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Code.Core.Storage.Texture
+namespace Code.Core.Storage.Textures
 {
     public interface ITextureStorageProvider
     {

@@ -1,5 +1,5 @@
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
-using Code.Core.Storage.DuelRoom;
+using Code.Core.Storage.DuelRooms;
 using Zenject;
 
 namespace Code.Core.DataManager.DuelRooms
