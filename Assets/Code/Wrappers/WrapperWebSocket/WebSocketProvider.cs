@@ -85,6 +85,7 @@ namespace Code.Wrappers.WrapperWebSocket
 
             RegisterHandler(scope, SmartDuelEventConstants.CardPlayAction);
             RegisterHandler(scope, SmartDuelEventConstants.CardRemoveAction);
+            RegisterHandler(scope, SmartDuelEventConstants.CardAttackAction);
         }
 
         private void RegisterHandler(string scope, string action)

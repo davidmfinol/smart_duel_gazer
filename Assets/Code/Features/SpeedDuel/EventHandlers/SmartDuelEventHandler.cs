@@ -157,6 +157,10 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(data);
                     return;
+                
+                case SmartDuelEventConstants.CardAttackAction:
+                    HandleAttackCardEvent(data);
+                    return;
             }
         }
 
@@ -196,6 +200,24 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var updatedPlayerState =
                 _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
             UpdateSpeedDuelState(playerState, updatedPlayerState);
+        }
+
+        private void HandleAttackCardEvent(CardEventData data)
+        {
+            _logger.Log(Tag,
+                $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}, targetCardId: {data.TargetCardId})");
+
+            var playerStates = _speedDuelState.GetPlayerStates();
+
+            var attackerState = playerStates.First(ps => ps.DuelistId == data.DuelistId);
+            var attackingCard = attackerState.GetCards()
+                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+
+            var targetState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
+            var targetCard = targetState.GetCards()
+                .FirstOrDefault(card => card.Id == data.TargetCardId && card.CopyNumber == data.TargetCopyNumber);
+            
+            // TODO: play animations
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)

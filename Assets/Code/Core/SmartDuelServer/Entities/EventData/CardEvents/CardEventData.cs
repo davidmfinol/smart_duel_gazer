@@ -16,5 +16,8 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
         [JsonProperty("cardPosition")]
         [JsonConverter(typeof(StringEnumConverter))]
         public CardPosition? CardPosition { get; set; }
+        
+        [JsonProperty("targetCardId")] public int? TargetCardId { get; set; }
+        [JsonProperty("targetCardCopyNumber")] public int? TargetCopyNumber { get; set; }
     }
 }
