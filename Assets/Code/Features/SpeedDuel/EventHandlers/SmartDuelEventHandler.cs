@@ -205,7 +205,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void HandleAttackCardEvent(CardEventData data)
         {
             _logger.Log(Tag,
-                $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}, targetCardId: {data.TargetCardId})");
+                $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}, targetCardId: {data.TargetCardId})");
 
             var playerStates = _speedDuelState.GetPlayerStates();
 
@@ -218,6 +218,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 .FirstOrDefault(card => card.Id == data.TargetCardId && card.CopyNumber == data.TargetCopyNumber);
             
             // TODO: play animations
+            _logger.Log(Tag, "Target acquired");
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)
