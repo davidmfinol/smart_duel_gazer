@@ -127,7 +127,7 @@ namespace Code.Core.SmartDuelServer
         private void HandleCardEvent(string action, JToken json)
         {
             _logger.Log(Tag, $"HandleCardEvent(action: {action})");
-            
+
             try
             {
                 var data = JsonConvert.DeserializeObject<CardEventData>(json.ToString());

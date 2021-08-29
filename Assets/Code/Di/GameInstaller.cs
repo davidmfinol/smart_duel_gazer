@@ -27,6 +27,7 @@ using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
+using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using Code.Wrappers.WrapperDialog;
@@ -122,6 +123,8 @@ namespace Code.Di
             Container.Bind<IPlayCardModelUseCase>().To<PlayCardModelUseCase>().AsSingle();
             Container.Bind<IRemoveCardModelUseCase>().To<RemoveCardModelUseCase>().AsSingle();
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
+            Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
+            Container.Bind<IMonsterBattleUseCase>().To<MonsterBattleUseCase>().AsSingle();
 
             #endregion
 

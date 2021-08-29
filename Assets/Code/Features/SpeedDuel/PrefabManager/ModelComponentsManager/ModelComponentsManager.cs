@@ -107,7 +107,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             switch (eventName)
             {
                 case ModelEvent.Attack:
-                    Attack();
+                    Attack(state);
                     break;
                 case ModelEvent.RevealSetMonsterModel:
                     RevealSetMonsterModel();
@@ -153,8 +153,16 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #region ModelFunctions
 
-        private void Attack()
+        //TODO: Add movement functionality
+        private void Attack(bool isAttackingMonster)
         {
+            if(!isAttackingMonster)
+            {
+                //TODO: Hook Up "Hurt" Animation to models
+                _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
+                return;
+            }
+            
             var isInDefence = _animator.GetBool(AnimatorParameters.DefenceBool);
             if (isInDefence) return;
 

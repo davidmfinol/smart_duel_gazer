@@ -6,9 +6,17 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface IModelEventHandler
     {
-        public void Summon(int instanceID);
-        public void Action(ModelEvent eventName, int instanceID, bool state);
-        public void Remove(int instanceID);
+        event Action<ModelEvent, int, bool> OnAction;
+        event Action<int> OnActivateModel;
+        event Action<SkinnedMeshRenderer[]> OnMonsterRemoval;
+        event Action<int> OnRemove;
+        event Action<int> OnSummon;
+
+        void Action(ModelEvent eventName, int instanceID, bool state = true);
+        void Activate(int instanceID);
+        void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
+        void Remove(int instanceID);
+        void Summon(int instanceID);
     }
 
     public class ModelEventHandler : IModelEventHandler
@@ -27,23 +35,27 @@ namespace Code.Features.SpeedDuel.EventHandlers
             add => _OnActivateModel += value;
             remove => _OnActivateModel -= value;
         }
-        public event Action<int> OnSummon 
-        { 
+
+        public event Action<int> OnSummon
+        {
             add => _OnSummon += value;
             remove => _OnSummon -= value;
         }
+
         public event Action<ModelEvent, int, bool> OnAction
         {
             add => _OnAction += value;
             remove => _OnAction -= value;
         }
+
         public event Action<int> OnRemove
         {
             add => _OnRemove += value;
             remove => _OnRemove -= value;
-        }       
-        public event Action<SkinnedMeshRenderer[]> OnMonsterRemoval 
-        { 
+        }
+
+        public event Action<SkinnedMeshRenderer[]> OnMonsterRemoval
+        {
             add => _OnMonsterRemoval += value;
             remove => _OnMonsterRemoval -= value;
         }
@@ -59,7 +71,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _OnSummon?.Invoke(instanceID);
         }
-        
+
         public void Action(ModelEvent eventName, int instanceID, bool state = true)
         {
             _OnAction?.Invoke(eventName, instanceID, state);

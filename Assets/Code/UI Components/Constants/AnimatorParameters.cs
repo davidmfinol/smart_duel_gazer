@@ -5,7 +5,7 @@ namespace Code.UI_Components.Constants
     public static class AnimatorParameters
     {
         #region Model Animations
-            
+
         public static readonly int SummoningTrigger = Animator.StringToHash("SummoningTrigger");
         public static readonly int DeathTrigger = Animator.StringToHash("Death");
         public static readonly int ActivateSpellOrTrapTrigger = Animator.StringToHash("ActivateSpellTrap");
@@ -14,6 +14,7 @@ namespace Code.UI_Components.Constants
         public static readonly int RevealSetMonsterTrigger = Animator.StringToHash("RevealSetMonster");
         public static readonly int HideSetMonsterImageTrigger = Animator.StringToHash("HideSetMonsterImage");
         public static readonly int PlayMonsterAttack1Trigger = Animator.StringToHash("Attack1");
+        public static readonly int TakeDamageTrigger = Animator.StringToHash("Take Damage");
         public static readonly int PickUpPlayfieldTrigger = Animator.StringToHash("PickUpPlayfield");
         public static readonly int FadeInSetCardTrigger = Animator.StringToHash("FadeIn");
 
@@ -33,7 +34,7 @@ namespace Code.UI_Components.Constants
 
         public static readonly int OpenPlayfieldMenuBool = Animator.StringToHash("OpenPlayfieldMenu");
         public static readonly int PrefabMenuBool = Animator.StringToHash("PrefabMenuEnter");
-        
+
         #endregion
     }
 }

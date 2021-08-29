@@ -9,10 +9,12 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
+using Code.Core.SmartDuelServer.Entities.EventData;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.UseCases;
+using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using UniRx;
 using UnityEngine;
@@ -32,6 +34,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
+        private IMonsterBattleInteractor _monsterBattleInteractor;
         private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
@@ -51,6 +54,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             ICreatePlayerStateUseCase createPlayerStateUseCase,
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
+            IMonsterBattleInteractor monsterBattleInteractor,
             IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
@@ -60,6 +64,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
+            _monsterBattleInteractor = monsterBattleInteractor;
             _logger = logger;
 
             screenService.UseAutoOrientation();
@@ -156,11 +161,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
                 case SmartDuelEventConstants.CardRemoveAction:
                     HandleRemoveCardEvent(data);
-                    return;
-                
+                    break;
+
                 case SmartDuelEventConstants.CardAttackAction:
                     HandleAttackCardEvent(data);
-                    return;
+                    break;
             }
         }
 
@@ -205,7 +210,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void HandleAttackCardEvent(CardEventData data)
         {
             _logger.Log(Tag,
-                $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}, targetCardId: {data.TargetCardId})");
+                $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), targetCardId: {data.TargetCardId})");
 
             var playerStates = _speedDuelState.GetPlayerStates();
 
@@ -213,12 +218,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var attackingCard = attackerState.GetCards()
                 .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
 
-            var targetState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
-            var targetCard = targetState.GetCards()
-                .FirstOrDefault(card => card.Id == data.TargetCardId && card.CopyNumber == data.TargetCopyNumber);
-            
-            // TODO: play animations
-            _logger.Log(Tag, "Target acquired");
+            var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
+            var targetCard = targetPlayerState.GetCards()
+                .FirstOrDefault(card => card.Id == data.TargetCardId && card.CopyNumber == data.TargetCardCopyNumber);
+
+            _monsterBattleInteractor.Execute(attackerState, attackingCard, targetPlayerState, targetCard);
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)

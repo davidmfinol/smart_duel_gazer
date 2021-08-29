@@ -8,7 +8,7 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
         [JsonProperty("duelistId")] public string DuelistId { get; set; }
         [JsonProperty("cardId")] public int CardId { get; set; }
         [JsonProperty("copyNumber")] public int CopyNumber { get; set; }
-
+        
         [JsonProperty("zoneName")]
         [JsonConverter(typeof(StringEnumConverter))]
         public ZoneType? ZoneType { get; set; }
@@ -18,6 +18,6 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
         public CardPosition? CardPosition { get; set; }
         
         [JsonProperty("targetCardId")] public int? TargetCardId { get; set; }
-        [JsonProperty("targetCardCopyNumber")] public int? TargetCopyNumber { get; set; }
+        [JsonProperty("targetCardCopyNumber")] public int? TargetCardCopyNumber { get; set; }
     }
 }
