@@ -13,6 +13,7 @@ using Code.Core.SmartDuelServer.Entities.EventData;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
+using Code.Features.SpeedDuel.Models.Zones;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
@@ -210,19 +211,27 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void HandleAttackCardEvent(CardEventData data)
         {
             _logger.Log(Tag,
-                $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), targetCardId: {data.TargetCardId})");
+                $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), zoneType: {data.ZoneType})");
+
+            if (!data.ZoneType.HasValue)
+            {
+                return;
+            }
 
             var playerStates = _speedDuelState.GetPlayerStates();
 
             var attackerState = playerStates.First(ps => ps.DuelistId == data.DuelistId);
             var attackingCard = attackerState.GetCards()
                 .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            var attackZone = attackingCard == null ? null : attackerState.GetZone(attackingCard.ZoneType);
 
             var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
-            var targetCard = targetPlayerState.GetCards()
-                .FirstOrDefault(card => card.Id == data.TargetCardId && card.CopyNumber == data.TargetCardCopyNumber);
+            var targetZone = targetPlayerState.GetZone(data.ZoneType.Value);
 
-            _monsterBattleInteractor.Execute(attackerState, attackingCard, targetPlayerState, targetCard);
+            if (attackZone != null && targetZone != null)
+            {
+                _monsterBattleInteractor.Execute(attackZone, targetZone);
+            }
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)

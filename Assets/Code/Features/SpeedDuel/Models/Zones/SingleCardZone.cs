@@ -6,7 +6,7 @@ namespace Code.Features.SpeedDuel.Models.Zones
 {
     public class SingleCardZone : Zone
     {
-        private PlayCard Card { get; set; }
+        public PlayCard Card { get; private set; }
         public GameObject SetCardModel { get; private set; }
         public GameObject MonsterModel { get; private set; }
 
