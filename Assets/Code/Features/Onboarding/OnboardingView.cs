@@ -20,8 +20,10 @@ namespace Code.Features.Onboarding
             Init();
         }
 
-        private void Init()
+        private async void Init()
         {
+            await _onboardingViewModel.Init();
+            
             BindButtons();
         }
 

@@ -31,6 +31,7 @@ using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using Code.Wrappers.WrapperDialog;
+using Code.Wrappers.WrapperFirebase;
 using Code.Wrappers.WrapperLogger;
 using Code.Wrappers.WrapperPlayerPrefs;
 using Code.Wrappers.WrapperResources;
@@ -131,6 +132,7 @@ namespace Code.Di
             #region Wrappers
 
             Container.Bind<IDialogProvider>().To<DialogProvider>().AsSingle();
+            Container.Bind<IFirebaseInitializer>().To<FirebaseInitializer>().AsSingle();
             Container.Bind<ILoggerProvider>().To<LoggerProvider>().AsSingle();
             Container.Bind<IPlayerPrefsProvider>().To<PlayerPrefsProvider>().AsSingle();
             Container.Bind<IResourcesProvider>().To<ResourcesProvider>().AsSingle();
