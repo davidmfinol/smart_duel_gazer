@@ -6,14 +6,14 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
 {
     public class DestructionParticles : MonoBehaviour
     {
-        private ModelEventHandler _modelEventHandler;
+        private IModelEventHandler _modelEventHandler;
         private ParticleSystem _particleSystem;
 
         #region Constructor
 
         [Inject]
         public void Construct(
-            ModelEventHandler modelEventHandler)
+            IModelEventHandler modelEventHandler)
         {
             _modelEventHandler = modelEventHandler;
         }

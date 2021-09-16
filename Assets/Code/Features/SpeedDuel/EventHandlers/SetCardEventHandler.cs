@@ -5,9 +5,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface ISetCardEventHandler
     {
-        public void Summon(int instanceID, string modelName, bool isMonster);
-        public void Action(SetCardEvent eventName, int instanceID);
-        public void Remove(int instanceID);
+        event Action<SetCardEvent, int> OnAction;
+        event Action<int> OnSetCardRemove;
+        event Action<int, string, bool> OnSummonSetCard;
+
+        void Action(SetCardEvent eventName, int instanceID);
+        void Remove(int instanceID);
+        void Summon(int instanceID, string modelName, bool isMonster);
     }
 
     public class SetCardEventHandler : ISetCardEventHandler

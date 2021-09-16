@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Model_skeleton_MotionE
+  m_Name: Idle - Attack (fixed)
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0

@@ -1,4 +1,5 @@
-﻿using Code.Core.Config.Entities;
+﻿using Code.Features.SpeedDuel.UseCases.CardBattle;
+using Code.Core.Config.Entities;
 using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.DataManager.Connections;
@@ -27,7 +28,6 @@ using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
-using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using Code.Wrappers.WrapperDialog;
@@ -58,6 +58,7 @@ namespace Code.Di
             // Config
             Container.Bind<IAppConfig>().FromInstance(new AppConfig());
             Container.Bind<IDelayProvider>().To<DelayProvider>().AsSingle();
+            Container.Bind<ITimeProvider>().To<TimeProvider>().AsSingle();
 
             // Data managers
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
@@ -98,9 +99,9 @@ namespace Code.Di
             Container.Bind<ConnectionViewModel>().AsTransient();
 
             // Event Handlers
-            Container.Bind<ModelEventHandler>().AsSingle();
+            Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();
             Container.Bind<PlayfieldEventHandler>().AsSingle();
-            Container.Bind<SetCardEventHandler>().AsSingle();
+            Container.Bind<ISetCardEventHandler>().To<SetCardEventHandler>().AsSingle();
 
             // Prefabs
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
@@ -125,7 +126,8 @@ namespace Code.Di
             Container.Bind<IRemoveCardModelUseCase>().To<RemoveCardModelUseCase>().AsSingle();
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
             Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
-            Container.Bind<IMonsterBattleUseCase>().To<MonsterBattleUseCase>().AsSingle();
+            Container.Bind<IMonsterZoneBattleUseCase>().To<MonsterZoneBattleUseCase>().AsSingle();
+            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();            
 
             #endregion
 

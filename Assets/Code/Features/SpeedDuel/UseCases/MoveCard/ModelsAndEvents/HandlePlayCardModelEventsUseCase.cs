@@ -11,12 +11,12 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
     public class HandlePlayCardModelEventsUseCase : IHandlePlayCardModelEventsUseCase
     {
-        private readonly SetCardEventHandler _setCardEventHandler;
+        private readonly ISetCardEventHandler _setCardEventHandler;
 
         #region Constructor
 
         public HandlePlayCardModelEventsUseCase(
-            SetCardEventHandler setCardEventHandler)
+            ISetCardEventHandler setCardEventHandler)
         {
             _setCardEventHandler = setCardEventHandler;
         }

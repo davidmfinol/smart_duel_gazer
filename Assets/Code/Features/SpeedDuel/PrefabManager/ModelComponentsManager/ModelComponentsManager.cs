@@ -1,4 +1,6 @@
+using Code.Core.Config.Providers;
 using Code.Core.General.Extensions;
+using Code.Core.Logger;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities;
@@ -7,23 +9,31 @@ using UnityEngine;
 using Zenject;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
-{    
-    [RequireComponent(typeof(Animator)), RequireComponent(typeof(ModelSettings))]
+{
+    [RequireComponent(typeof(Animator)), RequireComponent(typeof(ModelSettings)), RequireComponent(typeof(ModelMovementHandler))]
     public class ModelComponentsManager : MonoBehaviour
     {
-        private ModelEventHandler _modelEventHandler;
+        private const string Tag = "ModelComponentsManager";
+        
+        private IModelEventHandler _modelEventHandler;
         private PlayfieldEventHandler _playfieldEventHandler;
+        private IDelayProvider _delayProvider;
+        private IAppLogger _logger;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
         private ModelSettings _settings;
+        private ModelMovementHandler _movementHandler;
         private GameObject _parent;
         private bool _areRenderersEnabled;
+        private bool _attackingMonsterIsInDefence;
+        private int _waitTimeForEnemyAnimations = 600;
 
         #region Properties
 
         public void CallSummonMonster() => SummonMonster(_parent.GetInstanceID());
         public void CallRemoveMonster() => RemoveMonster(_parent.GetInstanceID());
+        public void CallTakeDamage() => _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
 
         #endregion
 
@@ -31,11 +41,15 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         [Inject]
         public void Construct(
-            ModelEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler)
+            IModelEventHandler modelEventHandler,
+            PlayfieldEventHandler playfieldEventHandler,
+            IDelayProvider delayProvider,
+            IAppLogger appLogger)
         {
+            _delayProvider = delayProvider;
             _modelEventHandler = modelEventHandler;
             _playfieldEventHandler = playfieldEventHandler;
+            _logger = appLogger;
         }
 
         #endregion
@@ -47,6 +61,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _animator = GetComponent<Animator>();
             _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             _settings = GetComponent<ModelSettings>();
+            _movementHandler = GetComponent<ModelMovementHandler>();
 
             _parent = transform.parent.gameObject;
             SubscribeToEvents();
@@ -57,6 +72,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnActivateModel -= ActivateModel;
             _modelEventHandler.OnSummon -= SummonMonster;
             _modelEventHandler.OnAction -= Action;
+            _modelEventHandler.OnDirectAttack -= DirectAttack;
             _modelEventHandler.OnRemove -= RemoveMonster;
 
             _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
@@ -72,6 +88,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnActivateModel += ActivateModel;
             _modelEventHandler.OnSummon += SummonMonster;
             _modelEventHandler.OnAction += Action;
+            _modelEventHandler.OnDirectAttack += DirectAttack;
             _modelEventHandler.OnRemove += RemoveMonster;
 
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
@@ -101,7 +118,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         }
 
         private void Action(ModelEvent eventName, int instanceID, bool state)
-        {
+        {            
             if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
@@ -116,6 +133,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
                     ChangeMonsterVisibility(state);
                     break;
             }
+        }
+
+        private void DirectAttack(int instanceID, Transform playfieldZone)
+        {
+            if (!_parent.ShouldModelListenToEvent(instanceID)) return;
+
+            _movementHandler.Activate(_parent.transform, playfieldZone.position);
         }
 
         private void RemoveMonster(int instanceID)
@@ -154,12 +178,15 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         #region ModelFunctions
 
         //TODO: Add movement functionality
-        private void Attack(bool isAttackingMonster)
+        private async void Attack(bool isAttackingMonster)
         {
+            _logger.Log(Tag, $"Model {name} has entered battle. Is attacking monster: {isAttackingMonster}");
+            
             if(!isAttackingMonster)
             {
-                //TODO: Hook Up "Hurt" Animation to models
-                _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
+                await _delayProvider.Wait(_waitTimeForEnemyAnimations);
+
+                TakeDamageIfNeeded();
                 return;
             }
             
@@ -167,6 +194,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             if (isInDefence) return;
 
             _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
+        }
+
+        private void TakeDamageIfNeeded()
+        {
+            if (_attackingMonsterIsInDefence) return;
+
+            _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
         }
 
         private void RevealSetMonsterModel()
