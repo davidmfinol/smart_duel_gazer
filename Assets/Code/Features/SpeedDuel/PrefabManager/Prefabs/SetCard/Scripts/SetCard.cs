@@ -24,7 +24,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private IDataManager _dataManager;
         private IAppLogger _logger;
         private SetCardEventHandler _setCardEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
         private CurrentState _currentState;
@@ -36,7 +36,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             IDataManager dataManager,            
             IAppLogger logger,
             SetCardEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler)
+            IPlayfieldEventHandler playfieldEventHandler)
         {
             _dataManager = dataManager;
             _logger = logger;

@@ -12,7 +12,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
     public class ModelComponentsManager : MonoBehaviour
     {
         private ModelEventHandler _modelEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
         private SkinnedMeshRenderer[] _renderers;
@@ -32,7 +32,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         [Inject]
         public void Construct(
             ModelEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler)
+            IPlayfieldEventHandler playfieldEventHandler)
         {
             _modelEventHandler = modelEventHandler;
             _playfieldEventHandler = playfieldEventHandler;
