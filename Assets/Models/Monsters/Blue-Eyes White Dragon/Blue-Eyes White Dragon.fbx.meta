@@ -5,22 +5,22 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 5577620199272415434
-    second: Model_skeleton|MotionA
+    second: Summoning
   - first:
       74: -4753414617813279217
-    second: Model_skeleton|MotionB
+    second: Idle - Attack
   - first:
       74: -2361512165147288874
-    second: Model_skeleton|MotionC
+    second: Idle - Defence
   - first:
       74: 2331642159709094490
-    second: Model_skeleton|MotionD
+    second: Attack1
   - first:
       74: 458377328876236368
-    second: Model_skeleton|MotionE
+    second: Death - Attack
   - first:
       74: 1491338518815256331
-    second: Model_skeleton|MotionF
+    second: Death - Defence
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -50,7 +50,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Model_skeleton|MotionA
+      name: Summoning
       takeName: Model_skeleton|MotionA
       internalID: 0
       firstFrame: 20
@@ -79,7 +79,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionB
+      name: Idle - Attack
       takeName: Model_skeleton|MotionB
       internalID: 0
       firstFrame: 0
@@ -108,7 +108,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionC
+      name: Idle - Defence
       takeName: Model_skeleton|MotionC
       internalID: 0
       firstFrame: 0
@@ -137,7 +137,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionD
+      name: Attack1
       takeName: Model_skeleton|MotionD
       internalID: 0
       firstFrame: 0
@@ -166,7 +166,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionE
+      name: Death - Attack
       takeName: Model_skeleton|MotionE
       internalID: 0
       firstFrame: 0
@@ -195,7 +195,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionF
+      name: Death - Defence
       takeName: Model_skeleton|MotionF
       internalID: 0
       firstFrame: 0
@@ -277,7 +277,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.001
+    globalScale: 0.1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

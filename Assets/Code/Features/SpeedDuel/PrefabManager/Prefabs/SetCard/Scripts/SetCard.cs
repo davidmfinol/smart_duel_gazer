@@ -21,10 +21,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private Renderer _image;
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
-        private IDataManager _dataManager;
-        private IAppLogger _logger;
-        private SetCardEventHandler _setCardEventHandler;
+        private IDataManager _dataManager;        
+        private ISetCardEventHandler _setCardEventHandler;
         private IPlayfieldEventHandler _playfieldEventHandler;
+        private IAppLogger _logger;
 
         private Animator _animator;
         private CurrentState _currentState;
@@ -34,9 +34,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [Inject]
         public void Construct(
             IDataManager dataManager,            
-            IAppLogger logger,
-            SetCardEventHandler modelEventHandler,
-            IPlayfieldEventHandler playfieldEventHandler)
+            ISetCardEventHandler modelEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _logger = logger;
@@ -57,6 +57,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void OnDisable()
         {
             _currentState = CurrentState.FaceDown;
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, false);
         }
 
         private void OnDestroy()
@@ -96,9 +98,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                 SetMonster();
             }
 
-            _setCardEventHandler.OnSummonSetCard -= OnSummon;
-            _animator.SetBool(AnimatorParameters.AllowDestroyBool, false);
-
             await GetAndDisplayCardImage(modelName);
         }
 
@@ -120,6 +119,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                 case SetCardEvent.HideSetCardImage:
                     HideSetCardImage();
                     break;
+                case SetCardEvent.Hurt:
+                    PlayHurtAnimation();
+                    break;
             }
         }
 
@@ -128,9 +130,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
-
-            //TODO: See if this is necessary
-            _animator.SetBool(AnimatorParameters.AllowDestroyBool, true);
         }
 
         #endregion
@@ -152,7 +151,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                     _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
                     break;
                 case CurrentState.SetMonsterRevealed:
-                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+                    _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
                     break;
             }
         }
@@ -189,14 +188,21 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         
         private void RevealSetCardImage()
         {
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
             _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
             _currentState = CurrentState.SetMonsterRevealed;
         }
 
         private void HideSetCardImage()
         {
-            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, false);
+            _animator.SetTrigger(AnimatorParameters.HideSetCardTrigger);
             _currentState = CurrentState.FaceDown;
+        }
+
+        private void PlayHurtAnimation()
+        {
+            _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
         }
 
         #endregion

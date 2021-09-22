@@ -26,8 +26,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private readonly IDataManager _dataManager;
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IHandlePlayCardModelEventsUseCase _handlePlayCardModelEventsUseCase;
-        private readonly ModelEventHandler _modelEventHandler;
-        private readonly SetCardEventHandler _setCardEventHandler;
+        private readonly IModelEventHandler _modelEventHandler;
+        private readonly ISetCardEventHandler _setCardEventHandler;
         private readonly ModelComponentsManager.Factory _modelFactory;
         private readonly IAppLogger _logger;
 
@@ -37,8 +37,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             IDataManager dataManager,
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IHandlePlayCardModelEventsUseCase handlePlayCardModelEventsUseCase,
-            ModelEventHandler modelEventHandler,
-            SetCardEventHandler setCardEventHandler,
+            IModelEventHandler modelEventHandler,
+            ISetCardEventHandler setCardEventHandler,
             ModelComponentsManager.Factory modelFactory,
             IAppLogger logger)
         {

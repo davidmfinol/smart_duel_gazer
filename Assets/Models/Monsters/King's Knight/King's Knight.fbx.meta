@@ -5,16 +5,16 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: -3174540627824510046
-    second: Model_skeleton|attack
+    second: Attack1
   - first:
       74: -3237224186688669524
     second: Model_skeleton|attack.001
   - first:
       74: -5185332079286193826
-    second: Model_skeleton|idle
+    second: Idle - Attack
   - first:
       74: -2205879859669881691
-    second: Model_skeleton|summoning
+    second: Summoning/Idle - Def
   - first:
       74: -6673471070252744015
     second: Model_skeleton|summoning.001
@@ -47,7 +47,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Model_skeleton|attack
+      name: Attack1
       takeName: Model_skeleton|attack
       internalID: 0
       firstFrame: 0
@@ -105,7 +105,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|idle
+      name: Idle - Attack
       takeName: Model_skeleton|idle
       internalID: 0
       firstFrame: 0
@@ -134,7 +134,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|summoning
+      name: Summoning/Idle - Def
       takeName: Model_skeleton|summoning
       internalID: 0
       firstFrame: 107
@@ -245,7 +245,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.001
+    globalScale: 0.1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

@@ -16,6 +16,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
         MonsterDestruction,
         Attack,
         RevealSetMonsterModel,
+        DirectAttack,
     }
 
     public enum SetCardEvent
@@ -26,6 +27,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
         DestroySetMonster,
         SpellTrapActivate,
         SetCardRemove,
-        ReturnToFaceDown
+        ReturnToFaceDown,
+        Hurt
     }
 }
