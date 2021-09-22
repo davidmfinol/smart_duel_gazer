@@ -3,11 +3,11 @@ using UnityEngine.UI;
 using Zenject;
 using UniRx;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
-using Code.Features.SpeedDuel.EventHandlers;
 using Code.Core.Logger;
 using Code.UI_Components.Constants;
 using System.Threading.Tasks;
 using Code.Core.Config.Providers;
+using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel
 {
@@ -29,8 +29,6 @@ namespace Code.Features.SpeedDuel
         [SerializeField] private Button _backButton;
 
         private SpeedDuelViewModel _speedDuelViewModel;
-        private PlayfieldMenuComponentsManager _playfieldMenuComponentsManager;
-        private PlacementEventHandler _placementEventHandler;
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
 
@@ -49,7 +47,7 @@ namespace Code.Features.SpeedDuel
             _delayProvider = delayProvider;
             _logger = appLogger;
 
-            Init();
+            BindButtons();
         }
 
         #endregion
@@ -59,22 +57,15 @@ namespace Code.Features.SpeedDuel
         private void OnDestroy()
         {
             _disposables.Dispose();
+            _speedDuelViewModel.Dispose();
         }
 
         #endregion
 
-        private void Init()
-        {
-            _playfieldMenuComponentsManager = GetComponentInChildren<PlayfieldMenuComponentsManager>();
-            _placementEventHandler = FindObjectOfType<PlacementEventHandler>();
-            if (_playfieldMenuComponentsManager == null || _placementEventHandler == null) return;
-
-            _playfieldMenuComponentsManager.InitMenus(_rotationSlider, _scaleSlider);
-            BindButtons();
-        }
-
         private void BindButtons()
         {
+            _logger.Log(Tag, "BindButtons()");
+            
             _togglePlayfieldMenusToggle.OnValueChangedAsObservable()
                 .Subscribe(_speedDuelViewModel.OnTogglePlayfieldMenu);
 
@@ -95,26 +86,26 @@ namespace Code.Features.SpeedDuel
             _backButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnBackButtonPressed());
 
             // VM Streams
+            _disposables.Add(_speedDuelViewModel.ActivatePlayfieldMenu
+                .Subscribe(playfield => ActivatePlayfieldMenus(playfield)));
             _disposables.Add(_speedDuelViewModel.TogglePlayfieldMenu
                 .Subscribe(state => ShowPlayfieldMenu(state)));
             _disposables.Add(_speedDuelViewModel.RemovePlayfield
-                .Subscribe(async state => await RemovePlayfieldMenus(state)));
-
-            // Placement Event Handler Streams
-            _disposables.Add(_placementEventHandler.ActivatePlayfield
-                .Subscribe(state => ActivatePlayfieldMenus(state)));
+                .Subscribe(async state => await RemovePlayfieldMenus(state)));            
         }
 
         #region Functions
 
-        private void ActivatePlayfieldMenus(bool state)
+        private void ActivatePlayfieldMenus(PlayfieldTransformValues playfieldValues)
         {
-            _logger.Log(Tag, $"Activate Playfield Menus: {state}");
-            
-            if (!state) return;
+            _logger.Log(Tag, "ActivatePlayfieldMenus()");
             
             _menus.SetActive(true);
-            var playfieldValues = _playfieldMenuComponentsManager.SetSliderValues();
+
+            if (playfieldValues.Scale > 10f)
+            {
+                _scaleSlider.maxValue = playfieldValues.Scale;
+            }
 
             _scaleSlider.value = playfieldValues.Scale;
             _rotationSlider.value = playfieldValues.Rotation;
@@ -123,6 +114,8 @@ namespace Code.Features.SpeedDuel
 
         private void ShowPlayfieldMenu(bool state)
         {
+            _logger.Log(Tag, $"Show Playfield Menus: {state}");
+            
             _animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
         }
 

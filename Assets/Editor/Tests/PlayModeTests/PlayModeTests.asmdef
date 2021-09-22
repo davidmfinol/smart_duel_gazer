@@ -1,5 +1,5 @@
 {
-    "name": "EditModeTests",
+    "name": "PlayModeTests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
@@ -7,16 +7,13 @@
         "CodeAssembly",
         "UniRx"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "Moq.dll",
-        "NSubstitute.dll"
+        "Moq.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

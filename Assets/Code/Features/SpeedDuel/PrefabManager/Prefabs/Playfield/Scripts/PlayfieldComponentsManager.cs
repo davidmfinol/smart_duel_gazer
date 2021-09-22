@@ -37,14 +37,14 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
             _animators = GetComponentsInChildren<Animator>();
             _renderers = GetComponentsInChildren<MeshRenderer>();
 
-            _playfieldEventHandler.OnActivatePlayfield += OnActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += (_ => OnActivatePlayfield());
             _playfieldEventHandler.OnAction += OnAction;
             _playfieldEventHandler.OnRemovePlayfield += OnRemovePlayfield;
         }
 
         private void OnDestroy()
         {
-            _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield -= (_ => OnActivatePlayfield());
             _playfieldEventHandler.OnAction -= OnAction;
             _playfieldEventHandler.OnRemovePlayfield -= OnRemovePlayfield;
         }

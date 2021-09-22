@@ -4,6 +4,8 @@ using Code.Features.SpeedDuel.EventHandlers;
 using Code.Core.Logger;
 using UniRx;
 using System;
+using UnityEngine;
+using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel
 {
@@ -15,11 +17,17 @@ namespace Code.Features.SpeedDuel
         private readonly IPlayfieldEventHandler _playfieldEventHandler;
         private readonly IAppLogger _logger;
 
-        private BehaviorSubject<bool> _togglePlayfieldMenu = new BehaviorSubject<bool>(default);
-        private BehaviorSubject<bool> _removePlayfield = new BehaviorSubject<bool>(default);
+        private Subject<PlayfieldTransformValues> _activatePlayfieldMenu = new Subject<PlayfieldTransformValues>();
+        private Subject<bool> _togglePlayfieldMenu = new Subject<bool>();
+        private Subject<bool> _removePlayfield = new Subject<bool>();
 
+        #region Observables
+
+        public IObservable<PlayfieldTransformValues> ActivatePlayfieldMenu => _activatePlayfieldMenu;
         public IObservable<bool> TogglePlayfieldMenu => _togglePlayfieldMenu;
         public IObservable<bool> RemovePlayfield => _removePlayfield;
+
+        #endregion
 
         #region Constructor
 
@@ -31,46 +39,70 @@ namespace Code.Features.SpeedDuel
             _navigationService = navigationService;
             _playfieldEventHandler = playfieldEventHandler;
             _logger = appLogger;
+
+            Init();
         }
 
         #endregion
 
+        private void Init()
+        {
+            _logger.Log(Tag, "Init()");
+
+            _playfieldEventHandler.OnActivatePlayfield += OnActivatePlayfield;
+        }
+
+        public void Dispose()
+        {
+            _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
+        }
+
         #region Playfield Events
 
-        public void RotatePlayfield(PlayfieldEventArgs floatValue)
+        private void OnActivatePlayfield(UnityEngine.GameObject playfield)
         {
-            _logger.Log(Tag, $"Rotate Playfield with value: {floatValue}");
+            _logger.Log(Tag, "OnActivatePlayfield()");
             
-            if (!(floatValue is PlayfieldEventValue<float>)) return;
-            
-            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, floatValue);
+            if (playfield == null) return;
+
+            var playfieldValues = GetPlayfieldScaleAndRotation(playfield);            
+            _activatePlayfieldMenu.OnNext(playfieldValues);
         }
 
-        public void ScalePlayfield(PlayfieldEventArgs floatValue)
+        public void RotatePlayfield(PlayfieldEventArgs argsAsFloat)
         {
-            _logger.Log(Tag, $"Scale Playfield with value: {floatValue}");
-
-            if (!(floatValue is PlayfieldEventValue<float>)) return;
+            _logger.Log(Tag, "RotatePlayfield()");
             
-            _playfieldEventHandler.Action(PlayfieldEvent.Scale, floatValue);
+            if (!(argsAsFloat is PlayfieldEventValue<float>)) return;
+            
+            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, argsAsFloat);
         }
 
-        public void HidePlayfield(PlayfieldEventArgs boolValue)
+        public void ScalePlayfield(PlayfieldEventArgs argsAsFloat)
         {
-            _logger.Log(Tag, $"Hide Playfield with value: {boolValue}");
+            _logger.Log(Tag, "ScalePlayfield()");
 
-            if (!(boolValue is PlayfieldEventValue<bool>)) return;
+            if (!(argsAsFloat is PlayfieldEventValue<float>)) return;
             
-            _playfieldEventHandler.Action(PlayfieldEvent.Hide, boolValue);
+            _playfieldEventHandler.Action(PlayfieldEvent.Scale, argsAsFloat);
         }
 
-        public void FlipPlayfield(PlayfieldEventArgs boolValue)
+        public void HidePlayfield(PlayfieldEventArgs argsAsBool)
         {
-            _logger.Log(Tag, $"Flip Playfield with value: {boolValue}");
+            _logger.Log(Tag, "HidePlayfield()");
 
-            if (!(boolValue is PlayfieldEventValue<bool>)) return;
+            if (!(argsAsBool is PlayfieldEventValue<bool>)) return;
+            
+            _playfieldEventHandler.Action(PlayfieldEvent.Hide, argsAsBool);
+        }
 
-            _playfieldEventHandler.Action(PlayfieldEvent.Flip, boolValue);
+        public void FlipPlayfield(PlayfieldEventArgs argsAsBool)
+        {
+            _logger.Log(Tag, "FlipPlayfield()");
+
+            if (!(argsAsBool is PlayfieldEventValue<bool>)) return;
+
+            _playfieldEventHandler.Action(PlayfieldEvent.Flip, argsAsBool);
         }
 
         #endregion
@@ -94,5 +126,13 @@ namespace Code.Features.SpeedDuel
         }
 
         #endregion
+
+        private PlayfieldTransformValues GetPlayfieldScaleAndRotation(GameObject playfield)
+        {            
+            var scale = playfield.transform.localScale.x;
+            var rotation = playfield.transform.localRotation.y;
+
+            return new PlayfieldTransformValues { Scale = scale, Rotation = rotation };
+        }
     }
 }

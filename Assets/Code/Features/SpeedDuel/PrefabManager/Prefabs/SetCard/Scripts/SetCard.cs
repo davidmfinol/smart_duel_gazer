@@ -65,7 +65,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction -= OnAction;
             _setCardEventHandler.OnSetCardRemove -= OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield -= (_ => ActivatePlayfield());
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
@@ -79,7 +79,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction += OnAction;
             _setCardEventHandler.OnSetCardRemove += OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += (_ => ActivatePlayfield());
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 

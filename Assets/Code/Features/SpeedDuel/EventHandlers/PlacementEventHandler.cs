@@ -30,9 +30,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private Pose _placementPose;
         private bool _objectIsPlaced = false;
 
-        private BehaviorSubject<bool> _activatePlayfield = new BehaviorSubject<bool>(default);
-        public IObservable<bool> ActivatePlayfield => _activatePlayfield;
-
         #region Properties
 
         public GameObject SpeedDuelField  => _speedDuelField;
@@ -93,8 +90,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
-                _activatePlayfield.OnNext(true);
-                _playfieldEventHandler.ActivatePlayfield();
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
 
@@ -110,8 +106,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 PlaceObject();
                 SetPlaymatScale(availablePlanes);
-                _activatePlayfield.OnNext(true);
-                _playfieldEventHandler.ActivatePlayfield();
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
             }
         }
 
