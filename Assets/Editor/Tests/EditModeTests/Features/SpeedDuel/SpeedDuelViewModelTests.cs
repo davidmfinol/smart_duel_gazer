@@ -5,7 +5,6 @@ using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using UnityEngine;
