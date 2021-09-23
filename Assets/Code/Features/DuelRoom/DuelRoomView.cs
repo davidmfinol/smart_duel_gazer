@@ -2,6 +2,7 @@
 using Code.Core.Logger;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
+using Code.Features.DuelRoom.Helpers;
 using Code.Features.DuelRoom.Models;
 using TMPro;
 using UniRx;
@@ -33,10 +34,10 @@ namespace Code.Features.DuelRoom
         [SerializeField] private GameObject waitingState;
         [SerializeField] private Button leaveRoomButton;
 
+        private DuelRoomViewModel _duelRoomViewModel;
         private ISmartDuelServer _smartDuelServer;
         private IAppLogger _logger;
 
-        private DuelRoomViewModel _duelRoomViewModel;
         private IDisposable _smartDuelEventSubscription;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -45,14 +46,13 @@ namespace Code.Features.DuelRoom
 
         [Inject]
         public void Construct(
+            DuelRoomViewModel duelRoomViewModel,
             ISmartDuelServer smartDuelServer,
-            IAppLogger logger,
-            DuelRoomViewModel duelRoomViewModel)
+            IAppLogger logger)
         {
-            _smartDuelServer = smartDuelServer;
-            _logger = logger;
-
             _duelRoomViewModel = duelRoomViewModel;
+            _smartDuelServer = smartDuelServer;
+            _logger = logger;            
 
             BindViews();
             InitSmartDuelEventSubscription();

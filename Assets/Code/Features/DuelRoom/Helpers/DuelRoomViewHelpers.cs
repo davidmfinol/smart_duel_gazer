@@ -2,7 +2,7 @@ using UnityEngine.UI;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using System.Linq;
 
-namespace Code.Features.DuelRoom
+namespace Code.Features.DuelRoom.Helpers
 {
     public static class DuelRoomViewHelpers
     {

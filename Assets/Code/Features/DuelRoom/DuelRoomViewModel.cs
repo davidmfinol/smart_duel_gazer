@@ -29,6 +29,7 @@ namespace Code.Features.DuelRoom
 
         private string _duelistToSpectate;
         private bool _startedDuelSuccessfully;
+        private int _waitForSocketToClose = 200;
 
         private readonly BehaviorSubject<string> _roomName = new BehaviorSubject<string>(default);
         private readonly BehaviorSubject<DuelRoomState> _duelRoomState = new BehaviorSubject<DuelRoomState>(default);
@@ -79,6 +80,8 @@ namespace Code.Features.DuelRoom
 
         public void OnEnterRoomPressed()
         {
+            _logger.Log(Tag, "OnEnterRoomPressed()");
+            
             if (string.IsNullOrWhiteSpace(_roomName.Value))
             {
                 _dialogService.ShowToast("Room name is required");
@@ -114,7 +117,7 @@ namespace Code.Features.DuelRoom
             _duelRoomState.OnNext(DuelRoomState.Loading);
 
             _smartDuelServer.Dispose();
-            await _delayProvider.Wait(200);
+            await _delayProvider.Wait(_waitForSocketToClose);
             _smartDuelServer.Init();
         }
 
@@ -203,7 +206,7 @@ namespace Code.Features.DuelRoom
 
         #region Receive global event
 
-        public void HandleGlobalEvent(SmartDuelEvent e)
+        private void HandleGlobalEvent(SmartDuelEvent e)
         {
             switch (e.Action)
             {
@@ -226,6 +229,9 @@ namespace Code.Features.DuelRoom
 
         private void HandleErrorEvent(string error)
         {
+            _logger.Log(Tag, $"Handling Error: {error}");
+
+            _duelRoomState.OnNext(DuelRoomState.Error);
             _errorText.OnNext(error);
         }
 
@@ -234,17 +240,18 @@ namespace Code.Features.DuelRoom
         #region Recieve Room Events
 
         // TODO: Update dropdown when new duelist enters the room
-        public void HandleRoomEvent(SmartDuelEvent e)
+        private void HandleRoomEvent(SmartDuelEvent e)
         {
             if (!(e.Data is RoomEventData data))
             {
                 HandleErrorEvent("Room Data is Invalid!");
+                return;
             }
 
             switch (e.Action)
             {
                 case SmartDuelEventConstants.RoomGetDuelistsAction:
-                    HandleRoomGetDuelistsEvent((RoomEventData)e.Data);
+                    HandleRoomGetDuelistsEvent(data);
                     break;
 
                 case SmartDuelEventConstants.RoomSpectateAction:
@@ -252,7 +259,7 @@ namespace Code.Features.DuelRoom
                     break;
 
                 case SmartDuelEventConstants.RoomStartAction:
-                    HandleRoomStartEvent((RoomEventData)e.Data);
+                    HandleRoomStartEvent(data);
                     break;
 
                 case SmartDuelEventConstants.RoomCloseAction:
@@ -266,6 +273,7 @@ namespace Code.Features.DuelRoom
             if (!data.Error.IsNullOrEmpty())
             {
                 HandleErrorEvent(data.Error);
+                return;
             }
 
             _dropdownData.OnNext(data);
@@ -283,6 +291,7 @@ namespace Code.Features.DuelRoom
             if (duelRoom == null)
             {
                 HandleErrorEvent("invalid duel room data");
+                return;
             }
 
             duelRoom.DuelistToSpectate = _duelistToSpectate;
