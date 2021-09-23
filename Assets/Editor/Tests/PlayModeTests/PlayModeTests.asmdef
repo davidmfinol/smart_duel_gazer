@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD:Assets/Editor/Tests/PlayModeTests/PlayModeTests.asmdef
     "name": "PlayModeTests",
+=======
+    "name": "EditModeTests",
+>>>>>>> develop:Assets/Editor/Tests/EditModeTests/EditModeTests.asmdef
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
@@ -7,7 +11,9 @@
         "CodeAssembly",
         "UniRx"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
