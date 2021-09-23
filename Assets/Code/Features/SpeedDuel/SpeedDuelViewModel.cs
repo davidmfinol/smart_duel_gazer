@@ -55,6 +55,10 @@ namespace Code.Features.SpeedDuel
         public void Dispose()
         {
             _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
+
+            _activatePlayfieldMenu.Dispose();
+            _togglePlayfieldMenu.Dispose();
+            _removePlayfield.Dispose();
         }
 
         #region Playfield Events

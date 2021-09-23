@@ -57,7 +57,7 @@ namespace Code.Features.SpeedDuel
         private void OnDestroy()
         {
             _disposables.Dispose();
-            _speedDuelViewModel.Dispose();
+            _speedDuelViewModel?.Dispose();
         }
 
         #endregion
