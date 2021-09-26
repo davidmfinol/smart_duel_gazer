@@ -1,9 +1,7 @@
-﻿using System;
-using Code.Core.Logger;
-using Code.Core.SmartDuelServer;
+﻿using Code.Core.Logger;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
-using Code.Features.DuelRoom.Helpers;
 using Code.Features.DuelRoom.Models;
+using System.Linq;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -35,10 +33,7 @@ namespace Code.Features.DuelRoom
         [SerializeField] private Button leaveRoomButton;
 
         private DuelRoomViewModel _duelRoomViewModel;
-        private ISmartDuelServer _smartDuelServer;
-        private IAppLogger _logger;
-
-        private IDisposable _smartDuelEventSubscription;
+        private IAppLogger _logger;        
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -47,15 +42,12 @@ namespace Code.Features.DuelRoom
         [Inject]
         public void Construct(
             DuelRoomViewModel duelRoomViewModel,
-            ISmartDuelServer smartDuelServer,
             IAppLogger logger)
         {
             _duelRoomViewModel = duelRoomViewModel;
-            _smartDuelServer = smartDuelServer;
             _logger = logger;            
 
             BindViews();
-            InitSmartDuelEventSubscription();
         }
 
         #endregion
@@ -69,10 +61,7 @@ namespace Code.Features.DuelRoom
 
         private void OnDestroy()
         {
-            _smartDuelEventSubscription?.Dispose();
             _disposables?.Dispose();
-            _smartDuelEventSubscription = null;
-
             _duelRoomViewModel?.Dispose();
         }
 
@@ -122,15 +111,6 @@ namespace Code.Features.DuelRoom
                 .Subscribe(data => UpdateDropdownMenu(data)));
         }
 
-        private void InitSmartDuelEventSubscription()
-        {
-            _smartDuelEventSubscription = _smartDuelServer.GlobalEvents
-                .Merge(_smartDuelServer.RoomEvents)
-                .Subscribe(e => _duelRoomViewModel.OnSmartDuelEventReceived(e));
-
-            _smartDuelServer.Init();
-        }
-
         #endregion
 
         #region Form Fields
@@ -147,7 +127,11 @@ namespace Code.Features.DuelRoom
 
         private void UpdateDropdownMenu(RoomEventData data)
         {
-            duelistsDropdown.ResetDropdown(data);
+            duelistsDropdown.ClearOptions();
+            if (data == null) return;
+
+            var options = data.DuelistsIds.ToList();
+            duelistsDropdown.AddOptions(options);
         }
 
         #endregion

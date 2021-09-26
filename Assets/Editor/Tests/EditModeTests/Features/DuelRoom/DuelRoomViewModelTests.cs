@@ -14,20 +14,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UniRx;
 using Tests.Utils;
-using UnityEngine.UIElements;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 
 namespace Tests.Features.DuelRoom
 {
-    // TODO: Update Unit Tests
     public class DuelRoomViewModelTests
     {
-        private const string _validRoomName = "a1B2c";
-        private const string _validDuelistId = "duelistID";
-
-        private DuelRoomState _expectedState;
-        private string _expectedErrorText;
-
         private DuelRoomViewModel _viewModel;
 
         private Mock<IDataManager> _dataManager;
@@ -37,6 +29,12 @@ namespace Tests.Features.DuelRoom
         private Mock<IDelayProvider> _delayProvider;
         private Mock<IScreenService> _screenService;
         private Mock<IAppLogger> _logger;
+
+        private const string _validRoomName = "a1B2c";
+        private const string _validDuelistId = "duelistID";
+
+        private DuelRoomState _expectedState;
+        private string _expectedErrorText;
 
         [SetUp]
         public void SetUp()
@@ -78,11 +76,10 @@ namespace Tests.Features.DuelRoom
                 sde => sde.Data is RoomEventData)), Times.Once);
         }
 
-        [Test]
         [TestCase("")]
         [TestCase("     ")]
         [TestCase(null)]
-        [Parallelizable]
+        [Parallelizable()]
         public void Given_InvalidRoomName_When_EnterRoomButtonPressed_Then_ToastErrorShown(string invalidName)
         {
             _viewModel.UpdateRoomName(invalidName);
@@ -102,11 +99,10 @@ namespace Tests.Features.DuelRoom
                 e => e.Action == SmartDuelEventConstants.RoomSpectateAction)), Times.Once);
         }
 
-        [Test]
         [TestCase("")]
         [TestCase("     ")]
         [TestCase(null)]
-        [Parallelizable]
+        [Parallelizable()]
         public void Given_InvalidDuelists_When_SpectateButtonPressed_Then_SpectateRoomEventSent(string invalidDuelistId)
         {
             _viewModel.OnSpectateButtonPressed(invalidDuelistId);
@@ -126,25 +122,39 @@ namespace Tests.Features.DuelRoom
         }
 
         [Test]
-        public void When_TryAgainPressed_Then_ServerResartsAndLoadingStateReturned()
+        public void When_TryAgainPressed_Then_ServerResarts()
+        {
+            TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
+
+            _smartDuelServer.Verify(sds => sds.Init(), Times.Once);
+        }
+
+        [Test]
+        public void When_TryAgainPressed_Then_LoadingStateReturned()
         {
             var model = DuelRoomState.Loading;
 
             TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
 
-            _smartDuelServer.Verify(sds => sds.Init(), Times.Once);
             Assert.AreEqual(model, _expectedState);
         }
 
         [Test]
-        public void When_LeaveRoomButtonPressed_Then_LeaveRoomEventFiredAndEnterRoomStateReturned()
+        public void When_LeaveRoomButtonPressed_Then_LeaveRoomEventFired()
+        {
+            _viewModel.OnLeaveRoomButtonPressed();
+
+            _smartDuelServer.Verify(sds => sds.EmitEvent(It.Is<SmartDuelEvent>(
+                sde => sde.Action == SmartDuelEventConstants.RoomLeaveAction)), Times.Once);
+        }
+
+        [Test]
+        public void When_LeaveRoomButtonPressed_Then_EnterRoomStateReturned()
         {
             var model = DuelRoomState.EnterRoomName;
 
             _viewModel.OnLeaveRoomButtonPressed();
 
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.Is<SmartDuelEvent>(
-                sde => sde.Action == SmartDuelEventConstants.RoomLeaveAction)), Times.Once);
             Assert.AreEqual(model, _expectedState);
         }
 
@@ -166,11 +176,10 @@ namespace Tests.Features.DuelRoom
             Assert.AreEqual(model, _expectedState);
         }
 
-        [Test]
         [TestCase(SmartDuelEventConstants.GlobalConnectErrorAction)]
         [TestCase(SmartDuelEventConstants.GlobalConnectTimeoutAction)]
         [TestCase(SmartDuelEventConstants.GlobalErrorAction)]
-        [Parallelizable]
+        [Parallelizable()]
         public void When_GlobalErrorEvent_Then_ErrorMessageAppears(string error)
         {
             var model = DuelRoomState.Error;
@@ -189,13 +198,12 @@ namespace Tests.Features.DuelRoom
 
         #region Room Event Logic Tests
 
-        [Test]
         [TestCase(SmartDuelEventConstants.RoomGetDuelistsAction)]
         [TestCase(SmartDuelEventConstants.RoomLeaveAction)]
         [TestCase(SmartDuelEventConstants.RoomSpectateAction)]
         [TestCase(SmartDuelEventConstants.RoomStartAction)]
         [TestCase(SmartDuelEventConstants.RoomCloseAction)]
-        [Parallelizable]
+        [Parallelizable()]
         public void Given_InvalidEventData_When_Handled_ErrorStateIsReturned(string eventName)
         {
             var model = DuelRoomState.Error;
@@ -210,14 +218,13 @@ namespace Tests.Features.DuelRoom
             Assert.AreEqual(model, _expectedState);
         }
 
-        [Test]
         [TestCase(SmartDuelEventConstants.RoomGetDuelistsAction)]
         [TestCase(SmartDuelEventConstants.RoomLeaveAction)]
         [TestCase(SmartDuelEventConstants.RoomSpectateAction)]
         [TestCase(SmartDuelEventConstants.RoomStartAction)]
         [TestCase(SmartDuelEventConstants.RoomCloseAction)]
-        [Parallelizable]
-        public void Given_AnInvalidRoomEvent_When_Handled_ErrorIsReturned(string eventName)
+        [Parallelizable()]
+        public void Given_InvalidRoomEvent_When_Handled_ErrorIsReturned(string eventName)
         {
             var model = DuelRoomState.Error;
             CardEventData invalidEventArgs = null;
@@ -232,12 +239,11 @@ namespace Tests.Features.DuelRoom
             Assert.AreEqual("Room Data is Invalid!", _expectedErrorText);
         }
 
-        [Test]
         [TestCase(SmartDuelEventConstants.GlobalConnectErrorAction)]
         [TestCase(SmartDuelEventConstants.GlobalConnectTimeoutAction)]
         [TestCase(SmartDuelEventConstants.GlobalErrorAction)]
-        [Parallelizable]
-        public void Given_ARoomEventError_When_GetDuelistsEventCalled_Then_ReturnErrorState(string error)
+        [Parallelizable()]
+        public void Given_RoomEventError_When_GetDuelistsEventCalled_Then_ReturnErrorState(string error)
         {
             var model = DuelRoomState.Error;
             var roomEvent = new SmartDuelEvent(
@@ -299,7 +305,7 @@ namespace Tests.Features.DuelRoom
         }
 
         [Test]
-        public void Given_ANullRoom_When_RoomStartEvent_Then_ErrorStateReturned()
+        public void Given_NullRoom_When_RoomStartEvent_Then_ErrorStateReturned()
         {
             var model = DuelRoomState.Error;
             var roomEvent = new SmartDuelEvent(
