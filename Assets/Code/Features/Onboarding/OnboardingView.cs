@@ -36,6 +36,16 @@ namespace Code.Features.Onboarding
 
         #endregion
 
+        #region Lifecycle
+
+        private void OnDestroy()
+        {
+            _disposables.Dispose();
+            _onboardingViewModel?.Dispose();
+        }
+
+        #endregion
+
         private async void Init()
         {
             _logger.Log(Tag, "Init()");

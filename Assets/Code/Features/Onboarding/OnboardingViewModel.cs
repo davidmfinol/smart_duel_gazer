@@ -104,6 +104,8 @@ namespace Code.Features.Onboarding
 
         public void Dispose()
         {
+            _logger.Log(Tag, "Dispose()");
+            
             _hasConnection.Dispose();
             _updateOnboardingState.Dispose();
             _appInitialized.Dispose();
