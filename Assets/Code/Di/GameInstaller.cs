@@ -40,6 +40,7 @@ using Code.Wrappers.WrapperWebSocket;
 using Dpoch.SocketIO;
 using UnityEngine;
 using Zenject;
+using Code.Wrappers.WrapperNetworkConnection;
 
 namespace Code.Di
 {
@@ -142,6 +143,7 @@ namespace Code.Di
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
+            Container.Bind<INetworkConnectionProvider>().To<NetworkConnectionProvider>().AsSingle();
 
             #endregion
         }
