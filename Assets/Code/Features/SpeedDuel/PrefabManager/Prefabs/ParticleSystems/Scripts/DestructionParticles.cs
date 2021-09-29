@@ -32,6 +32,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
             _modelEventHandler.OnMonsterRemoval += OnMonsterDestruction;
         }
 
+        private void OnDestroy()
+        {
+            _modelEventHandler.OnMonsterRemoval -= OnMonsterDestruction;
+        }
+
         #endregion
 
         private void OnMonsterDestruction(SkinnedMeshRenderer[] renderers)

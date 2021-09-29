@@ -165,12 +165,15 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void CreatePlayfield()
         {
             _speedDuelField = _playfieldFactory.Create(_playfieldPrefab).gameObject;
+
+            //Move Playfield to Scene Root rather than Zenject Project Context
+            _speedDuelField.transform.SetParent(transform);
             _speedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
 
             //Make Prefab Manager a child of Playfield for proper model scaling
             _prefabManager.transform.SetParent(_speedDuelField.transform);
             _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
-                _speedDuelField.transform.rotation);
+                _speedDuelField.transform.rotation);            
 
             _playfieldEventHandler.ActivatePlayfield();
         }
