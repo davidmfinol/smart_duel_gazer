@@ -19,18 +19,12 @@ namespace Code.Features.Onboarding
         private readonly INetworkConnectionProvider _networkConnectionProvider;
         private readonly IFirebaseInitializer _firebaseInitializer;
         private readonly IScreenService _screenService;
-        private readonly IDelayProvider _delayProvider;
         private readonly IAppLogger _logger;
-
-        private int _delayToShowConnectingState = 500;
 
         #region Properties
 
         private readonly BehaviorSubject<bool> _appInitialized = new BehaviorSubject<bool>(false);
         public IObservable<bool> AppInitialized => _appInitialized;
-
-        private readonly BehaviorSubject<bool> _hasConnection = new BehaviorSubject<bool>(false);
-        public IObservable<bool> HasConnection => _hasConnection;
 
         private readonly BehaviorSubject<OnboardingState> _updateOnboardingState = new BehaviorSubject<OnboardingState>(default);
         public IObservable<OnboardingState> UpdateOnboardingState => _updateOnboardingState;
@@ -44,14 +38,12 @@ namespace Code.Features.Onboarding
             INetworkConnectionProvider networkConnectionProvider,
             IFirebaseInitializer firebaseInitializer,
             IScreenService screenService,
-            IDelayProvider delayProvider,
             IAppLogger logger)
         {
             _navigationService = navigationService;
             _networkConnectionProvider = networkConnectionProvider;
             _firebaseInitializer = firebaseInitializer;
             _screenService = screenService;
-            _delayProvider = delayProvider;
             _logger = logger;
         }
 
@@ -76,12 +68,10 @@ namespace Code.Features.Onboarding
 
             if (!isConnected)
             {
-                _hasConnection.OnNext(false);
                 _updateOnboardingState.OnNext(OnboardingState.NoConnection);
                 return;
             }
 
-            _hasConnection.OnNext(true);
             _updateOnboardingState.OnNext(OnboardingState.Connected);
         }
 
@@ -92,13 +82,11 @@ namespace Code.Features.Onboarding
             _navigationService.ShowConnectionScene();
         }
 
-        public async Task OnRetryButtonPressed()
+        public void OnRetryButtonPressed()
         {
             _logger.Log(Tag, "OnRetryButtonPressed()");
             
             _updateOnboardingState.OnNext(OnboardingState.Connecting);
-
-            await _delayProvider.Wait(_delayToShowConnectingState);
             CheckNetworkConnection();
         }
 
@@ -106,7 +94,6 @@ namespace Code.Features.Onboarding
         {
             _logger.Log(Tag, "Dispose()");
             
-            _hasConnection.Dispose();
             _updateOnboardingState.Dispose();
             _appInitialized.Dispose();
         }

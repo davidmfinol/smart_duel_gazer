@@ -9,7 +9,7 @@ namespace Code.Features.Onboarding
 {
     public class OnboardingView : MonoBehaviour
     {
-        private const string Tag = "Onboarding View";
+        private const string Tag = "OnboardingView";
         
         [SerializeField] private Button initiateLinkButton;
         [SerializeField] private Button retryButton;
@@ -40,7 +40,7 @@ namespace Code.Features.Onboarding
 
         private void OnDestroy()
         {
-            _disposables.Dispose();
+            _disposables?.Dispose();
             _onboardingViewModel?.Dispose();
         }
 
@@ -61,28 +61,20 @@ namespace Code.Features.Onboarding
             initiateLinkButton.OnClickAsObservable()
                 .Subscribe(_ => _onboardingViewModel.OnInitiateLinkPressed());
             retryButton.OnClickAsObservable()
-                .Subscribe(async _ => await _onboardingViewModel.OnRetryButtonPressed());
+                .Subscribe(_ => _onboardingViewModel.OnRetryButtonPressed());
 
             // VM Streams
-            _disposables.Add(_onboardingViewModel.HasConnection
-                .Subscribe(e => SetInitiateLinkButtonActive(e)));
             _disposables.Add(_onboardingViewModel.UpdateOnboardingState
                 .Subscribe(state => UpdateOnboardingState(state)));
         }
 
         private void UpdateOnboardingState(OnboardingState onboardingState)
         {
-            _logger.Log(Tag, $"Update Onboarding State: {onboardingState}");
+            _logger.Log(Tag, $"UpdateOnboardingState(OnboardingState:{onboardingState}");
             
-            connectingState.SetActive(OnboardingState.Connecting == onboardingState);
-            noConnectionState.SetActive(OnboardingState.NoConnection == onboardingState);
-        }
-
-        private void SetInitiateLinkButtonActive(bool isConnected)
-        {
-            _logger.Log(Tag, $"Set Initiate Button Active: {isConnected}");
-            
-            initiateLinkButton.interactable = isConnected;
+            connectingState.SetActive(onboardingState == OnboardingState.Connecting);
+            noConnectionState.SetActive(onboardingState == OnboardingState.NoConnection);
+            initiateLinkButton.interactable = (onboardingState == OnboardingState.isConnected);
         }
     }
 }
