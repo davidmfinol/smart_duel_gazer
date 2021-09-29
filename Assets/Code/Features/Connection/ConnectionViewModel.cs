@@ -21,11 +21,15 @@ namespace Code.Features.Connection
         private readonly IScreenService _screenService;
         private readonly IAppLogger _logger;
 
+        #region Properties
+
         private readonly BehaviorSubject<string> _ipAddress = new BehaviorSubject<string>(default);
         public IObservable<string> IpAddress => _ipAddress;
 
         private readonly BehaviorSubject<string> _port = new BehaviorSubject<string>(default);
         public IObservable<string> Port => _port;
+
+        #endregion
 
         #region Constructors
 

@@ -104,6 +104,7 @@ namespace Code.Di
             Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();
             Container.Bind<IPlayfieldEventHandler>().To<PlayfieldEventHandler>().AsSingle();
             Container.Bind<ISetCardEventHandler>().To<SetCardEventHandler>().AsSingle();
+            Container.Bind<IEndOfDuelUseCase>().To<EndOfDuelUseCase>().AsSingle();
 
             // Prefabs
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()

@@ -1,4 +1,4 @@
-using Code.Core.Navigation;
+using Code.Features.SpeedDuel.UseCases;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,15 +11,15 @@ namespace Code.UI_Components.General
         [SerializeField]
         private Button _button;
 
-        private INavigationService _navigationService;
+        private IEndOfDuelUseCase _endOfDuel;
 
         #region Constructors
 
         [Inject]
         public void Construct(
-            INavigationService navigationService)
+            IEndOfDuelUseCase endOfGame)
         {
-            _navigationService = navigationService;
+            _endOfDuel = endOfGame;
 
             RegisterClickListeners();
         }
@@ -33,7 +33,7 @@ namespace Code.UI_Components.General
 
         private void OnButtonPressed()
         {
-            _navigationService.ShowConnectionScene();
+            _endOfDuel.Execute();
         }
     }
 }

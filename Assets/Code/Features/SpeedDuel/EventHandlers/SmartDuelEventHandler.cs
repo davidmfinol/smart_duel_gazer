@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Code.Core.DataManager;
-using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
 using Code.Core.Logger;
@@ -9,11 +8,9 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
-using Code.Core.SmartDuelServer.Entities.EventData;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
-using Code.Features.SpeedDuel.Models.Zones;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
@@ -36,6 +33,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
         private IMonsterBattleInteractor _monsterBattleInteractor;
+        private IEndOfDuelUseCase _endOfDuel;
         private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
@@ -56,6 +54,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
             IMonsterBattleInteractor monsterBattleInteractor,
+            IEndOfDuelUseCase endOfDuel,
             IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
@@ -66,6 +65,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
             _monsterBattleInteractor = monsterBattleInteractor;
+            _endOfDuel = endOfDuel;
             _logger = logger;
 
             screenService.UseAutoOrientation();
@@ -277,23 +277,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 Title = "Duel is over",
                 Description = $"{winnerId} won the duel!",
                 PositiveText = "Continue",
-                PositiveAction = () => ExecuteEndOfGame()
+                PositiveAction = () => _endOfDuel.Execute()
             });
         }
 
         #endregion
-
-        //Handle Async functions that haven't completed yet
-        private void ExecuteEndOfGame()
-        {
-            _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
-
-            Destroy(_speedDuelField);
-
-            _navigationService.ShowConnectionScene();
-        }
 
         #endregion
     }
