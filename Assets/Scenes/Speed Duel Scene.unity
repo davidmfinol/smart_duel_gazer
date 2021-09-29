@@ -2332,12 +2332,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _menus: {fileID: 439207711}
-  _toggleViewToggle: {fileID: 1714322488955655463}
+  _togglePlayfieldMenusToggle: {fileID: 1714322488955655463}
   _hidePlaymatToggle: {fileID: 6449482835655837761}
   _flipPlayfieldToggle: {fileID: 301659727}
   _removePlayfieldButton: {fileID: 6449482836187114997}
   _rotationSlider: {fileID: 1939941656498817586}
   _scaleSlider: {fileID: 1457861429}
+  _animator: {fileID: 1879231185}
+  _settingsMenu: {fileID: 747528651}
+  _backButton: {fileID: 1650324138}
 --- !u!95 &1879231185
 Animator:
   serializedVersion: 3

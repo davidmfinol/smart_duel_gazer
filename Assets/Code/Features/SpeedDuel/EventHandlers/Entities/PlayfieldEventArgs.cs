@@ -1,8 +1,17 @@
 ﻿namespace Code.Features.SpeedDuel.EventHandlers.Entities
 {
-    public class PlayfieldEventArgs
+    public class PlayfieldEventValue<T> : PlayfieldEventArgs
     {
-        public float FloatValue;
-        public bool BoolValue;
+        private T data;
+
+        public T Value 
+        { 
+            get => data; 
+            set => data = value; 
+        }
+    }
+
+    public abstract class PlayfieldEventArgs
+    {
     }
 }

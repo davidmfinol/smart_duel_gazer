@@ -23,7 +23,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private IDataManager _dataManager;        
         private ISetCardEventHandler _setCardEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private IAppLogger _logger;
 
         private Animator _animator;
@@ -35,7 +35,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         public void Construct(
             IDataManager dataManager,            
             ISetCardEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
             IAppLogger logger)
         {
             _dataManager = dataManager;
@@ -67,7 +67,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction -= OnAction;
             _setCardEventHandler.OnSetCardRemove -= OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield -= (_ => ActivatePlayfield());
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
@@ -81,7 +81,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction += OnAction;
             _setCardEventHandler.OnSetCardRemove += OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += (_ => ActivatePlayfield());
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 

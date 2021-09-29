@@ -22,6 +22,7 @@ using Code.Core.YGOProDeck;
 using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
 using Code.Features.Onboarding;
+using Code.Features.SpeedDuel;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
@@ -97,10 +98,11 @@ namespace Code.Di
             // ViewModels
             Container.Bind<OnboardingViewModel>().AsTransient();
             Container.Bind<ConnectionViewModel>().AsTransient();
+            Container.Bind<SpeedDuelViewModel>().AsTransient();
 
             // Event Handlers
             Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();
-            Container.Bind<PlayfieldEventHandler>().AsSingle();
+            Container.Bind<IPlayfieldEventHandler>().To<PlayfieldEventHandler>().AsSingle();
             Container.Bind<ISetCardEventHandler>().To<SetCardEventHandler>().AsSingle();
             Container.Bind<IEndOfDuelUseCase>().To<EndOfDuelUseCase>().AsSingle();
 

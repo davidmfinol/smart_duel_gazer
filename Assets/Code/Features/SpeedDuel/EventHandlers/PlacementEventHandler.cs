@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.General.Extensions;
 using Code.Features.SpeedDuel.PrefabManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
+using UniRx;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -17,7 +19,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         [SerializeField] private GameObject _placementIndicator;
 
         private IDataManager _dataManager;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private PlayfieldComponentsManager.Factory _playfieldFactory;
 
         private Camera _mainCamera;
@@ -39,7 +41,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         [Inject]
         public void Construct(
             IDataManager dataManager,
-            PlayfieldEventHandler playfieldEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
             PlayfieldComponentsManager.Factory playfieldFactory)
         {
             _dataManager = dataManager;
@@ -88,7 +90,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
-                _playfieldEventHandler.ActivatePlayfield();
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
                 return;
             }
 
@@ -104,7 +106,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 PlaceObject();
                 SetPlaymatScale(availablePlanes);
-                _playfieldEventHandler.ActivatePlayfield();
+                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
             }
         }
 
@@ -159,7 +161,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
             }
 
             playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
-            _playfieldEventHandler.ActivatePlayfield();
         }
 
         private void CreatePlayfield()
@@ -173,9 +174,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             //Make Prefab Manager a child of Playfield for proper model scaling
             _prefabManager.transform.SetParent(_speedDuelField.transform);
             _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
-                _speedDuelField.transform.rotation);            
-
-            _playfieldEventHandler.ActivatePlayfield();
+                _speedDuelField.transform.rotation);
         }
 
         private void SetPlaymatScale(List<ARRaycastHit> hits)
