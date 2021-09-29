@@ -12,6 +12,8 @@ using UniRx;
 using System;
 using Code.Core.Screen;
 using Code.Core.Logger;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Code.Features.DuelRoom
 {
@@ -44,8 +46,11 @@ namespace Code.Features.DuelRoom
         private readonly BehaviorSubject<string> _updateErrorTextField = new BehaviorSubject<string>(default);
         public IObservable<string> UpdateErrorTextField => _updateErrorTextField;
 
-        private readonly BehaviorSubject<RoomEventData> _updateDropdownDataMenu = new BehaviorSubject<RoomEventData>(default);
-        public IObservable<RoomEventData> UpdateDropDownMenu => _updateDropdownDataMenu;
+        private readonly Subject<bool> _clearDropDownMenu = new Subject<bool>();
+        public IObservable<bool> ClearDropDownMenu => _clearDropDownMenu;
+
+        private readonly Subject<List<string>> _updateDropdownDataMenu = new Subject<List<string>>();
+        public IObservable<List<string>> UpdateDropDownMenu => _updateDropdownDataMenu;
 
         #endregion
 
@@ -67,13 +72,13 @@ namespace Code.Features.DuelRoom
             _delayProvider = delayProvider;
             _screenService = screenService;
             _logger = appLogger;
-
-            Init();
         }
 
         #endregion
 
-        private void Init()
+        #region Initialization
+
+        public void Init()
         {
             _logger.Log(Tag, $"Init()");
 
@@ -89,6 +94,8 @@ namespace Code.Features.DuelRoom
 
             _smartDuelServer.Init();
         }
+
+        #endregion
 
         #region Button Events
 
@@ -147,8 +154,8 @@ namespace Code.Features.DuelRoom
         {
             _duelistToSpectate = null;
 
+            UpdateDropDownOptions(null);
             _updateRoomName.OnNext(null);
-            _updateDropdownDataMenu.OnNext(null);
         }
 
         #endregion
@@ -163,6 +170,19 @@ namespace Code.Features.DuelRoom
         public void UpdateDuelistToSpectate(string duelist)
         {
             _duelistToSpectate = duelist;
+        }
+
+        private void UpdateDropDownOptions(RoomEventData data)
+        {
+            if(data == null)
+            {
+                _clearDropDownMenu.OnNext(true);
+                return;
+            }
+            
+            var options = data.DuelistsIds.ToList();
+            _clearDropDownMenu.OnNext(true);
+            _updateDropdownDataMenu.OnNext(options);
         }
 
         #endregion
@@ -290,7 +310,7 @@ namespace Code.Features.DuelRoom
                 return;
             }
 
-            _updateDropdownDataMenu.OnNext(data);
+            UpdateDropDownOptions(data);
             _unpdateDuelRoomState.OnNext(DuelRoomState.SelectDuelist);
         }
 

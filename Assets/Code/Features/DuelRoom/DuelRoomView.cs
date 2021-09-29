@@ -1,6 +1,7 @@
 ﻿using Code.Core.Logger;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.DuelRoom.Models;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UniRx;
@@ -45,9 +46,9 @@ namespace Code.Features.DuelRoom
             IAppLogger logger)
         {
             _duelRoomViewModel = duelRoomViewModel;
-            _logger = logger;            
+            _logger = logger;
 
-            BindViews();
+            Init();
         }
 
         #endregion
@@ -68,6 +69,12 @@ namespace Code.Features.DuelRoom
         #endregion
 
         #region Initialization
+
+        private void Init()
+        {
+            _duelRoomViewModel?.Init();
+            BindViews();
+        }
 
         private void UpdateDuelRoomState(DuelRoomState state)
         {
@@ -107,6 +114,8 @@ namespace Code.Features.DuelRoom
                 .Subscribe(state => UpdateDuelRoomState(state)));
             _disposables.Add(_duelRoomViewModel.UpdateErrorTextField
                 .Subscribe(e => UpdateErrorText(e)));
+            _disposables.Add(_duelRoomViewModel.ClearDropDownMenu
+                .Subscribe(_ => ClearDropDownMenu()));
             _disposables.Add(_duelRoomViewModel.UpdateDropDownMenu
                 .Subscribe(data => UpdateDropdownMenu(data)));
         }
@@ -125,12 +134,13 @@ namespace Code.Features.DuelRoom
             errorDescriptionText.text = $"Could not connect to Smart Duel Server\nReason: {error}";
         }
 
-        private void UpdateDropdownMenu(RoomEventData data)
+        private void ClearDropDownMenu()
         {
             duelistsDropdown.ClearOptions();
-            if (data == null) return;
-
-            var options = data.DuelistsIds.ToList();
+        }
+        
+        private void UpdateDropdownMenu(List<string> options)
+        {
             duelistsDropdown.AddOptions(options);
         }
 
