@@ -349,17 +349,19 @@ namespace Code.Features.DuelRoom
 
         public void Dispose()
         {
-            _updateRoomName.Dispose();
-            _unpdateDuelRoomState.Dispose();
-            _updateErrorTextField.Dispose();
-            _updateDropdownDataMenu.Dispose();
+            _updateRoomName?.Dispose();
+            _unpdateDuelRoomState?.Dispose();
+            _updateErrorTextField?.Dispose();
+            _updateDropdownDataMenu?.Dispose();
 
             _smartDuelEventSubscription?.Dispose();
             _smartDuelEventSubscription = null;
 
-            if (_startedDuelSuccessfully) return;
-            
-            _smartDuelServer?.Dispose();
+            // Only Dispose of server if returning to Connection Screen
+            if (!_startedDuelSuccessfully)
+            {
+                _smartDuelServer?.Dispose();
+            }
         }
 
         #endregion
