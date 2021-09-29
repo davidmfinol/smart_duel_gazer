@@ -63,7 +63,7 @@ namespace Code.Features.Connection
                 .Subscribe(port => UpdateInputFieldTextIfNecessary(portInputField, port)));
         }
 
-        private static void UpdateInputFieldTextIfNecessary(TMP_InputField inputField, string text)
+        private void UpdateInputFieldTextIfNecessary(TMP_InputField inputField, string text)
         {
             if (!inputField.text.Equals(text))
             {
