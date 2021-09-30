@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f3e07149130ffc24790af3e6474de6a9
+guid: 6979ffad668492542bb6da6a59d8fe84
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
@@ -135,7 +135,7 @@ ModelImporter:
       takeName: hurt
       internalID: 0
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 54
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
