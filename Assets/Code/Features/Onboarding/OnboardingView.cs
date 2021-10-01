@@ -74,7 +74,7 @@ namespace Code.Features.Onboarding
             
             connectingState.SetActive(onboardingState == OnboardingState.Connecting);
             noConnectionState.SetActive(onboardingState == OnboardingState.NoConnection);
-            initiateLinkButton.interactable = (onboardingState == OnboardingState.isConnected);
+            initiateLinkButton.interactable = (onboardingState == OnboardingState.Connected);
         }
     }
 }

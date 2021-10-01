@@ -106,7 +106,7 @@ namespace Tests.Features.Onboarding
             _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
 
-            TestUtils.RunAsyncMethodSync(() => _viewModel.OnRetryButtonPressed());
+            _viewModel.OnRetryButtonPressed();
 
             Assert.AreEqual(model, onNext);
         }
@@ -119,7 +119,7 @@ namespace Tests.Features.Onboarding
             _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
 
-            TestUtils.RunAsyncMethodSync(() => _viewModel.OnRetryButtonPressed());
+            _viewModel.OnRetryButtonPressed();
 
             Assert.AreEqual(model, onNext);
         }
