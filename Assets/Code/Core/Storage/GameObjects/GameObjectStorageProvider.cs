@@ -11,6 +11,9 @@ namespace Code.Core.Storage.GameObjects
         public void SaveGameObject(string key, UnityEngine.GameObject model);
         public void RemoveGameObject(string key);
         public UnityEngine.GameObject GetCardModel(int cardId);
+        public UnityEngine.GameObject GetPlayfield();
+        public void StorePlayfield(UnityEngine.GameObject playfield);
+        public void RemoveStoredPlayfield();
     }
     
     public class GameObjectStorageProvider : IGameObjectStorageProvider
@@ -21,6 +24,7 @@ namespace Code.Core.Storage.GameObjects
 
         private readonly Dictionary<string, Queue<UnityEngine.GameObject>> _gameObjects = new Dictionary<string, Queue<UnityEngine.GameObject>>();
         private UnityEngine.GameObject[] _cardModels;
+        private UnityEngine.GameObject _playfield;
 
         [Inject]
         public GameObjectStorageProvider(
@@ -84,6 +88,25 @@ namespace Code.Core.Storage.GameObjects
         private void LoadCardModels()
         {
             _cardModels = _resourcesProvider.LoadAll<UnityEngine.GameObject>(MonsterResourcesPath);
+        }
+
+        #endregion
+
+        #region Playfield
+
+        public UnityEngine.GameObject GetPlayfield()
+        {
+            return _playfield;
+        }
+
+        public void StorePlayfield(UnityEngine.GameObject playfield)
+        {
+            _playfield = playfield;
+        }
+
+        public void RemoveStoredPlayfield()
+        {
+            _playfield = null;
         }
 
         #endregion

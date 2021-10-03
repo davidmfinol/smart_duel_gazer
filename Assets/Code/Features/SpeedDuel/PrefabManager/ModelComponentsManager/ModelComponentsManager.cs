@@ -75,7 +75,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnDirectAttack -= DirectAttack;
             _modelEventHandler.OnRemove -= RemoveMonster;
 
-            _playfieldEventHandler.OnActivatePlayfield -= (_ => ActivatePlayfield());
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
@@ -91,7 +91,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _modelEventHandler.OnDirectAttack += DirectAttack;
             _modelEventHandler.OnRemove += RemoveMonster;
 
-            _playfieldEventHandler.OnActivatePlayfield += (_ => ActivatePlayfield());
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 

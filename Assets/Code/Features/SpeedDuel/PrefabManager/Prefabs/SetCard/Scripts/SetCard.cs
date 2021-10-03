@@ -63,11 +63,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void OnDestroy()
         {
+            _logger.Log(Tag, "OnDestroy()");
+            
             _setCardEventHandler.OnSummonSetCard -= OnSummon;
             _setCardEventHandler.OnAction -= OnAction;
             _setCardEventHandler.OnSetCardRemove -= OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield -= (_ => ActivatePlayfield());
+            _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
@@ -81,7 +83,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction += OnAction;
             _setCardEventHandler.OnSetCardRemove += OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield += (_ => ActivatePlayfield());
+            _playfieldEventHandler.OnActivatePlayfield += OnActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 
@@ -138,8 +140,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #region Playfield Functions
 
-        private void ActivatePlayfield()
+        private void OnActivatePlayfield()
         {
+            _logger.Log(Tag, "OnActivatePlayfield");
+            
             if (!gameObject.activeSelf) return;
             
             switch (_currentState)

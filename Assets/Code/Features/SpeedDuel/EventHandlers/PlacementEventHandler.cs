@@ -30,12 +30,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private Pose _placementPose;
         private bool _objectIsPlaced = false;
 
-        #region Properties
-
-        public GameObject SpeedDuelField  => _speedDuelField;
-
-        #endregion
-
         #region Constructors
 
         [Inject]
@@ -90,7 +84,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
             {
                 PlaceObject();
-                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
+                _playfieldEventHandler.ActivatePlayfield();
                 return;
             }
 
@@ -106,7 +100,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 PlaceObject();
                 SetPlaymatScale(availablePlanes);
-                _playfieldEventHandler.ActivatePlayfield(_speedDuelField);
+                _playfieldEventHandler.ActivatePlayfield();
             }
         }
 
@@ -166,6 +160,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void CreatePlayfield()
         {
             _speedDuelField = _playfieldFactory.Create(_playfieldPrefab).gameObject;
+            _dataManager.StorePlayfield(_speedDuelField);
 
             //Move Playfield to Scene Root rather than Zenject Project Context
             _speedDuelField.transform.SetParent(transform);

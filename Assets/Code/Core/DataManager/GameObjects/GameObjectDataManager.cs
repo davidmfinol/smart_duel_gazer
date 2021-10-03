@@ -10,6 +10,9 @@ namespace Code.Core.DataManager.GameObjects
         public void SaveGameObject(string key, GameObject model);
         public void RemoveGameObject(string key);
         GameObject GetCardModel(int cardId);
+        GameObject GetPlayfield();
+        public void StorePlayfield(GameObject playfield);
+        public void RemoveStoredPlayfield();
     }
     
     public class GameObjectDataManager : IGameObjectDataManager
@@ -47,6 +50,25 @@ namespace Code.Core.DataManager.GameObjects
         public GameObject GetCardModel(int cardId)
         {
             return _gameObjectStorageProvider.GetCardModel(cardId);
+        }
+
+        #endregion
+
+        #region Playfield
+
+        public GameObject GetPlayfield()
+        {
+            return _gameObjectStorageProvider.GetPlayfield();
+        }
+
+        public void StorePlayfield(GameObject playfield)
+        {
+            _gameObjectStorageProvider.StorePlayfield(playfield);
+        }
+
+        public void RemoveStoredPlayfield()
+        {
+            _gameObjectStorageProvider.RemoveStoredPlayfield();
         }
 
         #endregion

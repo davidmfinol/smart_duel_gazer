@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UniRx;
 using Code.Features.SpeedDuel.UseCases;
+using Code.Core.DataManager;
 
 namespace Tests.Features.SpeedDuel
 {
@@ -17,6 +18,7 @@ namespace Tests.Features.SpeedDuel
         private SpeedDuelViewModel _viewModel;
 
         private Mock<IPlayfieldEventHandler> _playfieldEventHandler;
+        private Mock<IDataManager> _dataManager;
         private Mock<IEndOfDuelUseCase> _endOfDuelUseCase;
         private Mock<IAppLogger> _logger;
 
@@ -24,11 +26,13 @@ namespace Tests.Features.SpeedDuel
         public void SetUp()
         {
             _playfieldEventHandler = new Mock<IPlayfieldEventHandler>();
+            _dataManager = new Mock<IDataManager>();
             _endOfDuelUseCase = new Mock<IEndOfDuelUseCase>();
             _logger = new Mock<IAppLogger>();
 
             _viewModel = new SpeedDuelViewModel(
                 _playfieldEventHandler.Object,
+                _dataManager.Object,
                 _endOfDuelUseCase.Object,
                 _logger.Object);
         }

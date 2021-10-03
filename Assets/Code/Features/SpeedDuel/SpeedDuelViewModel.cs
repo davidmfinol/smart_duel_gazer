@@ -7,6 +7,7 @@ using System;
 using UnityEngine;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.UseCases;
+using Code.Core.DataManager;
 
 namespace Code.Features.SpeedDuel
 {
@@ -15,6 +16,7 @@ namespace Code.Features.SpeedDuel
         private const string Tag = "Speed Duel View Model";
 
         private readonly IPlayfieldEventHandler _playfieldEventHandler;
+        private readonly IDataManager _dataManager;
         private readonly IEndOfDuelUseCase _endOfDuelUseCase;
         private readonly IAppLogger _logger;        
 
@@ -35,10 +37,12 @@ namespace Code.Features.SpeedDuel
 
         public SpeedDuelViewModel(
             IPlayfieldEventHandler playfieldEventHandler,
+            IDataManager dataManager,
             IEndOfDuelUseCase endOfDuelUseCase,
             IAppLogger appLogger)
         {
             _playfieldEventHandler = playfieldEventHandler;
+            _dataManager = dataManager;
             _endOfDuelUseCase = endOfDuelUseCase;
             _logger = appLogger;
 
@@ -67,9 +71,11 @@ namespace Code.Features.SpeedDuel
 
         #region Playfield Events
 
-        private void OnActivatePlayfield(UnityEngine.GameObject playfield)
+        private void OnActivatePlayfield()
         {
             _logger.Log(Tag, "OnActivatePlayfield()");
+
+            var playfield = _dataManager.GetPlayfield();
             
             if (playfield == null) return;
 

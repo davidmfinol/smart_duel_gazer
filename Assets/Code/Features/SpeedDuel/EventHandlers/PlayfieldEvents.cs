@@ -6,23 +6,23 @@ namespace Code.Features.SpeedDuel.EventHandlers
     public interface IPlayfieldEventHandler
     {
         event Action<PlayfieldEvent, PlayfieldEventArgs> OnAction;
-        event Action<UnityEngine.GameObject> OnActivatePlayfield;
+        event Action OnActivatePlayfield;
         event Action OnRemovePlayfield;
 
         void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args);
-        void ActivatePlayfield(UnityEngine.GameObject playfield);
+        void ActivatePlayfield();
         void RemovePlayfield();
     }
 
     public class PlayfieldEventHandler : IPlayfieldEventHandler
     {
-        private event Action<UnityEngine.GameObject> _OnActivatePlayfield;
+        private event Action _OnActivatePlayfield;
         private event Action<PlayfieldEvent, PlayfieldEventArgs> _OnAction;
         private event Action _OnRemovePlayfield;
 
         #region Event Accessors
 
-        public event Action<UnityEngine.GameObject> OnActivatePlayfield
+        public event Action OnActivatePlayfield
         {
             add => _OnActivatePlayfield += value;
             remove => _OnActivatePlayfield -= value;
@@ -40,9 +40,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         #endregion
 
-        public void ActivatePlayfield(UnityEngine.GameObject playfield)
+        public void ActivatePlayfield()
         {
-            _OnActivatePlayfield?.Invoke(playfield);
+            _OnActivatePlayfield?.Invoke();
         }
 
         public void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args)

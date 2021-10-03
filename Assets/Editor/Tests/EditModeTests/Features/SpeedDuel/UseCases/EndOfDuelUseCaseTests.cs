@@ -47,5 +47,13 @@ namespace Tests.Features.SpeedDuel.UseCases
 
             _dataManger.Verify(dm => dm.RemoveGameObject(key), Times.Once);
         }
+
+        [Test]
+        public void When_ExecuteCalled_DataManagerRemovesStoredPlayafield()
+        {
+            _endOfDuel.Execute();
+
+            _dataManger.Verify(dm => dm.RemoveStoredPlayfield(), Times.Once);
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Code.Core.DataManager;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Features.SpeedDuel;
@@ -15,6 +16,7 @@ namespace Tests.Features.SpeedDuel
         private SpeedDuelViewModel _viewModel;
 
         private Mock<IPlayfieldEventHandler> _playfieldEventHandler;
+        private Mock<IDataManager> _dataManager;
         private Mock<IEndOfDuelUseCase> _endOfDuelUseCase;
         private Mock<IAppLogger> _logger;
 
@@ -22,22 +24,34 @@ namespace Tests.Features.SpeedDuel
         public void SetUp()
         {
             _playfieldEventHandler = new Mock<IPlayfieldEventHandler>();
+            _dataManager = new Mock<IDataManager>();
             _endOfDuelUseCase = new Mock<IEndOfDuelUseCase>();
             _logger = new Mock<IAppLogger>();
 
             _viewModel = new SpeedDuelViewModel(
                 _playfieldEventHandler.Object,
+                _dataManager.Object,
                 _endOfDuelUseCase.Object,
                 _logger.Object);
         }
 
         [Test]
-        public void Given_AnInvalidPlayfield_When_ActivatePlayfieldEventRecieved_Then_NoEventIsFired()
+        public void When_ActivatePlayfieldEventRecieved_Then_DataManagerGetsPlayfield()
+        {
+            _playfieldEventHandler.Raise(eh => eh.OnActivatePlayfield += null);
+            
+            _playfieldEventHandler.Object.ActivatePlayfield();
+
+            _dataManager.Verify(dm => dm.GetPlayfield(), Times.Once);
+        }
+        
+        [Test]
+        public void Given_ANullPlayfield_When_ActivatePlayfieldEventRecieved_Then_NoEventIsFired()
         {
             var expected = false;
             _viewModel.ActivatePlayfieldMenu.Subscribe(_ => expected = true);
 
-            _playfieldEventHandler.Object.ActivatePlayfield(null);
+            _playfieldEventHandler.Object.ActivatePlayfield();
 
             Assert.IsFalse(expected);
         }
