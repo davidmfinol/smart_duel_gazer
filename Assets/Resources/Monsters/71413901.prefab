@@ -54,7 +54,7 @@ Animator:
   m_GameObject: {fileID: 6046494554422383257}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 88a43ebd4d0714559836fddb3ddedf22, type: 2}
+  m_Controller: {fileID: 22100000, guid: b7677e1d9651d274b9c568cbbf8f13ec, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -63,19 +63,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5363277508253835141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6046494554422383257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8f014f8981154047817a1931e9241b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _modelScale: {x: 1, y: 1, z: 1}
 --- !u!114 &102638860168252812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,6 +87,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5363277508253835141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6046494554422383257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f014f8981154047817a1931e9241b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _modelScale: {x: 1, y: 1, z: 1}
 --- !u!1001 &6856764599415549896
 PrefabInstance:
   m_ObjectHideFlags: 0
