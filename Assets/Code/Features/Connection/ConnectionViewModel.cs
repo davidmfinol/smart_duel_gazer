@@ -23,6 +23,15 @@ namespace Code.Features.Connection
 
         #region Properties
 
+        private readonly BehaviorSubject<bool> _toggleDeveloperMode = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ToggleDeveloperMode => _toggleDeveloperMode;
+
+        private readonly BehaviorSubject<bool> _toggleLocalConnectionMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ToggleLocalConnectionMenu => _toggleLocalConnectionMenu;
+
+        private readonly BehaviorSubject<bool> _toggleSettingsMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ToggleSettingsMenu => _toggleSettingsMenu;
+
         private readonly BehaviorSubject<string> _ipAddress = new BehaviorSubject<string>(default);
         public IObservable<string> IpAddress => _ipAddress;
 
@@ -48,23 +57,30 @@ namespace Code.Features.Connection
             _navigationService = navigationService;
             _screenService = screenService;
             _logger = appLogger;
-
-            Init();
         }
 
         #endregion
 
         #region Initialization
 
-        private void Init()
+        public void Init()
         {
             _logger.Log(Tag, "Init()");
 
             _screenService.UsePortraitOrientation();
 
+            InitSettings();
             InitForm();
         }
 
+        private void InitSettings()
+        {
+            _logger.Log(Tag, "InitSettings()");
+            
+            var isInDeveloperMode = _dataManager.IsDeveloperModeEnabled();
+            _toggleDeveloperMode.OnNext(isInDeveloperMode);
+        }
+        
         private void InitForm()
         {
             _logger.Log(Tag, "InitForm()");
@@ -83,6 +99,22 @@ namespace Code.Features.Connection
 
         #region Form fields
 
+        public void OnSettingsMenuToggled(bool state)
+        {
+            _logger.Log(Tag, $"OnSettingsMenuToggled(State: {state})");
+
+            _toggleSettingsMenu.OnNext(state);
+        }
+
+        public void OnDeveloperModeToggled(bool state)
+        {
+            _logger.Log(Tag, $"OnDeveloperModeToggled(State: {state})");
+
+            _dataManager.SaveDeveloperModeEnabled(state);
+
+            _toggleLocalConnectionMenu.OnNext(state);
+        }
+        
         public void OnIpAddressChanged(string ipAddress)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(ipAddress: {ipAddress})");

@@ -116,9 +116,9 @@ namespace Code.Core.DataManager
             return _settingsDataManager.IsDeveloperModeEnabled();
         }
 
-        public void SaveDeveloperModelEnabled(bool value)
+        public void SaveDeveloperModeEnabled(bool value)
         {
-            _settingsDataManager.SaveDeveloperModelEnabled(value);
+            _settingsDataManager.SaveDeveloperModeEnabled(value);
         }
 
         #endregion

@@ -5,7 +5,7 @@ namespace Code.Core.DataManager.Settings
     public interface ISettingsDataManager
     {
         bool IsDeveloperModeEnabled();
-        void SaveDeveloperModelEnabled(bool value);
+        void SaveDeveloperModeEnabled(bool value);
     }
 
     public class SettingsDataManager : ISettingsDataManager
@@ -23,7 +23,7 @@ namespace Code.Core.DataManager.Settings
             return _settingsStorageProvider.IsDeveloperModeEnabled();
         }
 
-        public void SaveDeveloperModelEnabled(bool value)
+        public void SaveDeveloperModeEnabled(bool value)
         {
             _settingsStorageProvider.SaveDeveloperModeEnabled(value);
         }
