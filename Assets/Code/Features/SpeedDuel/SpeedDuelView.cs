@@ -56,7 +56,7 @@ namespace Code.Features.SpeedDuel
 
         private void OnDestroy()
         {
-            _disposables.Dispose();
+            _disposables?.Dispose();
             _speedDuelViewModel?.Dispose();
         }
 
@@ -70,16 +70,16 @@ namespace Code.Features.SpeedDuel
                 .Subscribe(_speedDuelViewModel.OnTogglePlayfieldMenu);
 
             //Side Menu Items
-            _rotationSlider.OnValueChangedAsObservable().Subscribe(_ => _speedDuelViewModel.RotatePlayfield(
-                new PlayfieldEventValue<float> { Value = _rotationSlider.value }));
-            _scaleSlider.OnValueChangedAsObservable().Subscribe(_ => _speedDuelViewModel.ScalePlayfield(
-                new PlayfieldEventValue<float> { Value = _scaleSlider.value }));
+            _rotationSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.RotatePlayfield(
+                new PlayfieldEventValue<float> { Value = value }));
+            _scaleSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.ScalePlayfield(
+                new PlayfieldEventValue<float> { Value = value }));
 
             //Bottom Menu Items
-            _hidePlaymatToggle.OnValueChangedAsObservable().Subscribe(_ => _speedDuelViewModel.HidePlayfield(
-                new PlayfieldEventValue<bool> { Value = _hidePlaymatToggle.isOn }));
-            _flipPlayfieldToggle.OnValueChangedAsObservable().Subscribe(_ => _speedDuelViewModel.FlipPlayfield(
-                new PlayfieldEventValue<bool> { Value = _flipPlayfieldToggle.isOn }));
+            _hidePlaymatToggle.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.HidePlayfield(
+                new PlayfieldEventValue<bool> { Value = value }));
+            _flipPlayfieldToggle.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.FlipPlayfield(
+                new PlayfieldEventValue<bool> { Value = value }));
             _removePlayfieldButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnRemovePlayfield());
 
             //Back Button
@@ -108,20 +108,20 @@ namespace Code.Features.SpeedDuel
             }
 
             _scaleSlider.value = playfieldValues.Scale;
-            _rotationSlider.value = playfieldValues.Rotation;
-            SetSlidersActive(true);
+            _rotationSlider.value = playfieldValues.yAxisRotation;
+            SetSlidersInteractableState(true);
         }
 
         private void ShowPlayfieldMenu(bool state)
         {
-            _logger.Log(Tag, $"Show Playfield Menus: {state}");
+            _logger.Log(Tag, $"ShowPlayfieldMenus({state})");
             
             _animator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, state);
         }
 
         private async Task RemovePlayfieldMenus(bool state)
         {
-            _logger.Log(Tag, "RemovePlayfieldMenus");
+            _logger.Log(Tag, $"RemovePlayfieldMenus({state})");
 
             if (!state) return;
 
@@ -131,11 +131,11 @@ namespace Code.Features.SpeedDuel
             await _delayProvider.Wait(ExitAnimationsTimeInMs);
             _animator.ResetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
 
-            SetSlidersActive(false);
+            SetSlidersInteractableState(false);
             _menus.SetActive(false);
         }
 
-        private void SetSlidersActive(bool state)
+        private void SetSlidersInteractableState(bool state)
         {
             _scaleSlider.interactable = state;
             _rotationSlider.interactable = state;

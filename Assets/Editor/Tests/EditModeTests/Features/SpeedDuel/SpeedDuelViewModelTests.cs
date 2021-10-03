@@ -3,11 +3,10 @@ using Code.Core.Navigation;
 using Code.Features.SpeedDuel;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
-using Code.Features.SpeedDuel.Models;
+using Code.Features.SpeedDuel.UseCases;
 using Moq;
 using NUnit.Framework;
 using UniRx;
-using UnityEngine;
 
 namespace Tests.Features.SpeedDuel
 {
@@ -15,20 +14,20 @@ namespace Tests.Features.SpeedDuel
     {
         private SpeedDuelViewModel _viewModel;
 
-        private Mock<INavigationService> _navigationService;
         private Mock<IPlayfieldEventHandler> _playfieldEventHandler;
+        private Mock<IEndOfDuelUseCase> _endOfDuelUseCase;
         private Mock<IAppLogger> _logger;
 
         [SetUp]
         public void SetUp()
         {
-            _navigationService = new Mock<INavigationService>();
             _playfieldEventHandler = new Mock<IPlayfieldEventHandler>();
+            _endOfDuelUseCase = new Mock<IEndOfDuelUseCase>();
             _logger = new Mock<IAppLogger>();
 
             _viewModel = new SpeedDuelViewModel(
-                _navigationService.Object,
                 _playfieldEventHandler.Object,
+                _endOfDuelUseCase.Object,
                 _logger.Object);
         }
 
@@ -179,11 +178,11 @@ namespace Tests.Features.SpeedDuel
         }
 
         [Test]
-        public void When_BackButtonPressed_Then_ShowConnctionScene()
+        public void When_BackButtonPressed_Then_EndOfDuelExeuted()
         {
             _viewModel.OnBackButtonPressed();
 
-            _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
+            _endOfDuelUseCase.Verify(uc => uc.Execute(), Times.Once);
         }
     }
 }

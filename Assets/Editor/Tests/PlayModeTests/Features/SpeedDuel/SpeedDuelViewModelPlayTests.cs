@@ -8,6 +8,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UniRx;
+using Code.Features.SpeedDuel.UseCases;
 
 namespace Tests.Features.SpeedDuel
 {
@@ -15,20 +16,20 @@ namespace Tests.Features.SpeedDuel
     {
         private SpeedDuelViewModel _viewModel;
 
-        private Mock<INavigationService> _navigationService;
         private Mock<IPlayfieldEventHandler> _playfieldEventHandler;
+        private Mock<IEndOfDuelUseCase> _endOfDuelUseCase;
         private Mock<IAppLogger> _logger;
 
         [SetUp]
         public void SetUp()
         {
-            _navigationService = new Mock<INavigationService>();
             _playfieldEventHandler = new Mock<IPlayfieldEventHandler>();
+            _endOfDuelUseCase = new Mock<IEndOfDuelUseCase>();
             _logger = new Mock<IAppLogger>();
 
             _viewModel = new SpeedDuelViewModel(
-                _navigationService.Object,
                 _playfieldEventHandler.Object,
+                _endOfDuelUseCase.Object,
                 _logger.Object);
         }
 
@@ -40,7 +41,7 @@ namespace Tests.Features.SpeedDuel
         public void Given_AValidPlayfield_When_ActivatePlayfieldEventRecieved_Then_CorrectTransformValuesAreFiredWithEvent(
             float correctRotation, float correctScale)
         {
-            var model = new PlayfieldTransformValues { Rotation = correctRotation, Scale = correctScale };
+            var model = new PlayfieldTransformValues { yAxisRotation = correctRotation, Scale = correctScale };
             var expected = new PlayfieldTransformValues();
             var testObj = new GameObject();
             testObj.transform.localRotation = Quaternion.Euler(0, correctRotation, 0);

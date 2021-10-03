@@ -64,7 +64,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void OnAction(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"Action: {playfieldEvent}");
+            _logger.Log(Tag, $"OnAction(PlayfieldEvent: {playfieldEvent})");
             
             switch (playfieldEvent)
             {
@@ -97,7 +97,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void FlipPlayfield(PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"FlipPlayfield()");
+            _logger.Log(Tag, "FlipPlayfield()");
             
             if (!(args is PlayfieldEventValue<bool> state)) return;
             
@@ -112,7 +112,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void HidePlayfield(PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"HidePlayfield()");
+            _logger.Log(Tag, "HidePlayfield()");
 
             if (!(args is PlayfieldEventValue<bool> state)) return;
 
@@ -124,7 +124,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void RotatePlayfield(PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"RotatePlayfield()");
+            _logger.Log(Tag, "RotatePlayfield()");
 
             if (!(args is PlayfieldEventValue<float> rotation)) return;
 
@@ -133,7 +133,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void ScalePlayfield(PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"RotatePlayfield()");
+            _logger.Log(Tag, "RotatePlayfield()");
 
             if (!(args is PlayfieldEventValue<float> scale)) return;
 

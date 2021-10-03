@@ -6,6 +6,7 @@ using UniRx;
 using System;
 using UnityEngine;
 using Code.Features.SpeedDuel.Models;
+using Code.Features.SpeedDuel.UseCases;
 
 namespace Code.Features.SpeedDuel
 {
@@ -13,18 +14,19 @@ namespace Code.Features.SpeedDuel
     {
         private const string Tag = "Speed Duel View Model";
 
-        private readonly INavigationService _navigationService;
         private readonly IPlayfieldEventHandler _playfieldEventHandler;
-        private readonly IAppLogger _logger;
+        private readonly IEndOfDuelUseCase _endOfDuelUseCase;
+        private readonly IAppLogger _logger;        
+
+        #region Properties
 
         private Subject<PlayfieldTransformValues> _activatePlayfieldMenu = new Subject<PlayfieldTransformValues>();
-        private Subject<bool> _togglePlayfieldMenu = new Subject<bool>();
-        private Subject<bool> _removePlayfield = new Subject<bool>();
-
-        #region Observables
-
         public IObservable<PlayfieldTransformValues> ActivatePlayfieldMenu => _activatePlayfieldMenu;
+
+        private Subject<bool> _togglePlayfieldMenu = new Subject<bool>();
         public IObservable<bool> TogglePlayfieldMenu => _togglePlayfieldMenu;
+
+        private Subject<bool> _removePlayfield = new Subject<bool>();
         public IObservable<bool> RemovePlayfield => _removePlayfield;
 
         #endregion
@@ -32,12 +34,12 @@ namespace Code.Features.SpeedDuel
         #region Constructor
 
         public SpeedDuelViewModel(
-            INavigationService navigationService,
             IPlayfieldEventHandler playfieldEventHandler,
+            IEndOfDuelUseCase endOfDuelUseCase,
             IAppLogger appLogger)
         {
-            _navigationService = navigationService;
             _playfieldEventHandler = playfieldEventHandler;
+            _endOfDuelUseCase = endOfDuelUseCase;
             _logger = appLogger;
 
             Init();
@@ -54,6 +56,8 @@ namespace Code.Features.SpeedDuel
 
         public void Dispose()
         {
+            _logger.Log(Tag, "Dispose()");
+
             _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
 
             _activatePlayfieldMenu.Dispose();
@@ -126,7 +130,7 @@ namespace Code.Features.SpeedDuel
 
         public void OnBackButtonPressed()
         {
-            _navigationService.ShowConnectionScene();
+            _endOfDuelUseCase.Execute();
         }
 
         #endregion
@@ -136,7 +140,7 @@ namespace Code.Features.SpeedDuel
             var scale = playfield.transform.localScale.x;
             var rotation = playfield.transform.localRotation.y;
 
-            return new PlayfieldTransformValues { Scale = scale, Rotation = rotation };
+            return new PlayfieldTransformValues { Scale = scale, yAxisRotation = rotation };
         }
     }
 }
