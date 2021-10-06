@@ -57,7 +57,6 @@ namespace Tests.Features.SpeedDuel
             Assert.IsFalse(expected);
         }
 
-        [Test]
         [TestCase(3f)]
         [TestCase(3.2f)]
         [TestCase(-2.1f)]
@@ -72,7 +71,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void Given_ANonFloatValue_When_RotateSliderIsAdjusted_Then_NoEventIsFired(bool value)
@@ -84,14 +82,13 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.Verify(eh => eh.Action(PlayfieldEvent.Rotate, model), Times.Never);
             _playfieldEventHandler.VerifyAll();
         }
-
-        [Test]
+        
         [TestCase(3f)]
         [TestCase(3.2f)]
         [TestCase(-2.1f)]
         [TestCase(10.7f)]
         public void Given_AFloatValue_When_ScaleSliderIsAdjusted_Then_EventHandlerFiresScaleEvent(float value)
-{
+        {
             var model = new PlayfieldEventValue<float> { Value = value };
 
             _viewModel.ScalePlayfield(model);
@@ -100,7 +97,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void Given_ANonFloatValue_When_ScaleSliderIsAdjusted_Then_NoEventIsFired(bool value)
@@ -113,7 +109,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void Give_ABoolValue_When_HideToggleIsAdjusted_Then_EventHandlerFiresHideEvent(bool value)
@@ -126,7 +121,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(3f)]
         [TestCase(3.2f)]
         [TestCase(-2.1f)]
@@ -141,7 +135,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void Give_ABoolValue_When_FlipToggleIsAdjusted_Then_EventHandlerFiresFlipEvent(bool value)
@@ -154,7 +147,6 @@ namespace Tests.Features.SpeedDuel
             _playfieldEventHandler.VerifyAll();
         }
 
-        [Test]
         [TestCase(3f)]
         [TestCase(3.2f)]
         [TestCase(-2.1f)]
