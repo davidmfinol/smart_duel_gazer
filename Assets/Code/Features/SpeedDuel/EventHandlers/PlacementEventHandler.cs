@@ -160,7 +160,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private void CreatePlayfield()
         {
             _speedDuelField = _playfieldFactory.Create(_playfieldPrefab).gameObject;
-            _dataManager.StorePlayfield(_speedDuelField);
+            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, _speedDuelField);
 
             //Move Playfield to Scene Root rather than Zenject Project Context
             _speedDuelField.transform.SetParent(transform);
@@ -197,7 +197,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 cameraOrientation.IsWithinRange(-45, -135) ||
                 cameraOrientation.IsWithinRange(-225, -315))
             {
-                return plane.size.y; ;
+                return plane.size.y;
             }
 
             return plane.size.x;
@@ -208,8 +208,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _objectIsPlaced = false;
             _placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
-
-            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, _speedDuelField);
         }
     }
 }

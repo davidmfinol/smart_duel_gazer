@@ -40,7 +40,6 @@ namespace Code.Features.SpeedDuel.UseCases
             _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
             _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
             _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
-            _dataManager.RemoveStoredPlayfield();
 
             _navigationService.ShowConnectionScene();
         }

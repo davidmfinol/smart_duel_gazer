@@ -8,6 +8,7 @@ using UnityEngine;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 
 namespace Code.Features.SpeedDuel
 {
@@ -75,7 +76,7 @@ namespace Code.Features.SpeedDuel
         {
             _logger.Log(Tag, "OnActivatePlayfield()");
 
-            var playfield = _dataManager.GetPlayfield();
+            var playfield = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
             
             if (playfield == null) return;
 

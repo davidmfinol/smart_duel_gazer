@@ -84,21 +84,6 @@ namespace Code.Core.DataManager
             return _gameObjectDataManager.GetCardModel(cardId);
         }
 
-        public GameObject GetPlayfield()
-        {
-            return _gameObjectDataManager.GetPlayfield();
-        }
-
-        public void StorePlayfield(GameObject playfield)
-        {
-            _gameObjectDataManager.StorePlayfield(playfield);
-        }
-
-        public void RemoveStoredPlayfield()
-        {
-            _gameObjectDataManager.RemoveStoredPlayfield();
-        }
-
         #endregion
 
         #region Texture

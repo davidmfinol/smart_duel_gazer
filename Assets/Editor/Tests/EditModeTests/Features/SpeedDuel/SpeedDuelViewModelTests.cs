@@ -1,4 +1,5 @@
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Features.SpeedDuel;
@@ -42,7 +43,7 @@ namespace Tests.Features.SpeedDuel
             
             _playfieldEventHandler.Object.ActivatePlayfield();
 
-            _dataManager.Verify(dm => dm.GetPlayfield(), Times.Once);
+            _dataManager.Verify(dm => dm.GetGameObject(GameObjectKeys.PlayfieldKey), Times.Once);
         }
         
         [Test]

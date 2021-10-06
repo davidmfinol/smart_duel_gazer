@@ -91,6 +91,39 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #region Events
 
+        #region Playfield Events
+
+        private void OnActivatePlayfield()
+        {
+            _logger.Log(Tag, "OnActivatePlayfield");
+
+            if (!gameObject.activeSelf) return;
+
+            switch (_currentState)
+            {
+                case CurrentState.FaceDown:
+                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+                    break;
+                case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
+                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+                    break;
+                case CurrentState.SetMonsterRevealed:
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
+                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+                    break;
+            }
+        }
+
+        private void RemovePlayfield()
+        {
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
+        }
+
+        #endregion
+
+        #region Model Events
+
         private async void OnSummon(int instanceID, string modelName, bool isMonster)
         {
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
@@ -136,36 +169,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #endregion
 
-        #region Functions
-
-        #region Playfield Functions
-
-        private void OnActivatePlayfield()
-        {
-            _logger.Log(Tag, "OnActivatePlayfield");
-            
-            if (!gameObject.activeSelf) return;
-            
-            switch (_currentState)
-            {
-                case CurrentState.FaceDown:
-                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
-                    break;
-                case CurrentState.SpellActivated:
-                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
-                    break;
-                case CurrentState.SetMonsterRevealed:
-                    _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
-                    break;
-            }
-        }
-
-        private void RemovePlayfield()
-        {
-            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
-        }
-
         #endregion
+
+        #region Functions
 
         #region Spell/Trap Functions
 
