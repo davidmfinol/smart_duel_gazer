@@ -7,5 +7,13 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Rocket Warrior Override
-  m_Controller: {fileID: 0}
-  m_Clips: []
+  m_Controller: {fileID: 9100000, guid: dbd5f738982b144b3a4faf3d304e1e6b, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: f252b253d6c8ca74d9a0e4ab9a28539f, type: 2}
+    m_OverrideClip: {fileID: -6239216113759591374, guid: f3e07149130ffc24790af3e6474de6a9, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: a1b2b915d3ed78548a1067e618458f65, type: 2}
+    m_OverrideClip: {fileID: 2963219463598164401, guid: f3e07149130ffc24790af3e6474de6a9, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: e2125ef36e823fa4dbbd915e0325b9ba, type: 2}
+    m_OverrideClip: {fileID: 8497145277678188838, guid: f3e07149130ffc24790af3e6474de6a9, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: cb4fd7fd6d4d61842b82f8bb6c0f3154, type: 2}
+    m_OverrideClip: {fileID: 665853745831072719, guid: f3e07149130ffc24790af3e6474de6a9, type: 3}
