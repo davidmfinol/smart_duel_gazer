@@ -7,7 +7,7 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Kaibaman Override
-  m_Controller: {fileID: 9100000, guid: dbd5f738982b144b3a4faf3d304e1e6b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5ca5c54e9c3e74747adaab9e887d8a1e, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e2125ef36e823fa4dbbd915e0325b9ba, type: 2}
     m_OverrideClip: {fileID: -6573999810842603455, guid: 86b5ce371835095459112de0ec055aca, type: 3}

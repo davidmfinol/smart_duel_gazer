@@ -7,7 +7,7 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Dark Magician Override
-  m_Controller: {fileID: 9100000, guid: dbd5f738982b144b3a4faf3d304e1e6b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5ca5c54e9c3e74747adaab9e887d8a1e, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: f252b253d6c8ca74d9a0e4ab9a28539f, type: 2}
     m_OverrideClip: {fileID: -2361512165147288874, guid: f208c283005094f14a0f113719c2183b, type: 3}
