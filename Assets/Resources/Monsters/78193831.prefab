@@ -24,7 +24,7 @@ Animator:
   m_GameObject: {fileID: 3788011267198208183}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 059f511b172164bdb87a0e66330cc08a, type: 3}
-  m_Controller: {fileID: 9100000, guid: e8bf905c26b4141a497769f6e3d1f656, type: 2}
+  m_Controller: {fileID: 22100000, guid: 94acf9b15927aa1468a69fc0b6409cb7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -46,18 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 50, y: 50, z: 50}
---- !u!114 &6985026693431763244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3788011267198208183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f40a1cb1b685bcc41bf19431922a9f7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6846695713083826842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,6 +56,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6985026693431763244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3788011267198208183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f40a1cb1b685bcc41bf19431922a9f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7224916136937916771
