@@ -14,12 +14,15 @@ using Code.Core.Screen;
 using Code.Core.Logger;
 using System.Linq;
 using System.Collections.Generic;
+using Castle.Core.Internal;
 
 namespace Code.Features.DuelRoom
 {
     public class DuelRoomViewModel
     {
         private const string Tag = "DuelRoomViewModel";
+
+        private const int CloseSocketDuration = 200;
 
         private readonly IDataManager _dataManager;
         private readonly INavigationService _navigationService;
@@ -33,24 +36,20 @@ namespace Code.Features.DuelRoom
 
         private string _duelistToSpectate;
         private bool _startedDuelSuccessfully;
-        private int _waitForSocketToClose = 200; 
 
         #region Properties
+        
+        private readonly BehaviorSubject<DuelRoomState> _roomState = new BehaviorSubject<DuelRoomState>(DuelRoomState.Loading);
+        public IObservable<DuelRoomState> RoomState => _roomState;
 
-        private readonly BehaviorSubject<string> _updateRoomName = new BehaviorSubject<string>(default);
-        public IObservable<string> UpdateRoomNameField => _updateRoomName;
+        private readonly BehaviorSubject<string> _roomName = new BehaviorSubject<string>(default);
+        public IObservable<string> RoomName => _roomName;
 
-        private readonly BehaviorSubject<DuelRoomState> _unpdateDuelRoomState = new BehaviorSubject<DuelRoomState>(default);
-        public IObservable<DuelRoomState> UpdateDuelRoomState => _unpdateDuelRoomState;
+        private readonly BehaviorSubject<string> _errorText = new BehaviorSubject<string>(default);
+        public IObservable<string> ErrorText => _errorText;
 
-        private readonly BehaviorSubject<string> _updateErrorTextField = new BehaviorSubject<string>(default);
-        public IObservable<string> UpdateErrorTextField => _updateErrorTextField;
-
-        private readonly Subject<bool> _clearDropDownMenu = new Subject<bool>();
-        public IObservable<bool> ClearDropDownMenu => _clearDropDownMenu;
-
-        private readonly Subject<List<string>> _updateDropdownDataMenu = new Subject<List<string>>();
-        public IObservable<List<string>> UpdateDropDownMenu => _updateDropdownDataMenu;
+        private readonly BehaviorSubject<List<string>> _duelistIds = new BehaviorSubject<List<string>>(default);
+        public IObservable<List<string>> DuelistIds => _duelistIds;
 
         #endregion
 
@@ -88,9 +87,11 @@ namespace Code.Features.DuelRoom
 
         private void InitSmartDuelEventSubscription()
         {
+            _logger.Log(Tag, $"InitSmartDuelEventSubscription()");
+            
             _smartDuelEventSubscription = _smartDuelServer.GlobalEvents
                 .Merge(_smartDuelServer.RoomEvents)
-                .Subscribe(e => OnSmartDuelEventReceived(e));
+                .Subscribe(OnSmartDuelEventReceived);
 
             _smartDuelServer.Init();
         }
@@ -102,8 +103,8 @@ namespace Code.Features.DuelRoom
         public void OnEnterRoomPressed()
         {
             _logger.Log(Tag, "OnEnterRoomPressed()");
-            
-            if (string.IsNullOrWhiteSpace(_updateRoomName.Value))
+
+            if (string.IsNullOrWhiteSpace(_roomName.Value))
             {
                 _dialogService.ShowToast("Room name is required");
                 return;
@@ -114,6 +115,8 @@ namespace Code.Features.DuelRoom
 
         public void OnSpectateButtonPressed(string duelist)
         {
+            _logger.Log(Tag, $"OnSpectateButtonPressed(duelist: {duelist})");
+            
             if (string.IsNullOrWhiteSpace(duelist))
             {
                 _dialogService.ShowToast("Duelist name is required");
@@ -127,35 +130,44 @@ namespace Code.Features.DuelRoom
 
         public void OnGoBackButtonPressed()
         {
+            _logger.Log(Tag, "OnGoBackButtonPressed()");
+            
             ResetFields();
-            _unpdateDuelRoomState.OnNext(DuelRoomState.EnterRoomName);
+            
+            _roomState.OnNext(DuelRoomState.EnterRoomName);
         }
 
         public async Task OnTryAgainButtonPressed()
         {
+            _logger.Log(Tag, "OnTryAgainButtonPressed()");
+            
             ResetFields();
 
-            _unpdateDuelRoomState.OnNext(DuelRoomState.Loading);
+            _roomState.OnNext(DuelRoomState.Loading);
 
             _smartDuelServer.Dispose();
-            await _delayProvider.Wait(_waitForSocketToClose);
+            await _delayProvider.Wait(CloseSocketDuration);
             _smartDuelServer.Init();
         }
 
         public void OnLeaveRoomButtonPressed()
         {
+            _logger.Log(Tag, "OnLeaveRoomButtonPressed()");
+            
             ResetFields();
             SendLeaveRoomEvent();
 
-            _unpdateDuelRoomState.OnNext(DuelRoomState.EnterRoomName);
+            _roomState.OnNext(DuelRoomState.EnterRoomName);
         }
 
         private void ResetFields()
         {
+            _logger.Log(Tag, "ResetFields()");
+            
             _duelistToSpectate = null;
 
-            UpdateDropDownOptions(null);
-            _updateRoomName.OnNext(null);
+            UpdateDuelistsToSpectateList(null);
+            _roomName.OnNext(null);
         }
 
         #endregion
@@ -164,55 +176,59 @@ namespace Code.Features.DuelRoom
 
         public void UpdateRoomName(string name)
         {
-            _updateRoomName.OnNext(name);
+            _logger.Log(Tag, $"UpdateRoomName(name: {name})");
+            
+            _roomName.OnNext(name);
         }
 
-        public void UpdateDuelistToSpectate(string duelist)
+        private void UpdateDuelistsToSpectateList(RoomEventData data)
         {
-            _duelistToSpectate = duelist;
-        }
-
-        private void UpdateDropDownOptions(RoomEventData data)
-        {
-            if(data == null)
+            _logger.Log(Tag, $"UpdateDuelistsToSpectateList(data: {data})");
+            
+            if (data == null || data.DuelistsIds.IsNullOrEmpty())
             {
-                _clearDropDownMenu.OnNext(true);
+                _duelistIds.OnNext(null);
                 return;
             }
-            
-            var options = data.DuelistsIds.ToList();
-            _clearDropDownMenu.OnNext(true);
-            _updateDropdownDataMenu.OnNext(options);
+
+            var duelistIds = data.DuelistsIds!.ToList();
+            _duelistIds.OnNext(duelistIds);
         }
 
         #endregion
 
-        #region Send smart duel events
+        #region Send Smart Duel Events
 
         private void SendGetDuelistsInRoomEvent()
         {
+            _logger.Log(Tag, "SendGetDuelistsInRoomEvent()");
+            
             _smartDuelServer.EmitEvent(new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomGetDuelistsAction,
                 new RoomEventData
                 {
-                    RoomName = _updateRoomName.Value
+                    RoomName = _roomName.Value
                 }));
         }
 
         private void SendSpectateRoomEvent()
         {
+            _logger.Log(Tag, "SendSpectateRoomEvent()");
+            
             _smartDuelServer.EmitEvent(new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomSpectateAction,
                 new RoomEventData
                 {
-                    RoomName = _updateRoomName.Value
+                    RoomName = _roomName.Value
                 }));
         }
 
         private void SendLeaveRoomEvent()
         {
+            _logger.Log(Tag, "SendLeaveRoomEvent()");
+            
             _smartDuelServer.EmitEvent(new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomLeaveAction));
@@ -238,10 +254,12 @@ namespace Code.Features.DuelRoom
             }
         }
 
-        #region Receive global event
+        #region Receive Global Event
 
         private void HandleGlobalEvent(SmartDuelEvent e)
         {
+            _logger.Log(Tag, $"HandleGlobalEvent(scope: {e.Scope}, action: {e.Action})");
+            
             switch (e.Action)
             {
                 case SmartDuelEventConstants.GlobalConnectAction:
@@ -258,24 +276,27 @@ namespace Code.Features.DuelRoom
 
         private void HandleConnectEvent()
         {
-            _unpdateDuelRoomState.OnNext(DuelRoomState.EnterRoomName);
+            _logger.Log(Tag, "HandleConnectEvent()");
+            
+            _roomState.OnNext(DuelRoomState.EnterRoomName);
         }
 
         private void HandleErrorEvent(string error)
         {
-            _logger.Log(Tag, $"Handling Error: {error}");
+            _logger.Log(Tag, $"HandleErrorEvent(error: {error})");
 
-            _unpdateDuelRoomState.OnNext(DuelRoomState.Error);
-            _updateErrorTextField.OnNext(error);
+            _roomState.OnNext(DuelRoomState.Error);
+            _errorText.OnNext(error);
         }
 
         #endregion
 
-        #region Recieve Room Events
-
-        // TODO: Update dropdown when new duelist enters the room
+        #region Receive Room Events
+        
         private void HandleRoomEvent(SmartDuelEvent e)
         {
+            _logger.Log(Tag, $"HandleRoomEvent(e: {e})");
+            
             if (!(e.Data is RoomEventData data))
             {
                 HandleErrorEvent("Room Data is Invalid!");
@@ -304,27 +325,33 @@ namespace Code.Features.DuelRoom
 
         private void HandleRoomGetDuelistsEvent(RoomEventData data)
         {
+            _logger.Log(Tag, $"HandleRoomGetDuelistsEvent(data: {data})");
+            
             if (!data.Error.IsNullOrEmpty())
             {
                 HandleErrorEvent(data.Error);
                 return;
             }
 
-            UpdateDropDownOptions(data);
-            _unpdateDuelRoomState.OnNext(DuelRoomState.SelectDuelist);
+            UpdateDuelistsToSpectateList(data);
+            _roomState.OnNext(DuelRoomState.SelectDuelist);
         }
 
         private void HandleRoomSpectateEvent()
         {
-            _unpdateDuelRoomState.OnNext(DuelRoomState.Waiting);
+            _logger.Log(Tag, "HandleRoomSpectateEvent()");
+            
+            _roomState.OnNext(DuelRoomState.Waiting);
         }
 
         private void HandleRoomStartEvent(RoomEventData data)
         {
+            _logger.Log(Tag, $"HandleRoomStartEvent(data: {data})");
+            
             var duelRoom = data.DuelRoom;
             if (duelRoom == null)
             {
-                HandleErrorEvent("invalid duel room data");
+                HandleErrorEvent("No duel room data found");
                 return;
             }
 
@@ -333,31 +360,35 @@ namespace Code.Features.DuelRoom
 
             _startedDuelSuccessfully = true;
             _navigationService.ShowSpeedDuelScene();
-            _unpdateDuelRoomState.OnNext(DuelRoomState.Loading);
+            _roomState.OnNext(DuelRoomState.Loading);
         }
 
         private void HandleRoomCloseEvent()
         {
-            HandleErrorEvent("roomIsClosed");
+            _logger.Log(Tag, "HandleRoomSpectateEvent()");
+            
+            HandleErrorEvent("Duel room is closed");
         }
 
         #endregion
 
         #endregion
 
-        #region Clean Up
+        #region Clean-up
 
         public void Dispose()
         {
-            _updateRoomName?.Dispose();
-            _unpdateDuelRoomState?.Dispose();
-            _updateErrorTextField?.Dispose();
-            _updateDropdownDataMenu?.Dispose();
+            _logger.Log(Tag, "Dispose()");
+            
+            _roomName?.Dispose();
+            _roomState?.Dispose();
+            _errorText?.Dispose();
+            _duelistIds?.Dispose();
 
             _smartDuelEventSubscription?.Dispose();
             _smartDuelEventSubscription = null;
 
-            // Only Dispose of server if returning to Connection Screen
+            // Don't dispose server if the duel screen is shown.
             if (!_startedDuelSuccessfully)
             {
                 _smartDuelServer?.Dispose();

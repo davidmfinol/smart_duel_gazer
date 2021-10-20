@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
@@ -6,18 +8,16 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
+using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.DuelRoom;
 using Code.Features.DuelRoom.Models;
+using Editor.Tests.EditModeTests.Utils;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using UniRx;
-using Tests.Utils;
-using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
-using NUnit.Framework.Internal;
 
-namespace Tests.Features.DuelRoom
+namespace Editor.Tests.EditModeTests.Features.DuelRoom
 {
     public class DuelRoomViewModelTests
     {
@@ -31,10 +31,11 @@ namespace Tests.Features.DuelRoom
         private Mock<IScreenService> _screenService;
         private Mock<IAppLogger> _logger;
 
-        private Randomizer _randomizer = new Randomizer();
-        
-        private const string _validRoomName = "a1B2c";
-        private const string _validDuelistId = "duelistID";
+        private Subject<SmartDuelEvent> _globalEvents;
+        private Subject<SmartDuelEvent> _roomEvents;
+
+        private const string ValidRoomName = "a1B2c";
+        private const string ValidDuelistId = "duelistID";
 
         [SetUp]
         public void SetUp()
@@ -47,6 +48,12 @@ namespace Tests.Features.DuelRoom
             _screenService = new Mock<IScreenService>();
             _logger = new Mock<IAppLogger>();
 
+            _globalEvents = new Subject<SmartDuelEvent>();
+            _roomEvents = new Subject<SmartDuelEvent>();
+
+            _smartDuelServer.SetupGet(sds => sds.GlobalEvents).Returns(_globalEvents);
+            _smartDuelServer.SetupGet(sds => sds.RoomEvents).Returns(_roomEvents);
+
             _viewModel = new DuelRoomViewModel(
                 _dataManager.Object,
                 _navigationService.Object,
@@ -57,354 +64,351 @@ namespace Tests.Features.DuelRoom
                 _logger.Object);
         }
 
-        // TODO: Null Reference Exception thrown when running these tests
-        //#region Initialization
+        [TearDown]
+        public void TearDown()
+        {
+            _globalEvents.Dispose();
+            _roomEvents.Dispose();
+        }
 
-        //[Test]
-        //public void When_ViewModelInitialized_Then_PortraitModeUsed()
-        //{
-        //    _viewModel.Init();
-
-        //    _screenService.Verify(ss => ss.UsePortraitOrientation(), Times.Once);
-        //}
-
-        //[Test]
-        //public void When_ViewModelInitialized_Then_SmartDuelServerInitialized()
-        //{
-        //    _viewModel.Init();
-
-        //    _smartDuelServer.Verify(sds => sds.Init(), Times.Once);
-        //}
-
-        //#endregion
-
-        #region Button Logic Tests
+        #region Initialization
 
         [Test]
-        //TODO: Ensure proper room name is passed
-        public void Given_AValidRoomName_When_EnterRoomButtonPressed_Then_SendDuelistsInRoomEventCalled()
+        public void When_ViewModelInitialized_Then_LoadingStateEmitted()
         {
-            _viewModel.UpdateRoomName(_validRoomName);
-            
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
+            _viewModel.Init();
+
+            Assert.AreEqual(new List<DuelRoomState> { DuelRoomState.Loading }, onNext);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_PortraitModeUsed()
+        {
+            _viewModel.Init();
+
+            _screenService.Verify(ss => ss.UsePortraitOrientation(), Times.Once);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_StartListeningToSmartDuelEvents()
+        {
+            _viewModel.Init();
+
+            _smartDuelServer.VerifyGet(sds => sds.GlobalEvents, Times.Once);
+            _smartDuelServer.VerifyGet(sds => sds.RoomEvents, Times.Once);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_SmartDuelServerInitialized()
+        {
+            _viewModel.Init();
+
+            _smartDuelServer.Verify(sds => sds.Init(), Times.Once);
+        }
+
+        #endregion
+
+        #region Button Events
+
+        [Test]
+        public void Given_ValidRoomName_When_EnterRoomButtonPressed_Then_GetDuelistsInRoomEventSent()
+        {
+            var expected = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomGetDuelistsAction,
+                new RoomEventData
+                {
+                    RoomName = ValidRoomName
+                });
+            _viewModel.UpdateRoomName(ValidRoomName);
+
             _viewModel.OnEnterRoomPressed();
 
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.Is<SmartDuelEvent>(
-                sde => sde.Action == SmartDuelEventConstants.RoomGetDuelistsAction)), Times.Once);
+            _smartDuelServer.Verify(sds => sds.EmitEvent(expected), Times.Once);
         }
 
         [TestCase("")]
         [TestCase("     ")]
         [TestCase(null)]
-        [Parallelizable()]
-        public void Given_InvalidRoomName_When_EnterRoomButtonPressed_Then_ToastErrorShown(string invalidName)
+        [Parallelizable]
+        public void Given_InvalidRoomName_When_EnterRoomButtonPressed_Then_ErrorMessageShown(string invalidName)
         {
             _viewModel.UpdateRoomName(invalidName);
-            
+
             _viewModel.OnEnterRoomPressed();
 
             _dialogService.Verify(ds => ds.ShowToast("Room name is required"), Times.Once);
         }
 
-        [TestCase("")]
-        [TestCase("     ")]
-        [TestCase(null)]
-        [Parallelizable()]
-        public void Given_InvalidRoomName_When_EnterRoomButtonPressed_Then_RoomNotEntered(string invalidName)
-        {
-            _viewModel.UpdateRoomName(invalidName);
-
-            _viewModel.OnEnterRoomPressed();
-
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.IsAny<SmartDuelEvent>()), Times.Never);
-        }
-
         [Test]
-        public void Given_ValidDuelists_When_SpectateButtonPressed_Then_SpectateRoomEventSent()
+        public void Given_ValidDuelistId_When_SpectateButtonPressed_Then_SpectateRoomEventSent()
         {
-            _viewModel.OnSpectateButtonPressed(_validDuelistId);
+            _viewModel.UpdateRoomName(ValidRoomName);
+            
+            var expected = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomSpectateAction,
+                new RoomEventData
+                {
+                    RoomName = ValidRoomName
+                });
 
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.Is<SmartDuelEvent>(
-                e => e.Action == SmartDuelEventConstants.RoomSpectateAction)), Times.Once);
+            _viewModel.OnSpectateButtonPressed(ValidDuelistId);
+
+            _smartDuelServer.Verify(sds => sds.EmitEvent(expected), Times.Once);
         }
 
         [TestCase("")]
         [TestCase("     ")]
         [TestCase(null)]
-        [Parallelizable()]
-        public void Given_InvalidDuelists_When_SpectateButtonPressed_Then_ToastMessageShown(string invalidDuelistId)
+        [Parallelizable]
+        public void Given_InvalidDuelistId_When_SpectateButtonPressed_Then_ErrorMessageShown(string invalidDuelistId)
         {
             _viewModel.OnSpectateButtonPressed(invalidDuelistId);
 
             _dialogService.Verify(ds => ds.ShowToast("Duelist name is required"), Times.Once);
         }
 
-        [TestCase("")]
-        [TestCase("     ")]
-        [TestCase(null)]
-        [Parallelizable()]
-        public void Given_InvalidDuelists_When_SpectateButtonPressed_Then_SpectateEventNotSent(string invalidDuelistId)
-        {
-            _viewModel.OnSpectateButtonPressed(invalidDuelistId);
-
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.IsAny<SmartDuelEvent>()), Times.Never);
-        }
-
         [Test]
-        public void When_GoBackButtonPressed_Then_DuelRoomStateIsEnterRoomName()
+        public void When_GoBackButtonPressed_Then_EnterRoomNameStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.EnterRoomName };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnGoBackButtonPressed();
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void When_GoBackButtonPressed_Then_RoomNameSetToNull()
+        public void When_GoBackButtonPressed_Then_RoomNameCleared()
         {
-            var model = "";
-            _viewModel.UpdateRoomNameField.Subscribe(e => model = e);
-            
+            var onNext = new List<string>();
+            _viewModel.RoomName.Subscribe(value => onNext.Add(value));
+
             _viewModel.OnGoBackButtonPressed();
 
-            Assert.IsNull(model);
+            Assert.AreEqual(new List<string> { null, null }, onNext);
         }
 
         [Test]
-        public void When_GoBackButtonPressed_Then_ClearDropDownMenusEventFired()
+        public void When_GoBackButtonPressed_Then_DuelistIdsCleared()
         {
-            bool model = false;
-            _viewModel.ClearDropDownMenu.Subscribe(e => model = e);
+            var onNext = new List<List<string>>();
+            _viewModel.DuelistIds.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnGoBackButtonPressed();
 
-            Assert.IsTrue(model);
+            Assert.AreEqual(new List<List<string>> { null, null }, onNext);
         }
 
         [Test]
-        public void When_GoBackButtonPressed_Then_UpdateDropDownMenusEventIsNotFired()
+        public void When_TryAgainPressed_Then_LoadingStateEmitted()
         {
-            bool model = true;
-            _viewModel.UpdateDropDownMenu.Subscribe(_ => model = false);
+            var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Loading };
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
 
-            _viewModel.OnGoBackButtonPressed();
+            TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
 
-            Assert.IsTrue(model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void When_TryAgainPressed_Then_ServerResarts()
+        public void When_TryAgainPressed_Then_SmartDuelServerRestarted()
         {
             TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
 
+            _smartDuelServer.Verify(sds => sds.Dispose(), Times.Once);
             _smartDuelServer.Verify(sds => sds.Init(), Times.Once);
         }
 
         [Test]
-        public void When_TryAgainPressed_Then_LoadingStateReturned()
+        public void When_TryAgainButtonPressed_Then_DuelistIdsCleared()
         {
-            var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Loading };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<List<string>>();
+            _viewModel.DuelistIds.Subscribe(value => onNext.Add(value));
 
             TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(new List<List<string>> { null, null }, onNext);
         }
 
         [Test]
-        public void When_TryAgainButtonPressed_Then_ClearDropDownMenusEventFired()
+        public void When_TryAgainButtonPressed_Then_RoomNameCleared()
         {
-            bool model = false;
-            _viewModel.ClearDropDownMenu.Subscribe(e => model = e);
+            var onNext = new List<string>();
+            _viewModel.RoomName.Subscribe(value => onNext.Add(value));
 
             TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
 
-            Assert.IsTrue(model);
+            Assert.AreEqual(new List<string> { null, null }, onNext);
         }
 
         [Test]
-        public void When_TryAgainButtonPressed_Then_UpdateDropDownMenusEventIsNotFired()
-        {
-            bool model = true;
-            _viewModel.UpdateDropDownMenu.Subscribe(_ => model = false);
-
-            TestUtils.RunAsyncMethodSync(() => _viewModel.OnTryAgainButtonPressed());
-
-            Assert.IsTrue(model);
-        }
-
-        [Test]
-        public void When_LeaveRoomButtonPressed_Then_LeaveRoomEventFired()
-        {
-            _viewModel.OnLeaveRoomButtonPressed();
-
-            _smartDuelServer.Verify(sds => sds.EmitEvent(It.Is<SmartDuelEvent>(
-                sde => sde.Action == SmartDuelEventConstants.RoomLeaveAction)), Times.Once);
-        }
-
-        [Test]
-        public void When_LeaveRoomButtonPressed_Then_EnterRoomStateReturned()
+        public void When_LeaveRoomButtonPressed_Then_EnterRoomStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.EnterRoomName };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnLeaveRoomButtonPressed();
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void When_LeaveRoomButtonPressed_Then_ClearDropDownMenusEventFired()
+        public void When_LeaveRoomButtonPressed_Then_LeaveRoomEventSent()
         {
-            bool model = false;
-            _viewModel.ClearDropDownMenu.Subscribe(e => model = e);
+            var expected = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomLeaveAction);
 
             _viewModel.OnLeaveRoomButtonPressed();
 
-            Assert.IsTrue(model);
+            _smartDuelServer.Verify(sds => sds.EmitEvent(expected), Times.Once);
         }
 
         [Test]
-        public void When_LeaveRoomButtonPressed_Then_UpdateDropDownMenusEventIsNotFired()
+        public void When_LeaveRoomButtonPressed_Then_DuelistIdsCleared()
         {
-            bool model = true;
-            _viewModel.UpdateDropDownMenu.Subscribe(_ => model = false);
+            var onNext = new List<List<string>>();
+            _viewModel.DuelistIds.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnLeaveRoomButtonPressed();
 
-            Assert.IsTrue(model);
+            Assert.AreEqual(new List<List<string>> { null, null }, onNext);
+        }
+
+        [Test]
+        public void When_LeaveRoomButtonPressed_Then_RoomNameCleared()
+        {
+            var onNext = new List<string>();
+            _viewModel.RoomName.Subscribe(value => onNext.Add(value));
+
+            _viewModel.OnLeaveRoomButtonPressed();
+
+            Assert.AreEqual(new List<string> { null, null }, onNext);
         }
 
         #endregion
 
-        #region Form Fields Tests
+        #region Form Fields
 
         [Test]
-        public void When_UpdateRoomName_Then_UpdateRoomNameFieldEventFired()
+        public void When_UpdateRoomName_Then_RoomNameEmitted()
         {
-            var randomString = _randomizer.GetString(5);
-            var model = "";
-            _viewModel.UpdateRoomNameField.Subscribe(e => model = e);
+            var onNext = new List<string>();
+            _viewModel.RoomName.Subscribe(value => onNext.Add(value));
 
-            _viewModel.UpdateRoomName(randomString);
+            _viewModel.UpdateRoomName(ValidRoomName);
 
-            Assert.AreEqual(randomString, model);
+            Assert.AreEqual(new List<string> { null, ValidRoomName }, onNext);
         }
 
         #endregion
 
-        #region Global Event Logic Tests
+        #region Receive Global Event
 
         [Test]
-        public void When_GlobalConnectEvent_Then_EnterRoomNameStatReturned()
+        public void When_GlobalConnectEventReceived_Then_EnterRoomNameStatEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.EnterRoomName };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var globalConnectEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.GlobalScope,
-                SmartDuelEventConstants.GlobalConnectAction,
-                null);
+                SmartDuelEventConstants.GlobalConnectAction);
 
             _viewModel.OnSmartDuelEventReceived(globalConnectEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [TestCase(SmartDuelEventConstants.GlobalConnectErrorAction)]
         [TestCase(SmartDuelEventConstants.GlobalConnectTimeoutAction)]
         [TestCase(SmartDuelEventConstants.GlobalErrorAction)]
-        [Parallelizable()]
-        public void When_GlobalErrorEvent_Then_ErrorStateREturned(string error)
+        [Parallelizable]
+        public void When_GlobalErrorEventReceived_Then_ErrorStateEmitted(string error)
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Error };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var globalErrorEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.GlobalScope,
-                error,
-                null);
+                error);
 
             _viewModel.OnSmartDuelEventReceived(globalErrorEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [TestCase(SmartDuelEventConstants.GlobalConnectErrorAction)]
         [TestCase(SmartDuelEventConstants.GlobalConnectTimeoutAction)]
         [TestCase(SmartDuelEventConstants.GlobalErrorAction)]
-        [Parallelizable()]
-        public void When_GlobalErrorEvent_Then_ErrorMessageAppears(string expectedError)
+        [Parallelizable]
+        public void When_GlobalErrorEventReceived_Then_ErrorMessageEmitted(string expectedError)
         {
-            string model = "";
-            _viewModel.UpdateErrorTextField.Subscribe(e => model = e);
+            var onNext = new List<string>();
+            _viewModel.ErrorText.Subscribe(value => onNext.Add(value));
+
             var globalErrorEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.GlobalScope,
-                expectedError,
-                null);
+                expectedError);
 
             _viewModel.OnSmartDuelEventReceived(globalErrorEvent);
 
-            Assert.AreEqual(expectedError, model);
+            Assert.AreEqual(new List<string> { null, expectedError }, onNext);
         }
 
         #endregion
 
-        #region Room Event Logic Tests
+        #region Receive Room Event
 
-        [TestCase(SmartDuelEventConstants.RoomGetDuelistsAction)]
-        [TestCase(SmartDuelEventConstants.RoomLeaveAction)]
-        [TestCase(SmartDuelEventConstants.RoomSpectateAction)]
-        [TestCase(SmartDuelEventConstants.RoomStartAction)]
-        [TestCase(SmartDuelEventConstants.RoomCloseAction)]
-        [Parallelizable()]
-        public void Given_InvalidRoomEvent_When_Handled_ErrorStateReturned(string eventName)
+        [Test]
+        public void Given_NoRoomEventData_When_RoomEventReceived_ErrorStateReturned()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Error };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
-            CardEventData invalidEventArgs = null;
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var invalidRoomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
-                eventName,
-                invalidEventArgs);
+                SmartDuelEventConstants.RoomCloseAction);
 
             _viewModel.OnSmartDuelEventReceived(invalidRoomEvent);
 
-            Assert.AreEqual(expected, model);
-        }
-
-        [TestCase(SmartDuelEventConstants.RoomGetDuelistsAction)]
-        [TestCase(SmartDuelEventConstants.RoomLeaveAction)]
-        [TestCase(SmartDuelEventConstants.RoomSpectateAction)]
-        [TestCase(SmartDuelEventConstants.RoomStartAction)]
-        [TestCase(SmartDuelEventConstants.RoomCloseAction)]
-        [Parallelizable()]
-        public void Given_InvalidRoomEvent_When_Handled_ErrorTextReturned(string eventName)
-        {
-            var model = "";
-            _viewModel.UpdateErrorTextField.Subscribe(e => model = e);
-            CardEventData invalidEventArgs = null;
-            var invalidRoomEvent = new SmartDuelEvent(
-                SmartDuelEventConstants.RoomScope,
-                eventName,
-                invalidEventArgs);
-
-            _viewModel.OnSmartDuelEventReceived(invalidRoomEvent);
-
-            Assert.AreEqual("Room Data is Invalid!", model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_RoomDataWithError_When_HandleGetDuelistsEventCalled_Then_ErrorStateReturned()
+        public void Given_NoRoomEventData_When_RoomEventReceived_ErrorMessageEmitted()
+        {
+            var onNext = new List<string>();
+            _viewModel.ErrorText.Subscribe(value => onNext.Add(value));
+
+            var invalidRoomEvent = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomCloseAction);
+
+            _viewModel.OnSmartDuelEventReceived(invalidRoomEvent);
+
+            Assert.AreEqual(new List<string> { null, "Room Data is Invalid!" }, onNext);
+        }
+
+        [Test]
+        public void Given_RoomGetDuelistsAction_And_ErrorIsNotNull_When_RoomEventReceived_Then_ErrorStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Error };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomGetDuelistsAction,
@@ -412,30 +416,33 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_RoomDataWithError_When_HandleGetDuelistEventCalled_ErrorTextReturned()
+        public void Given_RoomGetDuelistsAction_And_ErrorIsNotNull_When_RoomEventReceived_Then_ErrorTextReturned()
         {
-            var model = "";
-            _viewModel.UpdateErrorTextField.Subscribe(e => model = e);
-            var invalidRoomEventData = new SmartDuelEvent(
+            const string errorMessage = "Error";
+            var onNext = new List<string>();
+            _viewModel.ErrorText.Subscribe(value => onNext.Add(value));
+
+            var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomGetDuelistsAction,
-                new RoomEventData { Error = "Error" });
+                new RoomEventData { Error = errorMessage });
 
-            _viewModel.OnSmartDuelEventReceived(invalidRoomEventData);
+            _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual("Error", model);
+            Assert.AreEqual(new List<string> { null, errorMessage }, onNext);
         }
 
         [Test]
-        public void Given_ValidDuelistID_When_HandleGetDuelistsEventCalled_Then_ReturnSelectDuelistState()
+        public void Given_RoomGetDuelistsAction_And_ErrorIsNotNull_When_RoomEventReceived_Then_SelectDuelistStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.SelectDuelist };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var data = new RoomEventData { DuelistsIds = new List<string> { "validID", "validID2" } };
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
@@ -444,16 +451,17 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_ValidDuelistID_When_HandleGetDuelistsEventCalled_Then_UpdateDropDownEventFired()
+        public void Given_RoomGetDuelistsAction_And_ErrorIsNotNull_When_RoomEventReceived_Then_DuelistIdsEmitted()
         {
-            var expected = new List<string> { "validID", "validID2" };
-            var model = new List<string>();
-            _viewModel.UpdateDropDownMenu.Subscribe(e => model = e);
-            var data = new RoomEventData { DuelistsIds = expected };
+            var duelistIds = new List<string> { "validID", "validID2" };
+            var onNext = new List<List<string>>();
+            _viewModel.DuelistIds.Subscribe(value => onNext.Add(value));
+
+            var data = new RoomEventData { DuelistsIds = duelistIds };
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomGetDuelistsAction,
@@ -461,15 +469,16 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(new List<List<string>> { null, duelistIds }, onNext);
         }
 
         [Test]
-        public void When_RoomSpectateEventRecieved_Then_WaitingDuelRoomStateIsReturned()
+        public void Given_RoomSpectateAction_When_RoomEventReceived_Then_WaitingStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Waiting };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomSpectateAction,
@@ -477,11 +486,11 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void When_RoomStartEvent_Then_RoomSaved()
+        public void Given_RoomStartAction_When_RoomEventReceived_Then_DuelRoomSaved()
         {
             var room = new RoomEventData { DuelRoom = new Code.Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom() };
             var roomEvent = new SmartDuelEvent(
@@ -495,7 +504,7 @@ namespace Tests.Features.DuelRoom
         }
 
         [Test]
-        public void When_RoomStartEvent_Then_SpeedDuelSceneShown()
+        public void Given_RoomStartAction_When_RoomEventReceived_Then_SpeedDuelSceneShown()
         {
             var room = new RoomEventData { DuelRoom = new Code.Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom() };
             var roomEvent = new SmartDuelEvent(
@@ -509,11 +518,12 @@ namespace Tests.Features.DuelRoom
         }
 
         [Test]
-        public void When_RoomStartEvent_Then_LoadingStateReturned()
+        public void Given_RoomStartAction_When_RoomEventReceived_Then_LoadingStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Loading };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var room = new RoomEventData { DuelRoom = new Code.Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom() };
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
@@ -522,15 +532,16 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_NullRoom_When_RoomStartEvent_Then_ErrorStateReturned()
+        public void Given_RoomStartAction_And_NoDuelRoom_When_RoomEventReceived_Then_ErrorStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Error };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomStartAction,
@@ -538,14 +549,15 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_NullRoom_When_RoomStartEvent_Then_ErrorTextReturned()
+        public void Given_RoomStartAction_And_NoDuelRoom_When_RoomEventReceived_Then_ErrorTextReturned()
         {
-            var model = "";
-            _viewModel.UpdateErrorTextField.Subscribe(e => model = e);
+            var onNext = new List<string>();
+            _viewModel.ErrorText.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomStartAction,
@@ -553,28 +565,16 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual("invalid duel room data", model);
+            Assert.AreEqual(new List<string> { null, "No duel room data found" }, onNext);
         }
 
         [Test]
-        public void Given_NullRoom_When_RoomStartEvent_Then_SceneDoesntChange()
-        {
-            var roomEvent = new SmartDuelEvent(
-                SmartDuelEventConstants.RoomScope,
-                SmartDuelEventConstants.RoomStartAction,
-                new RoomEventData());
-
-            _viewModel.OnSmartDuelEventReceived(roomEvent);
-
-            _navigationService.Verify(ns => ns.ShowSpeedDuelScene(), Times.Never);
-        }
-
-        [Test]
-        public void When_RoomClosedEventRecieved_Then_ErrorDuelRoomStateReturned()
+        public void Given_RoomCloseAction_When_RoomEventReceived_Then_ErrorStateEmitted()
         {
             var expected = new List<DuelRoomState> { DuelRoomState.Loading, DuelRoomState.Error };
-            var model = new List<DuelRoomState>();
-            _viewModel.UpdateDuelRoomState.Subscribe(e => model.Add(e));
+            var onNext = new List<DuelRoomState>();
+            _viewModel.RoomState.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomCloseAction,
@@ -582,15 +582,15 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void When_RoomClosedEventRecieved_Then_ErrorTextReturned()
+        public void Given_RoomCloseAction_When_RoomEventReceived_Then_ErrorTextEmitted()
         {
-            var expected = "roomIsClosed";
-            var model = "";
-            _viewModel.UpdateErrorTextField.Subscribe(e => model = e);
+            var onNext = new List<string>();
+            _viewModel.ErrorText.Subscribe(value => onNext.Add(value));
+
             var roomEvent = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomCloseAction,
@@ -598,15 +598,15 @@ namespace Tests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(expected, model);
+            Assert.AreEqual(new List<string> { null, "Duel room is closed" }, onNext);
         }
 
         #endregion
 
-        #region Clean Up
-        
+        #region Clean-up
+
         [Test]
-        public void Given_DuelStartedSuccessfully_When_DisposeCalled_ServerIsNotDisposed()
+        public void Given_DuelStarted_When_DisposeCalled_ServerNotDisposed()
         {
             var room = new RoomEventData { DuelRoom = new Code.Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom() };
             var roomEvent = new SmartDuelEvent(
@@ -621,7 +621,7 @@ namespace Tests.Features.DuelRoom
         }
 
         [Test]
-        public void Given_DuelNotStarted_When_DisposeCalled_ServerIsNotDisposed()
+        public void Given_DuelNotStarted_When_DisposeCalled_ServerDisposed()
         {
             _viewModel.Dispose();
 

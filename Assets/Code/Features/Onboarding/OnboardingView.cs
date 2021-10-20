@@ -11,19 +11,23 @@ namespace Code.Features.Onboarding
 
         private OnboardingViewModel _onboardingViewModel;
 
+        #region Lifecycle
+        
         [Inject]
         public void Construct(
             OnboardingViewModel onboardingViewModel)
         {
             _onboardingViewModel = onboardingViewModel;
 
-            Init();
+            OnViewModelSet();
         }
 
-        private async void Init()
+        #endregion
+
+        private async void OnViewModelSet()
         {
             await _onboardingViewModel.Init();
-            
+
             BindButtons();
         }
 

@@ -4,7 +4,7 @@ using Code.Wrappers.WrapperPlayerPrefs;
 using Moq;
 using NUnit.Framework;
 
-namespace Tests.Core.Storage.Connections
+namespace Editor.Tests.EditModeTests.Core.Storage.Connections
 {
     public class ConnectionStorageProviderTests
     {
