@@ -4,14 +4,14 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Features.Onboarding;
 using Code.Wrappers.WrapperFirebase;
+using Editor.Tests.EditModeTests.Utils;
 using Moq;
 using NUnit.Framework;
 using UniRx;
-using Tests.Utils;
 using Code.Wrappers.WrapperNetworkConnection;
 using Code.Features.Onboarding.Models;
 
-namespace Tests.Features.Onboarding
+namespace Editor.Tests.EditModeTests.Features.Onboarding
 {
     public class OnboardingViewModelTests
     {

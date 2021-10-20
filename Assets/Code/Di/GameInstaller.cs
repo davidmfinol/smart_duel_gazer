@@ -21,6 +21,7 @@ using Code.Core.Storage.Textures;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
+using Code.Features.DuelRoom;
 using Code.Features.Onboarding;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
@@ -98,6 +99,7 @@ namespace Code.Di
             // ViewModels
             Container.Bind<OnboardingViewModel>().AsTransient();
             Container.Bind<ConnectionViewModel>().AsTransient();
+            Container.Bind<DuelRoomViewModel>().AsTransient();
 
             // Event Handlers
             Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();

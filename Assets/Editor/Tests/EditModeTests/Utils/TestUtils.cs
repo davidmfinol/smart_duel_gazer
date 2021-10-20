@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Tests.Utils
+namespace Editor.Tests.EditModeTests.Utils
 {
     public static class TestUtils
     {
