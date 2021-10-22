@@ -6,7 +6,7 @@ using Code.Core.Storage.Connections.Models;
 using Moq;
 using NUnit.Framework;
 
-namespace Tests.Core.DataManager.Connections
+namespace Editor.Tests.EditModeTests.Core.DataManager.Connections
 {
     public class ConnectionDataManagerTests
     {
