@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Code.Core.Config.Providers;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
@@ -23,11 +22,10 @@ namespace Code.Features.Onboarding
 
         #region Properties
 
-        private readonly BehaviorSubject<bool> _appInitialized = new BehaviorSubject<bool>(false);
-        public IObservable<bool> AppInitialized => _appInitialized;
+        private readonly BehaviorSubject<OnboardingState> _onboardingState =
+            new BehaviorSubject<OnboardingState>(OnboardingState.Connecting);
 
-        private readonly BehaviorSubject<OnboardingState> _updateOnboardingState = new BehaviorSubject<OnboardingState>(default);
-        public IObservable<OnboardingState> UpdateOnboardingState => _updateOnboardingState;
+        public IObservable<OnboardingState> State => _onboardingState;
 
         #endregion
 
@@ -57,45 +55,44 @@ namespace Code.Features.Onboarding
             CheckNetworkConnection();
 
             await _firebaseInitializer.Init();
-            _appInitialized.OnNext(true);
         }
 
         private void CheckNetworkConnection()
         {
             _logger.Log(Tag, "CheckNetworkConnection()");
-            
+
             var isConnected = _networkConnectionProvider.IsConnected();
-
-            if (!isConnected)
-            {
-                _updateOnboardingState.OnNext(OnboardingState.NoConnection);
-                return;
-            }
-
-            _updateOnboardingState.OnNext(OnboardingState.Connected);
+            var state = isConnected ? OnboardingState.Connected : OnboardingState.NoConnection;
+            _onboardingState.OnNext(state);
         }
 
         public void OnInitiateLinkPressed()
         {
             _logger.Log(Tag, "OnInitiateLinkPressed()");
-            
+
+            if (!_networkConnectionProvider.IsConnected())
+            {
+                _onboardingState.OnNext(OnboardingState.NoConnection);
+                return;
+            }
+
             _navigationService.ShowConnectionScene();
         }
 
         public void OnRetryButtonPressed()
         {
             _logger.Log(Tag, "OnRetryButtonPressed()");
-            
-            _updateOnboardingState.OnNext(OnboardingState.Connecting);
+
+            _onboardingState.OnNext(OnboardingState.Connecting);
+
             CheckNetworkConnection();
         }
 
         public void Dispose()
         {
             _logger.Log(Tag, "Dispose()");
-            
-            _updateOnboardingState.Dispose();
-            _appInitialized.Dispose();
+
+            _onboardingState.Dispose();
         }
     }
 }
