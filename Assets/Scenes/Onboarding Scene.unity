@@ -159,7 +159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -263}
+  m_AnchoredPosition: {x: 0, y: -368}
   m_SizeDelta: {x: 440, y: 66.878}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &55784419
@@ -244,6 +244,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 55784417}
   m_CullTransparentMesh: 1
+--- !u!1 &60655057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 60655058}
+  m_Layer: 5
+  m_Name: ConnectedState
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &60655058
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60655057}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1028013718}
+  m_Father: {fileID: 689254735}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &73559925
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,7 +290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 73559926}
   m_Layer: 5
-  m_Name: Connecting State
+  m_Name: ConnectingState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292,7 +328,7 @@ GameObject:
   - component: {fileID: 250330554}
   - component: {fileID: 250330553}
   m_Layer: 5
-  m_Name: No Connection Text
+  m_Name: NoConnectionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +462,7 @@ GameObject:
   - component: {fileID: 644264680}
   - component: {fileID: 644264679}
   m_Layer: 5
-  m_Name: Connecting Text
+  m_Name: ConnectingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -693,7 +729,7 @@ GameObject:
   - component: {fileID: 689254735}
   - component: {fileID: 689254736}
   m_Layer: 5
-  m_Name: Content
+  m_Name: OnboardingView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -712,8 +748,8 @@ RectTransform:
   m_Children:
   - {fileID: 1231612767}
   - {fileID: 651390654}
-  - {fileID: 1028013718}
   - {fileID: 1363770797}
+  - {fileID: 60655058}
   - {fileID: 73559926}
   - {fileID: 1940682126}
   m_Father: {fileID: 1412632689}
@@ -736,10 +772,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcb480c07623400686f7b8b2204223e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initiateLinkButton: {fileID: 1028013719}
-  retryButton: {fileID: 55784419}
   connectingState: {fileID: 73559925}
+  connectedState: {fileID: 60655057}
+  initiateLinkButton: {fileID: 1028013719}
   noConnectionState: {fileID: 1940682125}
+  retryButton: {fileID: 55784419}
 --- !u!1 &733392664
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,11 +998,11 @@ RectTransform:
   m_GameObject: {fileID: 1028013717}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.2499999}
   m_Children:
   - {fileID: 1268759144}
-  m_Father: {fileID: 689254735}
-  m_RootOrder: 2
+  m_Father: {fileID: 60655058}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1427,7 +1464,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 689254735}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1829,7 +1866,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1940682126}
   m_Layer: 5
-  m_Name: No Connection State
+  m_Name: NoConnectionState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

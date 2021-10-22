@@ -8,17 +8,20 @@ namespace Code.Features.Onboarding
 {
     public class OnboardingView : MonoBehaviour
     {
-        [SerializeField] private Button initiateLinkButton;
-        [SerializeField] private Button retryButton;
         [SerializeField] private GameObject connectingState;
+        
+        [SerializeField] private GameObject connectedState;
+        [SerializeField] private Button initiateLinkButton;
+        
         [SerializeField] private GameObject noConnectionState;
+        [SerializeField] private Button retryButton;
 
         private OnboardingViewModel _onboardingViewModel;
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         #region Lifecycle
-        
+
         [Inject]
         public void Construct(
             OnboardingViewModel onboardingViewModel)
@@ -27,7 +30,7 @@ namespace Code.Features.Onboarding
 
             OnViewModelSet();
         }
-        
+
         private void OnDestroy()
         {
             _disposables?.Dispose();
@@ -35,7 +38,7 @@ namespace Code.Features.Onboarding
         }
 
         #endregion
-        
+
         private async void OnViewModelSet()
         {
             await _onboardingViewModel.Init();
@@ -45,22 +48,22 @@ namespace Code.Features.Onboarding
 
         private void BindButtons()
         {
-            //Buttons
+            // Buttons
             initiateLinkButton.OnClickAsObservable()
                 .Subscribe(_ => _onboardingViewModel.OnInitiateLinkPressed());
             retryButton.OnClickAsObservable()
                 .Subscribe(_ => _onboardingViewModel.OnRetryButtonPressed());
 
             // VM Streams
-            _disposables.Add(_onboardingViewModel.UpdateOnboardingState
+            _disposables.Add(_onboardingViewModel.State
                 .Subscribe(UpdateOnboardingState));
         }
 
         private void UpdateOnboardingState(OnboardingState onboardingState)
         {
             connectingState.SetActive(onboardingState == OnboardingState.Connecting);
+            connectedState.SetActive(onboardingState == OnboardingState.Connected);
             noConnectionState.SetActive(onboardingState == OnboardingState.NoConnection);
-            initiateLinkButton.interactable = onboardingState == OnboardingState.Connected;
         }
     }
 }

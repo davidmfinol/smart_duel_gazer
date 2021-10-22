@@ -41,21 +41,14 @@ namespace Editor.Tests.EditModeTests.Features.Onboarding
         }
 
         [Test]
-        public void When_ViewModelCreated_Then_UpdateOnboardingStateEmitsConnecting()
+        public void When_ViewModelCreated_Then_StateEmitsConnecting()
         {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting };
+            
             var onNext = new List<OnboardingState>();
-            _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
+            _viewModel.State.Subscribe(value => onNext.Add(value));
 
-            Assert.AreEqual(new List<OnboardingState> { OnboardingState.Connecting }, onNext);
-        }
-
-        [Test]
-        public void When_ViewModelCreated_Then_AppInitializedEmitsFalse()
-        {
-            var onNext = new List<bool>();
-            _viewModel.AppInitialized.Subscribe(value => onNext.Add(value));
-
-            Assert.AreEqual(new List<bool> { false }, onNext);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
@@ -75,55 +68,33 @@ namespace Editor.Tests.EditModeTests.Features.Onboarding
         }
 
         [Test]
-        public void Given_NoNetworkConnection_When_ViewModelInitialized_Then_NoNetworkConnectionStateReturned()
+        public void Given_NoNetworkConnection_When_ViewModelInitialized_Then_NoConnectionStateEmitted()
         {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.NoConnection };
+            
             var onNext = new List<OnboardingState>();
-            _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
+            _viewModel.State.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
 
             TestUtils.RunAsyncMethodSync(() => _viewModel.Init());
 
-            Assert.AreEqual(new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.NoConnection }, onNext);
+            Assert.AreEqual(expected, onNext);
         }
 
         [Test]
-        public void Given_NetworkConnection_When_ViewModelInitialized_Then_ConnectedStateReturned()
+        public void Given_NetworkConnection_When_ViewModelInitialized_Then_ConnectedStateEmitted()
         {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connected };
+            
             var onNext = new List<OnboardingState>();
-            _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
+            _viewModel.State.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
 
             TestUtils.RunAsyncMethodSync(() => _viewModel.Init());
 
-            Assert.AreEqual(new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connected }, onNext);
+            Assert.AreEqual(expected, onNext);
         }
         
-        [Test]
-        public void Given_NoNetworkConnection_When_RetryButtonPressed_Then_NoNetworkConnectionStateReturned()
-        {
-            var model = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connecting, OnboardingState.NoConnection };
-            var onNext = new List<OnboardingState>();
-            _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
-            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
-
-            _viewModel.OnRetryButtonPressed();
-
-            Assert.AreEqual(model, onNext);
-        }
-
-        [Test]
-        public void Given_NetworkConnection_When_RetryButtonPressed_Then_ConnectedStateReturned()
-        {
-            var model = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connecting, OnboardingState.Connected };
-            var onNext = new List<OnboardingState>();
-            _viewModel.UpdateOnboardingState.Subscribe(value => onNext.Add(value));
-            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
-
-            _viewModel.OnRetryButtonPressed();
-
-            Assert.AreEqual(model, onNext);
-        }
-
         [Test]
         public void When_ViewModelInitialized_Then_FirebaseInitialized()
         {
@@ -131,24 +102,57 @@ namespace Editor.Tests.EditModeTests.Features.Onboarding
 
             _firebaseInitializer.Verify(fi => fi.Init(), Times.Once);
         }
-
+        
         [Test]
-        public void When_ViewModelInitialized_Then_AppInitializedEmitsTrue()
+        public void Given_NoNetworkConnection_When_InitiateLinkPressed_Then_NoConnectionStateEmitted()
         {
-            var onNext = new List<bool>();
-            _viewModel.AppInitialized.Subscribe(value => onNext.Add(value));
-
-            TestUtils.RunAsyncMethodSync(() => _viewModel.Init());
-
-            Assert.AreEqual(new List<bool> { false, true }, onNext);
-        }
-
-        [Test]
-        public void When_InitiateLinkPressed_Then_ConnectionSceneShown()
-        {
+            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
+            
             _viewModel.OnInitiateLinkPressed();
 
             _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
+        }
+        
+        [Test]
+        public void Given_NetworkConnection_When_InitiateLinkPressed_Then_ConnectionSceneShown()
+        {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.NoConnection };
+            
+            var onNext = new List<OnboardingState>();
+            _viewModel.State.Subscribe(value => onNext.Add(value));
+            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
+            
+            _viewModel.OnInitiateLinkPressed();
+
+            Assert.AreEqual(expected, onNext);
+        }
+        
+        [Test]
+        public void Given_NoNetworkConnection_When_RetryButtonPressed_Then_NoConnectionStateEmitted()
+        {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connecting, OnboardingState.NoConnection };
+            
+            var onNext = new List<OnboardingState>();
+            _viewModel.State.Subscribe(value => onNext.Add(value));
+            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
+
+            _viewModel.OnRetryButtonPressed();
+
+            Assert.AreEqual(expected, onNext);
+        }
+
+        [Test]
+        public void Given_NetworkConnection_When_RetryButtonPressed_Then_ConnectedStateEmitted()
+        {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.Connecting, OnboardingState.Connected };
+            
+            var onNext = new List<OnboardingState>();
+            _viewModel.State.Subscribe(value => onNext.Add(value));
+            _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
+
+            _viewModel.OnRetryButtonPressed();
+
+            Assert.AreEqual(expected, onNext);
         }
     }
 }
