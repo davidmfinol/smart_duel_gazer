@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.General.Extensions;
+using Code.Core.Logger;
 using Code.Features.SpeedDuel.PrefabManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
 using UnityEngine;
@@ -13,38 +14,44 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public class PlacementEventHandler : MonoBehaviour
     {
-        [SerializeField] private GameObject _playfieldPrefab;
-        [SerializeField] private GameObject _placementIndicator;
+        private const string Tag = "PlacementEventHandler";
+        
+        [SerializeField] private GameObject playmatPrefab;
+        [SerializeField] private GameObject placementIndicator;
 
         private IDataManager _dataManager;
         private PlayfieldEventHandler _playfieldEventHandler;
         private PlayfieldComponentsManager.Factory _playfieldFactory;
+        private IAppLogger _logger;
 
         private Camera _mainCamera;
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private GameObject _prefabManager;
-        private GameObject _speedDuelField;
+
         private Pose _placementPose;
-        private bool _objectIsPlaced = false;
+        private TrackableId _placementTrackableId;
+        private bool _objectPlaced;
 
         #region Properties
 
-        public GameObject SpeedDuelField  => _speedDuelField;
+        public GameObject SpeedDuelField { get; private set; }
 
         #endregion
 
-        #region Constructors
+        #region Construct
 
         [Inject]
         public void Construct(
             IDataManager dataManager,
             PlayfieldEventHandler playfieldEventHandler,
-            PlayfieldComponentsManager.Factory playfieldFactory)
+            PlayfieldComponentsManager.Factory playfieldFactory,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _playfieldEventHandler = playfieldEventHandler;
             _playfieldFactory = playfieldFactory;
+            _logger = logger;
         }
 
         #endregion
@@ -59,7 +66,19 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void Update()
         {
+            #if UNITY_EDITOR
+
+            // Use SpaceBar to place playfield if in Editor
+            if (!_objectPlaced && Input.GetKeyDown(KeyCode.Space))
+            {
+                PlacePlaymat();
+                return;
+            }
+
+            #endif
+
             UpdatePlacementIndicatorIfNecessary();
+            PlacePlaymatIfNecessary();
         }
 
         private void OnDestroy()
@@ -77,125 +96,135 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _prefabManager = FindObjectOfType<SpeedDuelPrefabManager>().gameObject;
         }
 
+        #region Placement Indicator
+
         private void UpdatePlacementIndicatorIfNecessary()
         {
+            if (_objectPlaced) return;
+            
+            _logger.Log(Tag, "UpdatePlacementIndicatorIfNecessary()");
 
-            #region Editor
-
-            #if UNITY_EDITOR
-
-            // Use Spacebar to place playfield if in Editor
-            if (!_objectIsPlaced && Input.GetKeyDown(KeyCode.Space))
+            var validHit = GetValidRaycastHit();
+            if (!validHit.HasValue)
             {
-                PlaceObject();
-                _playfieldEventHandler.ActivatePlayfield();
+                placementIndicator.SetActive(false);
                 return;
             }
-
-            #endif
-
-            #endregion
-
-            if (_objectIsPlaced) return;
-
-            var isPlacementAvailable = CheckForAvailablePlanes(out var availablePlanes);
-
-            if (isPlacementAvailable && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                PlaceObject();
-                SetPlaymatScale(availablePlanes);
-                _playfieldEventHandler.ActivatePlayfield();
-            }
-        }
-
-        private bool CheckForAvailablePlanes(out List<ARRaycastHit> availablePlanes)
-        {
-            var hitsList = FindAvailablePlanes();
-
-            var placementPoseIsValid = hitsList.Count > 0;
-            if (!placementPoseIsValid)
-            {
-                _placementIndicator.SetActive(false);
-                availablePlanes = hitsList;
-                return placementPoseIsValid;
-            }
-
-            _placementPose = hitsList[hitsList.Count - 1].pose;
+            
             UpdatePlacementIndicator();
-
-            availablePlanes = hitsList;
-            return placementPoseIsValid;
         }
 
-        private List<ARRaycastHit> FindAvailablePlanes()
+        private ARRaycastHit? GetValidRaycastHit()
         {
-            var screenCenter = _mainCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
-            var hitsList = new List<ARRaycastHit>();
-            _arRaycastManager.Raycast(screenCenter, hitsList, TrackableType.Planes);
+            _logger.Log(Tag, "GetValidRaycastHit()");
+            
+            var hitResults = GetRaycastHitResults();
+            if (hitResults.Count <= 0)
+            {
+                return null;
+            }
 
-            return hitsList;
+            var validHit = hitResults[hitResults.Count - 1];
+            _placementPose = validHit.pose;
+            _placementTrackableId = validHit.trackableId;
+
+            return validHit;
+        }
+
+        private List<ARRaycastHit> GetRaycastHitResults()
+        {
+            _logger.Log(Tag, "GetRaycastHitResults()");
+            
+            var screenCenter = _mainCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
+            var hitResults = new List<ARRaycastHit>();
+            _arRaycastManager.Raycast(screenCenter, hitResults, TrackableType.Planes);
+
+            return hitResults;
         }
 
         private void UpdatePlacementIndicator()
         {
+            _logger.Log(Tag, "UpdatePlacementIndicator()");
+            
             var cameraForward = _mainCamera.transform.forward;
             var cameraBearing = new Vector3(cameraForward.x, 0, cameraForward.z).normalized;
             _placementPose.rotation = Quaternion.LookRotation(cameraBearing);
-
-            _placementIndicator.SetActive(true);
-            _placementIndicator.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);        
+            
+            placementIndicator.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+            placementIndicator.SetActive(true);
         }
 
-        private void PlaceObject()
+        #endregion
+
+        #region Playmat
+
+         private void PlacePlaymatIfNecessary()
         {
-            _objectIsPlaced = true;
-            _placementIndicator.SetActive(false);
+            if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput()) return;
+            
+            _logger.Log(Tag, "PlacePlaymatIfNecessary()");
+            
+            PlacePlaymat();
+            SetPlaymatScale();
+            StopPlaneTracking();
+        }
+
+        private static bool HasTouchInput()
+        {
+            return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
+        }
+
+        private void PlacePlaymat()
+        {
+            _logger.Log(Tag, "PlacePlaymat()");
+            
+            _objectPlaced = true;
+            placementIndicator.SetActive(false);
 
             var playMat = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
             if (playMat == null)
             {
-                CreatePlayfield();
-                return;
+                CreatePlaymat();
+            }
+            else
+            {
+                playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
             }
 
-            playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
             _playfieldEventHandler.ActivatePlayfield();
         }
 
-        private void CreatePlayfield()
+        private void CreatePlaymat()
         {
-            _speedDuelField = _playfieldFactory.Create(_playfieldPrefab).gameObject;
+            _logger.Log(Tag, "CreatePlaymat()");
+            
+            SpeedDuelField = _playfieldFactory.Create(playmatPrefab).gameObject;
 
-            //Move Playfield to Scene Root rather than Zenject Project Context
-            _speedDuelField.transform.SetParent(transform);
-            _speedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+            // Move Playfield to Scene Root rather than Zenject Project Context
+            SpeedDuelField.transform.SetParent(transform);
+            SpeedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
 
-            //Make Prefab Manager a child of Playfield for proper model scaling
-            _prefabManager.transform.SetParent(_speedDuelField.transform);
-            _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
-                _speedDuelField.transform.rotation);            
-
-            _playfieldEventHandler.ActivatePlayfield();
+            // Make Prefab Manager a child of Playfield for proper model scaling
+            _prefabManager.transform.SetParent(SpeedDuelField.transform);
+            _prefabManager.transform.SetPositionAndRotation(SpeedDuelField.transform.position,
+                SpeedDuelField.transform.rotation);
         }
 
-        private void SetPlaymatScale(List<ARRaycastHit> hits)
+        private void SetPlaymatScale()
         {
-            if (hits == null) return;
+            _logger.Log(Tag, "SetPlaymatScale()");
+            
+            var plane = _arPlaneManager.GetPlane(_placementTrackableId);
+            var planeSize = GetPlaneSize(plane);
+            if (planeSize <= 0) return;
 
-            var plane = _arPlaneManager.GetPlane(hits[hits.Count - 1].trackableId);
-            var scalePlane = GetCameraOrientation(plane);
-
-            if (scalePlane <= 0) return;
-
-            _speedDuelField.transform.localScale = new Vector3(scalePlane, scalePlane, scalePlane);
-
-            //disable AR Plane Manager to stop tracking new planes
-            _arPlaneManager.SetTrackablesActive(false);
-            _arPlaneManager.enabled = false;
+            SpeedDuelField.transform.localScale = new Vector3(planeSize, planeSize, planeSize);
         }
 
-        private float GetCameraOrientation(ARPlane plane)
+        private float GetPlaneSize(ARPlane plane)
         {
+            _logger.Log(Tag, $"GetPlaneSize(plane: {plane})");
+            
             var cameraOrientation = _mainCamera.transform.rotation.y;
 
             if (cameraOrientation.IsWithinRange(45, 135) ||
@@ -203,19 +232,29 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 cameraOrientation.IsWithinRange(-45, -135) ||
                 cameraOrientation.IsWithinRange(-225, -315))
             {
-                return plane.size.y; ;
+                return plane.size.y;
             }
 
             return plane.size.x;
         }
+        
+        private void StopPlaneTracking()
+        {
+            _logger.Log(Tag, "StopPlaneTracking()");
+            
+            _arPlaneManager.SetTrackablesActive(false);
+            _arPlaneManager.enabled = false;
+        }
+
+        #endregion
 
         private void RemovePlayfield()
         {
-            _objectIsPlaced = false;
-            _placementIndicator.SetActive(true);
+            _objectPlaced = false;
+            placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
 
-            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, _speedDuelField);
+            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, SpeedDuelField);
         }
     }
 }
