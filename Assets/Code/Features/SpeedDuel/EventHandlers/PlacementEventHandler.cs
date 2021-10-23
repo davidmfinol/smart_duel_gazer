@@ -16,7 +16,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
     {
         private const string Tag = "PlacementEventHandler";
         
-        [SerializeField] private GameObject playmatPrefab;
+        [SerializeField] private GameObject playfieldPrefab;
         [SerializeField] private GameObject placementIndicator;
 
         private IDataManager _dataManager;
@@ -71,14 +71,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
             // Use SpaceBar to place playfield if in Editor
             if (!_objectPlaced && Input.GetKeyDown(KeyCode.Space))
             {
-                PlacePlaymat();
+                PlacePlayfield();
                 return;
             }
 
             #endif
 
             UpdatePlacementIndicatorIfNecessary();
-            PlacePlaymatIfNecessary();
+            PlacePlayfieldIfNecessary();
         }
 
         private void OnDestroy()
@@ -156,16 +156,16 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         #endregion
 
-        #region Playmat
+        #region Playfield
 
-         private void PlacePlaymatIfNecessary()
+         private void PlacePlayfieldIfNecessary()
         {
             if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput()) return;
             
-            _logger.Log(Tag, "PlacePlaymatIfNecessary()");
+            _logger.Log(Tag, "PlacePlayfieldIfNecessary()");
             
-            PlacePlaymat();
-            SetPlaymatScale();
+            PlacePlayfield();
+            SetPlayfieldScale();
             StopPlaneTracking();
         }
 
@@ -174,31 +174,31 @@ namespace Code.Features.SpeedDuel.EventHandlers
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
         }
 
-        private void PlacePlaymat()
+        private void PlacePlayfield()
         {
-            _logger.Log(Tag, "PlacePlaymat()");
+            _logger.Log(Tag, "PlacePlayfield()");
             
             _objectPlaced = true;
             placementIndicator.SetActive(false);
 
-            var playMat = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
-            if (playMat == null)
+            var playfield = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
+            if (playfield == null)
             {
-                CreatePlaymat();
+                CreatePlayfield();
             }
             else
             {
-                playMat.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+                playfield.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
             }
 
             _playfieldEventHandler.ActivatePlayfield();
         }
 
-        private void CreatePlaymat()
+        private void CreatePlayfield()
         {
-            _logger.Log(Tag, "CreatePlaymat()");
+            _logger.Log(Tag, "CreatePlayfield()");
             
-            SpeedDuelField = _playfieldFactory.Create(playmatPrefab).gameObject;
+            SpeedDuelField = _playfieldFactory.Create(playfieldPrefab).gameObject;
 
             // Move Playfield to Scene Root rather than Zenject Project Context
             SpeedDuelField.transform.SetParent(transform);
@@ -210,9 +210,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 SpeedDuelField.transform.rotation);
         }
 
-        private void SetPlaymatScale()
+        private void SetPlayfieldScale()
         {
-            _logger.Log(Tag, "SetPlaymatScale()");
+            _logger.Log(Tag, "SetPlayfieldScale()");
             
             var plane = _arPlaneManager.GetPlane(_placementTrackableId);
             var planeSize = GetPlaneSize(plane);
