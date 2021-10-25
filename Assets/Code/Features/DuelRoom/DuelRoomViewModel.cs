@@ -133,6 +133,7 @@ namespace Code.Features.DuelRoom
             _logger.Log(Tag, "OnGoBackButtonPressed()");
             
             ResetFields();
+            SendLeaveRoomEvent();
             
             _roomState.OnNext(DuelRoomState.EnterRoomName);
         }
@@ -189,6 +190,12 @@ namespace Code.Features.DuelRoom
             {
                 _duelistIds.OnNext(null);
                 return;
+            }
+
+            var currentDuelistIds = _duelistIds.Value;
+            if (!currentDuelistIds.IsNullOrEmpty())
+            {
+                _dialogService.ShowToast("A new duelist has appeared!");
             }
 
             var duelistIds = data.DuelistsIds!.ToList();

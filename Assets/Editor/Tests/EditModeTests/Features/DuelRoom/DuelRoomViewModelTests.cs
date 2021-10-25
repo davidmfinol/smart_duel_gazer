@@ -205,6 +205,18 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             Assert.AreEqual(new List<List<string>> { null, null }, onNext);
         }
+        
+        [Test]
+        public void When_GoBackButtonPressed_Then_LeaveRoomEventSent()
+        {
+            var expected = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomLeaveAction);
+
+            _viewModel.OnGoBackButtonPressed();
+
+            _smartDuelServer.Verify(sds => sds.EmitEvent(expected), Times.Once);
+        }
 
         [Test]
         public void When_TryAgainPressed_Then_LoadingStateEmitted()
@@ -470,6 +482,23 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
             Assert.AreEqual(new List<List<string>> { null, duelistIds }, onNext);
+        }
+        
+        [Test]
+        public void Given_RoomGetDuelistsAction_And_PreviousDuelistIdsAvailable_When_RoomEventReceived_Then_ToastMessageShown()
+        {
+            var duelistIds = new List<string> { "validID", "validID2" };
+
+            var data = new RoomEventData { DuelistsIds = duelistIds };
+            var roomEvent = new SmartDuelEvent(
+                SmartDuelEventConstants.RoomScope,
+                SmartDuelEventConstants.RoomGetDuelistsAction,
+                data);
+
+            _viewModel.OnSmartDuelEventReceived(roomEvent);
+            _viewModel.OnSmartDuelEventReceived(roomEvent);
+
+            _dialogService.Verify(ds => ds.ShowToast("A new duelist has appeared!"), Times.Once);
         }
 
         [Test]

@@ -128,9 +128,9 @@ namespace Code.Features.DuelRoom
 
         private void UpdateDropdownMenu(List<string> duelistIds)
         {
+            duelistsDropdown.ClearOptions();
             if (duelistIds == null)
             {
-                duelistsDropdown.ClearOptions();
                 return;
             }
             
