@@ -21,7 +21,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private Renderer _image;
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
-        private IDataManager _dataManager;        
+        private IDataManager _dataManager;
         private ISetCardEventHandler _setCardEventHandler;
         private IPlayfieldEventHandler _playfieldEventHandler;
         private IAppLogger _logger;
@@ -33,7 +33,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,            
+            IDataManager dataManager,
             ISetCardEventHandler modelEventHandler,
             IPlayfieldEventHandler playfieldEventHandler,
             IAppLogger logger)
@@ -63,13 +63,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void OnDestroy()
         {
-            _logger.Log(Tag, "OnDestroy()");
-            
             _setCardEventHandler.OnSummonSetCard -= OnSummon;
             _setCardEventHandler.OnAction -= OnAction;
             _setCardEventHandler.OnSetCardRemove -= OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield -= ActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
         }
 
@@ -83,46 +81,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             _setCardEventHandler.OnAction += OnAction;
             _setCardEventHandler.OnSetCardRemove += OnRemove;
 
-            _playfieldEventHandler.OnActivatePlayfield += OnActivatePlayfield;
+            _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
         }
 
         #endregion
 
         #region Events
-
-        #region Playfield Events
-
-        private void OnActivatePlayfield()
-        {
-            _logger.Log(Tag, "OnActivatePlayfield");
-
-            if (!gameObject.activeSelf) return;
-
-            switch (_currentState)
-            {
-                case CurrentState.FaceDown:
-                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
-                    break;
-                case CurrentState.SpellActivated:
-                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
-                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
-                    break;
-                case CurrentState.SetMonsterRevealed:
-                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
-                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
-                    break;
-            }
-        }
-
-        private void RemovePlayfield()
-        {
-            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
-        }
-
-        #endregion
-
-        #region Model Events
 
         private async void OnSummon(int instanceID, string modelName, bool isMonster)
         {
@@ -141,7 +106,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
-            {               
+            {
                 case SetCardEvent.SpellTrapActivate:
                     SpellTrapActivate();
                     break;
@@ -169,9 +134,34 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         #endregion
 
-        #endregion
-
         #region Functions
+
+        #region Playfield Functions
+
+        private void ActivatePlayfield()
+        {
+            if (!gameObject.activeSelf) return;
+
+            switch (_currentState)
+            {
+                case CurrentState.FaceDown:
+                    _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
+                    break;
+                case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
+                    break;
+                case CurrentState.SetMonsterRevealed:
+                    _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
+                    break;
+            }
+        }
+
+        private void RemovePlayfield()
+        {
+            _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
+        }
+
+        #endregion
 
         #region Spell/Trap Functions
 
@@ -195,7 +185,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         {
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-        
+
         private void RevealSetCardImage()
         {
             _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);

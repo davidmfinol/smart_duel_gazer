@@ -2,7 +2,6 @@ using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 

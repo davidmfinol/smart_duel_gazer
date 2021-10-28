@@ -51,7 +51,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         #endregion
 
-        // TODO: Move to UniRX subject
         private void OnActivatePlayfield()
         {
             _logger.Log(Tag, "OnActivatePlayfield()");

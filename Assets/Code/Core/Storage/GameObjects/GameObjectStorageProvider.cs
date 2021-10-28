@@ -22,7 +22,6 @@ namespace Code.Core.Storage.GameObjects
 
         private readonly Dictionary<string, Queue<UnityEngine.GameObject>> _gameObjects = new Dictionary<string, Queue<UnityEngine.GameObject>>();
         private UnityEngine.GameObject[] _cardModels;
-        private UnityEngine.GameObject _playfield;
 
         [Inject]
         public GameObjectStorageProvider(

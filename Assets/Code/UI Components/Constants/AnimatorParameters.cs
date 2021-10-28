@@ -17,7 +17,6 @@ namespace Code.UI_Components.Constants
         public static readonly int FadeInSetCardTrigger = Animator.StringToHash("FadeIn");
         public static readonly int HideSetCardTrigger = Animator.StringToHash("HideSetMonster");
         public static readonly int RevealSetMonsterTrigger = Animator.StringToHash("RevealSetMonster");
-        public static readonly int PlayfieldActivationTrigger = Animator.StringToHash("ActivatePlayfield");
 
         public static readonly int DefenceBool = Animator.StringToHash("IsDefence");
         public static readonly int RotatePlatformBool = Animator.StringToHash("Rotate");
