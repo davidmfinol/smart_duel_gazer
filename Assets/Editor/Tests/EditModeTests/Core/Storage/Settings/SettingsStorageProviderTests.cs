@@ -3,7 +3,7 @@ using Code.Wrappers.WrapperPlayerPrefs;
 using Moq;
 using NUnit.Framework;
 
-namespace Tests.Core.Storage.Settings
+namespace Editor.Tests.EditModeTests.Core.Storage.Settings
 {
     public class SettingsStorageProviderTests
     {

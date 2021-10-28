@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Code.Core.DataManager;
 using Code.Core.DataManager.Connections.Entities;
 using Code.Core.Dialog;
@@ -8,8 +9,9 @@ using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
 using Moq;
 using NUnit.Framework;
+using UniRx;
 
-namespace Tests.Features.Connection
+namespace Editor.Tests.EditModeTests.Features.Connection
 {
     public class ConnectionViewModelTests
     {
@@ -22,8 +24,10 @@ namespace Tests.Features.Connection
         private Mock<IScreenService> _screenService;
         private ConnectionFormValidators _validators;
 
-        private const string _validIp = "0.0.0.0";
-        private const string _validPort = "8080";
+        private const string ValidIp = "0.0.0.0";
+        private const string ValidPort = "8080";
+
+        private static readonly ConnectionInfo ConnectionInfo = new ConnectionInfo(ValidIp, ValidPort);
 
         [SetUp]
         public void SetUp()
@@ -46,46 +50,115 @@ namespace Tests.Features.Connection
         }
 
         [Test]
-        public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_InfoIsSaved()
+        public void When_ViewModelInitialized_Then_PortraitOrientationUsed()
         {
-            var expected = new ConnectionInfo(_validIp, _validPort);
+            _viewModel.Init();
 
-            _viewModel.OnIpAddressChanged(_validIp);
-            _viewModel.OnPortChanged(_validPort);
+            _screenService.Verify(ss => ss.UsePortraitOrientation(), Times.Once);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_ConnectionInfoFetched()
+        {
+            _viewModel.Init();
+
+            _dataManager.Verify(dm => dm.GetConnectionInfo(true), Times.Once);
+        }
+
+        [Test]
+        public void Given_ConnectionInfoNotNull_When_ViewModelInitialized_Then_ConnectionInfoEmitted()
+        {
+            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(ConnectionInfo);
+
+            var ipAddressOnNext = new List<string>();
+            var portOnNext = new List<string>();
+            _viewModel.IpAddress.Subscribe(value => ipAddressOnNext.Add(value));
+            _viewModel.Port.Subscribe(value => portOnNext.Add(value));
+
+            _viewModel.Init();
+
+            Assert.AreEqual(new List<string> {null, ValidIp}, ipAddressOnNext);
+            Assert.AreEqual(new List<string> {null, ValidPort}, portOnNext);
+        }
+
+        [Test]
+        public void When_IpAddressChanged_Then_UpdatedIpAddressEmitted()
+        {
+            var ipAddressOnNext = new List<string>();
+            _viewModel.IpAddress.Subscribe(value => ipAddressOnNext.Add(value));
+
+            _viewModel.OnIpAddressChanged(ValidIp);
+
+            Assert.AreEqual(new List<string> {null, ValidIp}, ipAddressOnNext);
+        }
+
+        [Test]
+        public void When_OnPortChanged_Then_UpdatedPortEmitted()
+        {
+            var portOnNext = new List<string>();
+            _viewModel.Port.Subscribe(value => portOnNext.Add(value));
+
+            _viewModel.OnPortChanged(ValidPort);
+
+            Assert.AreEqual(new List<string> {null, ValidPort}, portOnNext);
+        }
+
+        [Test]
+        public void When_EnterOnlineDuelRoomButtonPressed_Then_OnlineDuelRoomUsed()
+        {
+            _viewModel.OnEnterOnlineDuelRoomPressed();
+
+            _dataManager.Verify(dm => dm.SaveUseOnlineDuelRoom(true), Times.Once);
+        }
+
+        [Test]
+        public void When_EnterOnlineDuelRoomButtonPressed_Then_DuelRoomShown()
+        {
+            _viewModel.OnEnterOnlineDuelRoomPressed();
+
+            _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Once);
+        }
+
+        [Test]
+        public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_ConnectionInfoSaved()
+        {
+            var expected = new ConnectionInfo(ValidIp, ValidPort);
+            _viewModel.OnIpAddressChanged(ValidIp);
+            _viewModel.OnPortChanged(ValidPort);
+
             _viewModel.OnEnterLocalDuelRoomPressed();
 
             _dataManager.Verify(dm => dm.SaveConnectionInfo(expected), Times.Once);
         }
 
         [Test]
-        public void When_EnterLocalDuelRoomButtonPressed_Then_SaveOnlineUseDuelRoomSavesFalse()
+        public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_OfflineDuelRoomUsed()
         {
-            _viewModel.OnIpAddressChanged(_validIp);
-            _viewModel.OnPortChanged(_validPort);
+            _viewModel.OnIpAddressChanged(ValidIp);
+            _viewModel.OnPortChanged(ValidPort);
+
             _viewModel.OnEnterLocalDuelRoomPressed();
 
             _dataManager.Verify(dm => dm.SaveUseOnlineDuelRoom(false), Times.Once);
         }
 
         [Test]
-        public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_DuelRoomSceneIsShown()
+        public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_DuelRoomShown()
         {
-            var expected = new ConnectionInfo(_validIp, _validPort);
+            _viewModel.OnIpAddressChanged(ValidIp);
+            _viewModel.OnPortChanged(ValidPort);
 
-            _viewModel.OnIpAddressChanged(_validIp);
-            _viewModel.OnPortChanged(_validPort);
             _viewModel.OnEnterLocalDuelRoomPressed();
 
             _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Once);
         }
 
-        [TestCase(null, _validPort)]
-        [TestCase(_validIp, null)]
-        [TestCase("Invalid", _validPort)]
-        [TestCase(_validIp, "Invalid")]
-        [Parallelizable()]
-        public void Given_InvalidForm_When_EnterLocalDuelRoomButtonPressed_Then_SceneDoesntProgress(
-            string ip, string port)
+        [TestCase(null, ValidPort)]
+        [TestCase(ValidIp, null)]
+        [TestCase("Invalid", ValidPort)]
+        [TestCase(ValidIp, "Invalid")]
+        [Parallelizable]
+        public void Given_InvalidForm_When_EnterLocalDuelRoomButtonPressed_Then_DuelRoomNotShown(string ip, string port)
         {
             _viewModel.OnIpAddressChanged(ip);
             _viewModel.OnPortChanged(port);
@@ -94,35 +167,20 @@ namespace Tests.Features.Connection
             _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Never);
         }
 
-        [TestCase(null, _validPort, "IP address is required.")]
-        [TestCase(_validIp, null, "Port is required.")]
-        [TestCase("Invalid", _validPort, "Not a valid IP address.")]
-        [TestCase(_validIp, "Invalid", "Not a valid port.")]
-        [Parallelizable()]
-        public void Given_InvalidForm_When_EnterLocalDuelRoomButtonPressed_Then_ToastMessageShows(
-            string ip, string port, string message)
+        [TestCase(null, ValidPort, "IP address is required.")]
+        [TestCase(ValidIp, null, "Port is required.")]
+        [TestCase("Invalid", ValidPort, "Not a valid IP address.")]
+        [TestCase(ValidIp, "Invalid", "Not a valid port.")]
+        [Parallelizable]
+        public void Given_InvalidForm_When_EnterLocalDuelRoomButtonPressed_Then_ErrorMessageShown(string ip, string port,
+            string expected)
         {
             _viewModel.OnIpAddressChanged(ip);
             _viewModel.OnPortChanged(port);
+            
             _viewModel.OnEnterLocalDuelRoomPressed();
 
-            _dialogService.Verify(ds => ds.ShowToast(message), Times.Once);
-        }
-
-        [Test]
-        public void When_EnterOnlineDuelRoomButtonPressed_Then_DataMangerSavesTrue()
-        {
-            _viewModel.OnEnterOnlineDuelRoomPressed();
-
-            _dataManager.Verify(dm => dm.SaveUseOnlineDuelRoom(true), Times.Once);
-        }
-
-        [Test]
-        public void When_EnterOnlineDuelRoomButtonPressed_Then_DuelRoomSceneShown()
-        {
-            _viewModel.OnEnterOnlineDuelRoomPressed();
-
-            _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Once);
+            _dialogService.Verify(ds => ds.ShowToast(expected), Times.Once);
         }
     }
 }
