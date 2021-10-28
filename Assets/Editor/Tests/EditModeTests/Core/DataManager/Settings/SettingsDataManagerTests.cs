@@ -3,7 +3,7 @@ using Code.Core.Storage.Settings;
 using Moq;
 using NUnit.Framework;
 
-namespace Tests.Core.DataManager.Settings
+namespace Editor.Tests.EditModeTests.Core.DataManager.Settings
 {
     public class SettingsDataManagerTests
     {

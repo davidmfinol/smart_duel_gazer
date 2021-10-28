@@ -23,8 +23,8 @@ namespace Code.Features.Connection
 
         #region Properties
 
-        private readonly BehaviorSubject<bool> _toggleDeveloperMode = new BehaviorSubject<bool>(false);
-        public IObservable<bool> ToggleDeveloperMode => _toggleDeveloperMode;
+        private readonly BehaviorSubject<bool> _developerModeEnabled = new BehaviorSubject<bool>(false);
+        public IObservable<bool> IsDeveloperModeEnabled => _developerModeEnabled;
 
         private readonly BehaviorSubject<bool> _toggleLocalConnectionMenu = new BehaviorSubject<bool>(false);
         public IObservable<bool> ToggleLocalConnectionMenu => _toggleLocalConnectionMenu;
@@ -78,7 +78,7 @@ namespace Code.Features.Connection
             _logger.Log(Tag, "InitSettings()");
             
             var isInDeveloperMode = _dataManager.IsDeveloperModeEnabled();
-            _toggleDeveloperMode.OnNext(isInDeveloperMode);
+            _developerModeEnabled.OnNext(isInDeveloperMode);
         }
         
         private void InitForm()

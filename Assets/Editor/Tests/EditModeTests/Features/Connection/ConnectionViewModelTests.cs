@@ -9,7 +9,6 @@ using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using UniRx;
 
 namespace Editor.Tests.EditModeTests.Features.Connection
@@ -65,7 +64,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         public void When_ViewModelCreated_Then_ToggleDeveloperModeEmitsFalse()
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleDeveloperMode.Subscribe(value => onNext.Add(value));
+            _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
 
             Assert.AreEqual(new List<bool> { false }, onNext);
         }
@@ -100,7 +99,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         public void When_ViewModelInitialized_Then_ToggleDeveloperModeEmitsStateFromDataManager(bool state)
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleDeveloperMode.Subscribe(value => onNext.Add(value));
+            _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
             _dataManager.Setup(dm => dm.IsDeveloperModeEnabled()).Returns(state);
 
             _viewModel.Init();
@@ -147,11 +146,11 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         {
             var onNext = new List<string>();
             _viewModel.IpAddress.Subscribe(value => onNext.Add(value));
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(new ConnectionInfo(_validIp, _validPort));
+            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(ConnectionInfo);
 
             _viewModel.Init();
 
-            Assert.AreEqual(new List<string> { null, _validIp }, onNext);
+            Assert.AreEqual(new List<string> { null, ValidIp }, onNext);
         }
 
         [Test]
@@ -159,11 +158,11 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         {
             var onNext = new List<string>();
             _viewModel.Port.Subscribe(value => onNext.Add(value));
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(new ConnectionInfo(_validIp, _validPort));
+            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(ConnectionInfo);
 
             _viewModel.Init();
 
-            Assert.AreEqual(new List<string> { null, _validPort }, onNext);
+            Assert.AreEqual(new List<string> { null, ValidPort }, onNext);
         }
 
         #endregion
@@ -269,6 +268,8 @@ namespace Editor.Tests.EditModeTests.Features.Connection
             _viewModel.OnDeveloperModeToggled(state);
 
             Assert.AreEqual(new List<bool> { false, state }, onNext);
+        }
+            
         [Test]
         public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_ConnectionInfoSaved()
         {
