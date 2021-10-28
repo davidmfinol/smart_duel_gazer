@@ -121,8 +121,7 @@ namespace Code.Features.Connection
 
             _ipAddress.OnNext(ipAddress);
         }
-
-
+        
         public void OnPortChanged(string port)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(port: {port})");
@@ -223,7 +222,7 @@ namespace Code.Features.Connection
 
         #endregion
 
-        #region CleanUp
+        #region Clean-up
 
         public void Dispose()
         {

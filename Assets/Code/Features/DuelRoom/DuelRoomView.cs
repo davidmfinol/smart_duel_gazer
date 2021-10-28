@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Code.Core.Config.Providers;
-using Code.Core.DataManager;
-using Code.Core.Dialog;
-using Code.Core.Logger;
-using Code.Core.Navigation;
-using Code.Core.Screen;
-using Code.Core.SmartDuelServer;
-using Code.Core.SmartDuelServer.Entities;
-using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
+﻿using Code.Core.Logger;
 using Code.Features.DuelRoom.Models;
+using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using WebSocketSharp;
 using Zenject;
 
 namespace Code.Features.DuelRoom
 {
     public class DuelRoomView : MonoBehaviour
     {
-        private const string Tag = "DuelRoomView";
-        
         [SerializeField] private GameObject loadingState;
 
         [SerializeField] private GameObject enterRoomNameState;
@@ -42,73 +29,82 @@ namespace Code.Features.DuelRoom
         [SerializeField] private GameObject waitingState;
         [SerializeField] private Button leaveRoomButton;
 
-        private IDataManager _dataManager;
-        private INavigationService _navigationService;
-        private IDialogService _dialogService;
-        private ISmartDuelServer _smartDuelServer;
-        private IDelayProvider _delayProvider;
-        private IAppLogger _logger;
+        private DuelRoomViewModel _duelRoomViewModel;
 
-        private IDisposable _smartDuelEventSubscription;
-        private DuelRoomState _currentState;
-        private string _roomName;
-        private string _duelistToSpectate;
-        private bool _startedDuelSuccessfully;
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-        #region Constructors
+        #region Lifecycle
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,
-            INavigationService navigationService,
-            IDialogService dialogService,
-            IScreenService screenService,
-            ISmartDuelServer smartDuelServer,
-            IDelayProvider delayProvider,
+            DuelRoomViewModel duelRoomViewModel,
             IAppLogger logger)
         {
-            _dataManager = dataManager;
-            _navigationService = navigationService;
-            _dialogService = dialogService;
-            _smartDuelServer = smartDuelServer;
-            _delayProvider = delayProvider;
-            _logger = logger;
+            _duelRoomViewModel = duelRoomViewModel;
 
-            screenService.UsePortraitOrientation();
-            InitSmartDuelEventSubscription();
+            OnViewModelSet();
         }
-
-        #endregion
-
-        #region Lifecycle
 
         private void Awake()
         {
             UpdateDuelRoomState(DuelRoomState.Loading);
-            InitButtons();
         }
 
         private void OnDestroy()
         {
-            _smartDuelEventSubscription?.Dispose();
-            _smartDuelEventSubscription = null;
-
-            if (!_startedDuelSuccessfully)
-            {
-                _smartDuelServer?.Dispose();
-            }
+            _disposables?.Dispose();
+            _duelRoomViewModel?.Dispose();
         }
 
         #endregion
 
         #region Initialization
 
+        private void OnViewModelSet()
+        {
+            _duelRoomViewModel.Init();
+
+            BindViews();
+        }
+
+        private void BindViews()
+        {
+            // Buttons
+            enterRoomButton.OnClickAsObservable()
+                .Subscribe(_ => _duelRoomViewModel.OnEnterRoomPressed());
+            spectateButton.OnClickAsObservable()
+                .Subscribe(_ => OnSpectateButtonPressed());
+            goBackButton.OnClickAsObservable()
+                .Subscribe(_ => _duelRoomViewModel.OnGoBackButtonPressed());
+            tryAgainButton.OnClickAsObservable()
+                .Subscribe(async _ => await _duelRoomViewModel.OnTryAgainButtonPressed());
+            leaveRoomButton.OnClickAsObservable()
+                .Subscribe(_ => _duelRoomViewModel.OnLeaveRoomButtonPressed());
+
+            // Input Fields
+            _disposables.Add(roomNameInputField.onValueChanged.AsObservable()
+                .Subscribe(text => _duelRoomViewModel.UpdateRoomName(text)));
+
+            // VM Streams
+            _disposables.Add(_duelRoomViewModel.RoomName
+                .Subscribe(UpdateRoomNameField));
+            _disposables.Add(_duelRoomViewModel.RoomState
+                .Subscribe(UpdateDuelRoomState));
+            _disposables.Add(_duelRoomViewModel.ErrorText
+                .Subscribe(UpdateErrorText));
+            _disposables.Add(_duelRoomViewModel.DuelistIds
+                .Subscribe(UpdateDropdownMenu));
+        }
+
+        private void OnSpectateButtonPressed()
+        {
+            var duelistToSpectate = duelistsDropdown.options[duelistsDropdown.value].text;
+
+            _duelRoomViewModel.OnSpectateButtonPressed(duelistToSpectate);
+        }
+
         private void UpdateDuelRoomState(DuelRoomState state)
         {
-            _logger.Log(Tag, $"UpdateDuelRoomState(state: {state})");
-
-            _currentState = state;
-
             loadingState.SetActive(state == DuelRoomState.Loading);
             enterRoomNameState.SetActive(state == DuelRoomState.EnterRoomName);
             selectDuelistsState.SetActive(state == DuelRoomState.SelectDuelist);
@@ -116,248 +112,30 @@ namespace Code.Features.DuelRoom
             waitingState.SetActive(state == DuelRoomState.Waiting);
         }
 
-        private void InitButtons()
-        {
-            enterRoomButton.OnClickAsObservable().Subscribe(_ => OnEnterRoomPressed());
-            spectateButton.OnClickAsObservable().Subscribe(_ => OnSpectateButtonPressed());
-            goBackButton.OnClickAsObservable().Subscribe(_ => OnGoBackButtonPressed());
-            tryAgainButton.OnClickAsObservable().Subscribe(async _ => await OnTryAgainButtonPressed());
-            leaveRoomButton.OnClickAsObservable().Subscribe(_ => OnLeaveRoomButtonPressed());
-        }
-
-        private void InitSmartDuelEventSubscription()
-        {
-            _smartDuelEventSubscription = _smartDuelServer.GlobalEvents
-                .Merge(_smartDuelServer.RoomEvents)
-                .Subscribe(OnSmartDuelEventReceived);
-
-            _smartDuelServer.Init();
-        }
-
         #endregion
 
-        #region Button events
+        #region Form Fields
 
-        private void OnEnterRoomPressed()
+        private void UpdateRoomNameField(string roomName)
         {
-            var roomName = roomNameInputField.text;
-            if (string.IsNullOrWhiteSpace(roomName))
-            {
-                _dialogService.ShowToast("Room name is required");
-                return;
-            }
-
-            _roomName = roomName;
-
-            SendGetDuelistsInRoomEvent();
+            roomNameInputField.text = roomName;
         }
 
-        private void OnSpectateButtonPressed()
-        {
-            var index = duelistsDropdown.value;
-            var duelist = duelistsDropdown.options[index].text;
-            if (string.IsNullOrWhiteSpace(duelist))
-            {
-                _dialogService.ShowToast("Duelist name is required");
-                return;
-            }
-
-            _duelistToSpectate = duelist;
-
-            SendSpectateRoomEvent();
-        }
-
-        private void OnGoBackButtonPressed()
-        {
-            ResetFields();
-
-            UpdateDuelRoomState(DuelRoomState.EnterRoomName);
-        }
-
-        private async Task OnTryAgainButtonPressed()
-        {
-            ResetFields();
-
-            UpdateDuelRoomState(DuelRoomState.Loading);
-
-            _smartDuelServer.Dispose();
-            await _delayProvider.Wait(200);
-            _smartDuelServer.Init();
-        }
-
-        private void OnLeaveRoomButtonPressed()
-        {
-            ResetFields();
-
-            UpdateDuelRoomState(DuelRoomState.EnterRoomName);
-            SendLeaveRoomEvent();
-        }
-
-        private void ResetFields()
-        {
-            _roomName = null;
-            _duelistToSpectate = null;
-
-            duelistsDropdown.ClearOptions();
-        }
-
-        #endregion
-
-        #region Send smart duel events
-
-        private void SendGetDuelistsInRoomEvent()
-        {
-            _smartDuelServer.EmitEvent(new SmartDuelEvent(
-                SmartDuelEventConstants.RoomScope,
-                SmartDuelEventConstants.RoomGetDuelistsAction,
-                new RoomEventData
-                {
-                    RoomName = _roomName
-                }));
-        }
-
-        private void SendSpectateRoomEvent()
-        {
-            _smartDuelServer.EmitEvent(new SmartDuelEvent(
-                SmartDuelEventConstants.RoomScope,
-                SmartDuelEventConstants.RoomSpectateAction,
-                new RoomEventData
-                {
-                    RoomName = _roomName
-                }));
-        }
-
-        private void SendLeaveRoomEvent()
-        {
-            _smartDuelServer.EmitEvent(new SmartDuelEvent(
-                SmartDuelEventConstants.RoomScope,
-                SmartDuelEventConstants.RoomLeaveAction));
-        }
-
-        #endregion
-
-        #region Receive smart duel events
-
-        private void OnSmartDuelEventReceived(SmartDuelEvent e)
-        {
-            _logger.Log(Tag, $"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
-
-            switch (e.Scope)
-            {
-                case SmartDuelEventConstants.GlobalScope:
-                    HandleGlobalEvent(e);
-                    break;
-
-                case SmartDuelEventConstants.RoomScope:
-                    HandleRoomEvent(e);
-                    break;
-            }
-        }
-
-        #region Receive global event
-
-        private void HandleGlobalEvent(SmartDuelEvent e)
-        {
-            switch (e.Action)
-            {
-                case SmartDuelEventConstants.GlobalConnectAction:
-                    HandleConnectEvent();
-                    break;
-
-                case SmartDuelEventConstants.GlobalConnectErrorAction:
-                case SmartDuelEventConstants.GlobalConnectTimeoutAction:
-                case SmartDuelEventConstants.GlobalErrorAction:
-                    HandleErrorEvent(e.Action);
-                    break;
-            }
-        }
-
-        private void HandleConnectEvent()
-        {
-            if (_currentState == DuelRoomState.Loading)
-            {
-                UpdateDuelRoomState(DuelRoomState.EnterRoomName);
-            }
-        }
-
-        private void HandleErrorEvent(string error)
+        private void UpdateErrorText(string error)
         {
             errorDescriptionText.text = $"Could not connect to Smart Duel Server\nReason: {error}";
-            UpdateDuelRoomState(DuelRoomState.Error);
         }
 
-        #endregion
-
-        #region Receive room event
-
-        private void HandleRoomEvent(SmartDuelEvent e)
+        private void UpdateDropdownMenu(List<string> duelistIds)
         {
-            if (!(e.Data is RoomEventData data))
-            {
-                return;
-            }
-
-            switch (e.Action)
-            {
-                case SmartDuelEventConstants.RoomGetDuelistsAction:
-                    HandleRoomGetDuelistsEvent(data);
-                    break;
-
-                case SmartDuelEventConstants.RoomSpectateAction:
-                    HandleRoomSpectateEvent();
-                    break;
-
-                case SmartDuelEventConstants.RoomStartAction:
-                    HandleRoomStartEvent(data);
-                    break;
-
-                case SmartDuelEventConstants.RoomCloseAction:
-                    HandleRoomCloseEvent();
-                    break;
-            }
-        }
-
-        private void HandleRoomGetDuelistsEvent(RoomEventData data)
-        {
-            if (!data.Error.IsNullOrEmpty())
-            {
-                HandleErrorEvent(data.Error);
-                return;
-            }
-
             duelistsDropdown.ClearOptions();
-            duelistsDropdown.AddOptions(data.DuelistsIds.ToList());
-
-            UpdateDuelRoomState(DuelRoomState.SelectDuelist);
-        }
-
-        private void HandleRoomSpectateEvent()
-        {
-            UpdateDuelRoomState(DuelRoomState.Waiting);
-        }
-
-        private void HandleRoomStartEvent(RoomEventData data)
-        {
-            var duelRoom = data.DuelRoom;
-            if (duelRoom == null)
+            if (duelistIds == null)
             {
-                HandleErrorEvent("invalid duel room data");
                 return;
             }
-
-            duelRoom.DuelistToSpectate = _duelistToSpectate;
-            _dataManager.SaveDuelRoom(duelRoom);
-
-            _startedDuelSuccessfully = true;
-            _navigationService.ShowSpeedDuelScene();
+            
+            duelistsDropdown.AddOptions(duelistIds);
         }
-
-        private void HandleRoomCloseEvent()
-        {
-            HandleErrorEvent("roomIsClosed");
-        }
-
-        #endregion
 
         #endregion
     }

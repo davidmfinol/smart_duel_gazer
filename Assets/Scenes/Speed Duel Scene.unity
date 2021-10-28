@@ -376,8 +376,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ec0147a6960f6a4b9a0e216d03c26c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playfieldPrefab: {fileID: 5832322887851411820, guid: 083ac975799f2b74c953f057f7101bf7, type: 3}
-  _placementIndicator: {fileID: 633987594}
+  playfieldPrefab: {fileID: 5832322887851411820, guid: 083ac975799f2b74c953f057f7101bf7, type: 3}
+  placementIndicator: {fileID: 633987594}
 --- !u!1 &301659725
 GameObject:
   m_ObjectHideFlags: 0
