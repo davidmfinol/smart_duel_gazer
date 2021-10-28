@@ -48,15 +48,13 @@ namespace Code.Features.Connection
             _navigationService = navigationService;
             _screenService = screenService;
             _logger = appLogger;
-
-            Init();
         }
 
         #endregion
 
         #region Initialization
 
-        private void Init()
+        public void Init()
         {
             _logger.Log(Tag, "Init()");
 
@@ -89,8 +87,7 @@ namespace Code.Features.Connection
 
             _ipAddress.OnNext(ipAddress);
         }
-
-
+        
         public void OnPortChanged(string port)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(port: {port})");
@@ -191,7 +188,7 @@ namespace Code.Features.Connection
 
         #endregion
 
-        #region CleanUp
+        #region Clean-up
 
         public void Dispose()
         {

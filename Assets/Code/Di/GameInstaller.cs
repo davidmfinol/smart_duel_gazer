@@ -21,6 +21,7 @@ using Code.Core.Storage.Textures;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
+using Code.Features.DuelRoom;
 using Code.Features.Onboarding;
 using Code.Features.SpeedDuel;
 using Code.Features.SpeedDuel.EventHandlers;
@@ -41,6 +42,7 @@ using Code.Wrappers.WrapperWebSocket;
 using Dpoch.SocketIO;
 using UnityEngine;
 using Zenject;
+using Code.Wrappers.WrapperNetworkConnection;
 
 namespace Code.Di
 {
@@ -99,6 +101,7 @@ namespace Code.Di
             Container.Bind<OnboardingViewModel>().AsTransient();
             Container.Bind<ConnectionViewModel>().AsTransient();
             Container.Bind<SpeedDuelViewModel>().AsTransient();
+            Container.Bind<DuelRoomViewModel>().AsTransient();
 
             // Event Handlers
             Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();
@@ -145,6 +148,7 @@ namespace Code.Di
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
+            Container.Bind<INetworkConnectionProvider>().To<NetworkConnectionProvider>().AsSingle();
 
             #endregion
         }
