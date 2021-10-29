@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Loco Localization Table_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 59b086d05aee94558b58c42fc4b50e49, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 269755604992
+    m_Localized: 'Smart
+
+      Duel Gazer'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335643926528
+    m_Localized: Smart Duel Gazer is an unofficial Fan Project and is not approved
+      or endorsed by Konami. Portions of the materials used are property of Konami
+      Digital Entertainment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 604192628736
+    m_Localized: Initiate link!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 711596171264
+    m_Localized: Connecting...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 842819166208
+    m_Localized: No Network Detected!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 947290890240
+    m_Localized: Try again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390429005570048
+    m_Localized: Enter Duel Room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390941901840384
+    m_Localized: IP Address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390992984268800
+    m_Localized: Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391018401751040
+    m_Localized: Enter Local Duel Room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391197372702720
+    m_Localized: Port is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391305556385792
+    m_Localized: Not a valid port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391378210119680
+    m_Localized: IP address is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391455343370240
+    m_Localized: Not a valid IP address
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1

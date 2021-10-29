@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Loco Localization Table Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Loco Localization Table
+  m_TableCollectionNameGuidString: 59b086d05aee94558b58c42fc4b50e49
+  m_Entries:
+  - m_Id: 269755604992
+    m_Key: onboarding_app_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335643926528
+    m_Key: onboarding_fineprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 604192628736
+    m_Key: onboarding_initiate_link
+    m_Metadata:
+      m_Items: []
+  - m_Id: 711596171264
+    m_Key: onboarding_status_connecting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 842819166208
+    m_Key: onboarding_status_not_connected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 947290890240
+    m_Key: general_error_try_again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390429005570048
+    m_Key: connection_enter_online_duel_room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390941901840384
+    m_Key: connection_hint_ip_address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390992984268800
+    m_Key: connection_hint_port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391018401751040
+    m_Key: connection_enter_local_duel_room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391197372702720
+    m_Key: connection_port_required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391305556385792
+    m_Key: connection_port_invalid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391378210119680
+    m_Key: connection_ip_address_required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391455343370240
+    m_Key: connection_ip_address_invalid
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1635441269695
