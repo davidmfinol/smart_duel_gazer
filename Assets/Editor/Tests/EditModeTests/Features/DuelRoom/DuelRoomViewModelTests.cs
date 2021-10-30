@@ -1,14 +1,15 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
-using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.DuelRoom;
 using Code.Features.DuelRoom.Models;
@@ -28,6 +29,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
         private Mock<IDialogService> _dialogService;
         private Mock<ISmartDuelServer> _smartDuelServer;
         private Mock<IDelayProvider> _delayProvider;
+        private Mock<IStringProvider> _stringProvider;
         private Mock<IScreenService> _screenService;
         private Mock<IAppLogger> _logger;
 
@@ -45,6 +47,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
             _dialogService = new Mock<IDialogService>();
             _smartDuelServer = new Mock<ISmartDuelServer>();
             _delayProvider = new Mock<IDelayProvider>();
+            _stringProvider = new Mock<IStringProvider>();
             _screenService = new Mock<IScreenService>();
             _logger = new Mock<IAppLogger>();
 
@@ -54,12 +57,26 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
             _smartDuelServer.SetupGet(sds => sds.GlobalEvents).Returns(_globalEvents);
             _smartDuelServer.SetupGet(sds => sds.RoomEvents).Returns(_roomEvents);
 
+            _stringProvider.Setup(sp => sp.GetString(
+                    It.IsAny<string>(), It.IsAny<object[]>()))
+                .Returns<string, object[]>((key, args) =>
+                {
+                    var text = key;
+                    if (args.Length > 0)
+                    {
+                        text += ": ";
+                    }
+
+                    return args.Aggregate(text, (current, arg) => current + arg);
+                });
+
             _viewModel = new DuelRoomViewModel(
                 _dataManager.Object,
                 _navigationService.Object,
                 _dialogService.Object,
                 _smartDuelServer.Object,
                 _delayProvider.Object,
+                _stringProvider.Object,
                 _screenService.Object,
                 _logger.Object);
         }
@@ -140,14 +157,14 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnEnterRoomPressed();
 
-            _dialogService.Verify(ds => ds.ShowToast("Room name is required"), Times.Once);
+            _dialogService.Verify(ds => ds.ShowToast(LocaleKeys.DuelRoomRoomNameRequired), Times.Once);
         }
 
         [Test]
         public void Given_ValidDuelistId_When_SpectateButtonPressed_Then_SpectateRoomEventSent()
         {
             _viewModel.UpdateRoomName(ValidRoomName);
-            
+
             var expected = new SmartDuelEvent(
                 SmartDuelEventConstants.RoomScope,
                 SmartDuelEventConstants.RoomSpectateAction,
@@ -169,7 +186,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
         {
             _viewModel.OnSpectateButtonPressed(invalidDuelistId);
 
-            _dialogService.Verify(ds => ds.ShowToast("Duelist name is required"), Times.Once);
+            _dialogService.Verify(ds => ds.ShowToast(LocaleKeys.DuelRoomDuelistNameRequired), Times.Once);
         }
 
         [Test]
@@ -205,7 +222,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             Assert.AreEqual(new List<List<string>> { null, null }, onNext);
         }
-        
+
         [Test]
         public void When_GoBackButtonPressed_Then_LeaveRoomEventSent()
         {
@@ -376,7 +393,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(globalErrorEvent);
 
-            Assert.AreEqual(new List<string> { null, expectedError }, onNext);
+            Assert.AreEqual(new List<string> { null, $"{LocaleKeys.DuelistRoomConnectionErrorPrefix}: {expectedError}" }, onNext);
         }
 
         #endregion
@@ -411,7 +428,11 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(invalidRoomEvent);
 
-            Assert.AreEqual(new List<string> { null, "Room Data is Invalid!" }, onNext);
+            Assert.AreEqual(
+                new List<string>
+                {
+                    null, $"{LocaleKeys.DuelistRoomConnectionErrorPrefix}: {LocaleKeys.DuelistRoomConnectionErrorDataInvalid}"
+                }, onNext);
         }
 
         [Test]
@@ -445,7 +466,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(new List<string> { null, errorMessage }, onNext);
+            Assert.AreEqual(new List<string> { null, $"{LocaleKeys.DuelistRoomConnectionErrorPrefix}: {errorMessage}" }, onNext);
         }
 
         [Test]
@@ -483,7 +504,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             Assert.AreEqual(new List<List<string>> { null, duelistIds }, onNext);
         }
-        
+
         [Test]
         public void Given_RoomGetDuelistsAction_And_PreviousDuelistIdsAvailable_When_RoomEventReceived_Then_ToastMessageShown()
         {
@@ -498,7 +519,7 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
             _viewModel.OnSmartDuelEventReceived(roomEvent);
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            _dialogService.Verify(ds => ds.ShowToast("A new duelist has appeared!"), Times.Once);
+            _dialogService.Verify(ds => ds.ShowToast(LocaleKeys.DuelRoomDuelistAppeared), Times.Once);
         }
 
         [Test]
@@ -594,7 +615,10 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(new List<string> { null, "No duel room data found" }, onNext);
+            Assert.AreEqual(
+                new List<string>
+                    { null, $"{LocaleKeys.DuelistRoomConnectionErrorPrefix}: {LocaleKeys.DuelistRoomConnectionErrorNoData}" },
+                onNext);
         }
 
         [Test]
@@ -627,7 +651,10 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
 
             _viewModel.OnSmartDuelEventReceived(roomEvent);
 
-            Assert.AreEqual(new List<string> { null, "Duel room is closed" }, onNext);
+            Assert.AreEqual(
+                new List<string>
+                    { null, $"{LocaleKeys.DuelistRoomConnectionErrorPrefix}: {LocaleKeys.DuelistRoomConnectionErrorRoomClosed}" },
+                onNext);
         }
 
         #endregion

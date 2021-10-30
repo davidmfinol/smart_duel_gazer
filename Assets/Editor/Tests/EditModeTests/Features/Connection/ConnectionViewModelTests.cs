@@ -44,7 +44,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
             _logger = new Mock<IAppLogger>();
 
             _stringProvider.Setup(sp => sp.GetString(
-                It.IsAny<string>())).Returns<string>(key => key);
+                It.IsAny<string>(), It.IsAny<object[]>())).Returns<string, object[]>((key, args) => key);
 
             _viewModel = new ConnectionViewModel(
                 _validators,

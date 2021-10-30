@@ -4,7 +4,7 @@ namespace Code.Core.Localization
 {
     public interface IStringProvider
     {
-        string GetString(string key);
+        string GetString(string key, params object[] args);
     }
     
     public class StringProvider : IStringProvider
@@ -17,9 +17,9 @@ namespace Code.Core.Localization
             _stringTable = stringTable;
         }
 
-        public string GetString(string key)
+        public string GetString(string key, params object[] args)
         {
-            return _stringTable[key].LocalizedValue;
+            return string.Format(_stringTable[key].LocalizedValue, args);
         }
     }
 }

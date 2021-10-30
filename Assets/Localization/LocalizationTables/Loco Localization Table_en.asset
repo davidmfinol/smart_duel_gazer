@@ -47,11 +47,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 390429005570048
-    m_Localized: Enter Duel Room
+    m_Localized: Enter online duel room
     m_Metadata:
       m_Items: []
   - m_Id: 390941901840384
-    m_Localized: IP Address
+    m_Localized: IP address
     m_Metadata:
       m_Items: []
   - m_Id: 390992984268800
@@ -59,7 +59,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 391018401751040
-    m_Localized: Enter Local Duel Room
+    m_Localized: Enter local duel room
     m_Metadata:
       m_Items: []
   - m_Id: 391197372702720
@@ -76,6 +76,80 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 391455343370240
     m_Localized: Not a valid IP address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413786275045376
+    m_Localized: Connecting...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413989837201408
+    m_Localized: Room name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414405782134784
+    m_Localized: Enter room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414532567556096
+    m_Localized: Who do you want to specate?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414789359624192
+    m_Localized: Spectate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414831214583808
+    m_Localized: Waiting for the duel to start...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 415226519347200
+    m_Localized: Leave room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416700049645568
+    m_Localized: Go back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 418848426680320
+    m_Localized: A new duelist has appeared!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419618656083968
+    m_Localized: Room name is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420733598556160
+    m_Localized: Duelist name is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 424735769878528
+    m_Localized: 'Could not connect to Smart Duel Server
+
+      Reason: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425008043122688
+    m_Localized: Room data is invalid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425151240855552
+    m_Localized: No duel room data found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425228759982080
+    m_Localized: Duel room is closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436593490911232
+    m_Localized: Duel is over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436666136256512
+    m_Localized: '{0} won the duel!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436748487221248
+    m_Localized: Continue
     m_Metadata:
       m_Items: []
   references:
