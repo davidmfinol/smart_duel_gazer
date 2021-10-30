@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Bonze Alone Override
+  m_Controller: {fileID: 9100000, guid: dbd5f738982b144b3a4faf3d304e1e6b, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: f252b253d6c8ca74d9a0e4ab9a28539f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 50dbd34496121e047bfb9b94f64b35e1, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: cb4fd7fd6d4d61842b82f8bb6c0f3154, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 04cc6d4e0346db7498942b6fe7364836, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: e2125ef36e823fa4dbbd915e0325b9ba, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9dd8e60999b957d4c8257c24f1f7df54, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: a1b2b915d3ed78548a1067e618458f65, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 50dbd34496121e047bfb9b94f64b35e1, type: 2}
