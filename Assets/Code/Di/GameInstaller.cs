@@ -9,6 +9,7 @@ using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Settings;
 using Code.Core.DataManager.Textures;
 using Code.Core.Dialog;
+using Code.Core.Localization;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
@@ -42,11 +43,16 @@ using Dpoch.SocketIO;
 using UnityEngine;
 using Zenject;
 using Code.Wrappers.WrapperNetworkConnection;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 
 namespace Code.Di
 {
     public class GameInstaller : MonoInstaller
     {
+        [SerializeField]
+        private LocalizedStringTable localizedStringTable;
+        
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
@@ -86,6 +92,11 @@ namespace Code.Di
 
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
+            
+            // String provider
+            var stringTable =  localizedStringTable.GetTable();
+            Container.Bind<StringTable>().FromInstance(stringTable);
+            Container.Bind<IStringProvider>().To<StringProvider>().AsSingle();
 
             // Logger
             Container.Bind<IAppLogger>().To<AppLogger>().AsSingle();

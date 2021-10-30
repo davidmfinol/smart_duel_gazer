@@ -3,8 +3,9 @@ using System.Linq;
 using Code.Core.DataManager;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using Code.Core.Logger;
-using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
@@ -28,12 +29,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
-        private INavigationService _navigationService;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
         private IMonsterBattleInteractor _monsterBattleInteractor;
         private IEndOfDuelUseCase _endOfDuel;
+        private IStringProvider _stringProvider;
         private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
@@ -49,23 +50,23 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IDataManager dataManager,
             IScreenService screenService,
             IDialogService dialogService,
-            INavigationService navigationService,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
             IMonsterBattleInteractor monsterBattleInteractor,
             IEndOfDuelUseCase endOfDuel,
+            IStringProvider stringProvider,
             IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _dialogService = dialogService;
-            _navigationService = navigationService;
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
             _monsterBattleInteractor = monsterBattleInteractor;
             _endOfDuel = endOfDuel;
+            _stringProvider = stringProvider;
             _logger = logger;
 
             screenService.UseAutoOrientation();
@@ -274,9 +275,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             _dialogService.ShowDialog(new DialogConfig
             {
-                Title = "Duel is over",
-                Description = $"{winnerId} won the duel!",
-                PositiveText = "Continue",
+                Title = _stringProvider.GetString(LocaleKeys.SpeedDuelDuelOverDialogTitle),
+                Description = _stringProvider.GetString(LocaleKeys.SpeedDuelDuelOverDialogDescription, winnerId),
+                PositiveText = _stringProvider.GetString(LocaleKeys.GeneralActionContinue),
                 PositiveAction = () => _endOfDuel.Execute()
             });
         }
