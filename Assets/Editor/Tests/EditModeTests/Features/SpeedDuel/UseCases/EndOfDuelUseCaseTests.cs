@@ -6,7 +6,7 @@ using Code.Features.SpeedDuel.UseCases;
 using Moq;
 using NUnit.Framework;
 
-namespace Editor.Tests.EditModeTests.Features
+namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
 {
     public class EndOfDuelUseCaseTests
     {

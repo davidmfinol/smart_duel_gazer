@@ -45,7 +45,7 @@ namespace Tests.Features.SpeedDuel
         public void Given_AValidPlayfield_When_ActivatePlayfieldEventRecieved_Then_CorrectTransformValuesAreFiredWithEvent(
             float correctRotation, float correctScale)
         {
-            var model = new PlayfieldTransformValues { yAxisRotation = correctRotation, Scale = correctScale };
+            var model = new PlayfieldTransformValues { YAxisRotation = correctRotation, Scale = correctScale };
             var expected = new PlayfieldTransformValues();
             var testObj = new GameObject();
             testObj.transform.localRotation = Quaternion.Euler(0, correctRotation, 0);

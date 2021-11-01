@@ -1,4 +1,3 @@
-using Code.Core.Navigation;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Core.Logger;
@@ -14,7 +13,7 @@ namespace Code.Features.SpeedDuel
 {
     public class SpeedDuelViewModel
     {
-        private const string Tag = "Speed Duel View Model";
+        private const string Tag = "SpeedDuelViewModel";
 
         private readonly IPlayfieldEventHandler _playfieldEventHandler;
         private readonly IDataManager _dataManager;
@@ -147,7 +146,7 @@ namespace Code.Features.SpeedDuel
             var scale = playfield.transform.localScale.x;
             var rotation = playfield.transform.localRotation.y;
 
-            return new PlayfieldTransformValues { Scale = scale, yAxisRotation = rotation };
+            return new PlayfieldTransformValues { Scale = scale, YAxisRotation = rotation };
         }
     }
 }

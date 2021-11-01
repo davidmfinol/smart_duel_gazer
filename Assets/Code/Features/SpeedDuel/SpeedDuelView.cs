@@ -13,7 +13,7 @@ namespace Code.Features.SpeedDuel
 {
     public class SpeedDuelView : MonoBehaviour
     {
-        private const string Tag = "Speed Duel View";
+        private const string Tag = "SpeedDuelView";
         
         [SerializeField] private GameObject _menus;
         [SerializeField] private Toggle _togglePlayfieldMenusToggle;
@@ -32,8 +32,8 @@ namespace Code.Features.SpeedDuel
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
 
-        CompositeDisposable _disposables = new CompositeDisposable();
-        private int ExitAnimationsTimeInMs = 700;
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private const int ExitAnimationsTimeInMs = 700;
 
         #region Constructor
 
@@ -69,20 +69,20 @@ namespace Code.Features.SpeedDuel
             _togglePlayfieldMenusToggle.OnValueChangedAsObservable()
                 .Subscribe(_speedDuelViewModel.OnTogglePlayfieldMenu);
 
-            //Side Menu Items
+            // Side Menu Items
             _rotationSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.RotatePlayfield(
                 new PlayfieldEventValue<float> { Value = value }));
             _scaleSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.ScalePlayfield(
                 new PlayfieldEventValue<float> { Value = value }));
 
-            //Bottom Menu Items
+            // Bottom Menu Items
             _hidePlaymatToggle.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.HidePlayfield(
                 new PlayfieldEventValue<bool> { Value = value }));
             _flipPlayfieldToggle.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.FlipPlayfield(
                 new PlayfieldEventValue<bool> { Value = value }));
             _removePlayfieldButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnRemovePlayfield());
 
-            //Back Button
+            // Back Button
             _backButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnBackButtonPressed());
 
             // VM Streams
@@ -108,7 +108,7 @@ namespace Code.Features.SpeedDuel
             }
 
             _scaleSlider.value = playfieldValues.Scale;
-            _rotationSlider.value = playfieldValues.yAxisRotation;
+            _rotationSlider.value = playfieldValues.YAxisRotation;
             SetSlidersInteractableState(true);
         }
 

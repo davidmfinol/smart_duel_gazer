@@ -6,12 +6,12 @@
 
     public class PlayfieldEventValue<T> : PlayfieldEventArgs
     {
-        private T dataValue;
+        private T _dataValue;
 
         public T Value 
         { 
-            get => dataValue; 
-            set => dataValue = value; 
+            get => _dataValue; 
+            set => _dataValue = value; 
         }
     }    
 }

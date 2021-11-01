@@ -1,7 +1,6 @@
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Logger;
-using Code.Core.Navigation;
 using Code.Features.SpeedDuel;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
@@ -10,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using UniRx;
 
-namespace Tests.Features.SpeedDuel
+namespace Editor.Tests.EditModeTests.Features.SpeedDuel
 {
     public class SpeedDuelViewModelTests
     {
