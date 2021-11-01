@@ -75,7 +75,7 @@ namespace Code.Features.SpeedDuel
         {
             _logger.Log(Tag, "OnActivatePlayfield()");
 
-            var playfield = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
+            var playfield = _dataManager.Playfield;
             
             if (playfield == null) return;
 

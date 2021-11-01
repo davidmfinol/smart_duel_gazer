@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Code.Core.DataManager.GameObjects.Entities;
 using Code.Wrappers.WrapperResources;
 using Zenject;
 
@@ -12,6 +11,9 @@ namespace Code.Core.Storage.GameObjects
         public void SaveGameObject(string key, UnityEngine.GameObject model);
         public void RemoveGameObject(string key);
         public UnityEngine.GameObject GetCardModel(int cardId);
+        public UnityEngine.GameObject Playfield { get; }
+        public void SavePlayfield(UnityEngine.GameObject playfield);
+        public void RemovePlayfield();
     }
     
     public class GameObjectStorageProvider : IGameObjectStorageProvider
@@ -22,6 +24,8 @@ namespace Code.Core.Storage.GameObjects
 
         private readonly Dictionary<string, Queue<UnityEngine.GameObject>> _gameObjects = new Dictionary<string, Queue<UnityEngine.GameObject>>();
         private UnityEngine.GameObject[] _cardModels;
+
+        public UnityEngine.GameObject Playfield { get; private set; }
 
         [Inject]
         public GameObjectStorageProvider(
@@ -37,11 +41,6 @@ namespace Code.Core.Storage.GameObjects
             if (!_gameObjects.ContainsKey(key) || _gameObjects[key].Count == 0)
             {
                 return null;
-            }
-
-            if (key == GameObjectKeys.PlayfieldKey)
-            {
-                return _gameObjects[key].Peek();
             }
 
             return _gameObjects[key].Dequeue();
@@ -90,6 +89,20 @@ namespace Code.Core.Storage.GameObjects
         private void LoadCardModels()
         {
             _cardModels = _resourcesProvider.LoadAll<UnityEngine.GameObject>(MonsterResourcesPath);
+        }
+
+        #endregion
+
+        #region Playfield
+
+        public void SavePlayfield(UnityEngine.GameObject playfield)
+        {
+            Playfield = playfield;
+        }
+
+        public void RemovePlayfield()
+        {
+            Playfield = null;
         }
 
         #endregion

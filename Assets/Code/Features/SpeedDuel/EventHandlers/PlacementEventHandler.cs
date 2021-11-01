@@ -176,7 +176,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _objectPlaced = true;
             placementIndicator.SetActive(false);
 
-            var playfield = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
+            var playfield = _dataManager.Playfield;
             if (playfield == null)
             {
                 CreatePlayfield();
@@ -194,7 +194,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _logger.Log(Tag, "CreatePlayfield()");
             
             _speedDuelField = _playfieldFactory.Create(playfieldPrefab).gameObject;
-            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, _speedDuelField);
+            _dataManager.SavePlayfield(_speedDuelField);
 
             // Move Playfield to Scene Root rather than Zenject Project Context
             _speedDuelField.transform.SetParent(transform);

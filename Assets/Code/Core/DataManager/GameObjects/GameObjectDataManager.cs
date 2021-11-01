@@ -6,15 +6,19 @@ namespace Code.Core.DataManager.GameObjects
 {
     public interface IGameObjectDataManager
     {
+        public GameObject Playfield { get; }
         public GameObject GetGameObject(string key);
         public void SaveGameObject(string key, GameObject model);
         public void RemoveGameObject(string key);
         GameObject GetCardModel(int cardId);
+        public void SavePlayfield(GameObject playField);
+        public void RemovePlayfield();
     }
     
     public class GameObjectDataManager : IGameObjectDataManager
     {
         private readonly IGameObjectStorageProvider _gameObjectStorageProvider;
+        public GameObject Playfield { get => _gameObjectStorageProvider.Playfield; }
 
         [Inject]
         public GameObjectDataManager(
@@ -47,6 +51,20 @@ namespace Code.Core.DataManager.GameObjects
         public GameObject GetCardModel(int cardId)
         {
             return _gameObjectStorageProvider.GetCardModel(cardId);
+        }
+
+        #endregion
+
+        #region Playfield
+
+        public void SavePlayfield(GameObject playField)
+        {
+            _gameObjectStorageProvider.SavePlayfield(playField);
+        }
+
+        public void RemovePlayfield()
+        {
+            _gameObjectStorageProvider.RemovePlayfield();
         }
 
         #endregion

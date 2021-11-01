@@ -39,13 +39,20 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
 
         [TestCase(GameObjectKeys.ParticlesKey)]
         [TestCase(GameObjectKeys.SetCardKey)]
-        [TestCase(GameObjectKeys.PlayfieldKey)]
         [Parallelizable]
         public void When_ExecuteCalled_GameObjectRemoved(string key)
         {
             _endOfDuel.Execute();
 
             _dataManger.Verify(dm => dm.RemoveGameObject(key), Times.Once);
+        }
+
+        [Test]
+        public void When_ExectuteCalled_PlayfieldRemoved()
+        {
+            _endOfDuel.Execute();
+
+            _dataManger.Verify(dm => dm.RemovePlayfield(), Times.Once);
         }
     }
 }

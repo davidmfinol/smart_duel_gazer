@@ -143,7 +143,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             if (_speedDuelField != null) return;
 
-            _speedDuelField = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
+            _speedDuelField = _dataManager.Playfield;
         }
 
         #region Handle card events

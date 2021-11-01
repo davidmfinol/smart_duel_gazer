@@ -42,7 +42,7 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
             
             _playfieldEventHandler.Object.ActivatePlayfield();
 
-            _dataManager.Verify(dm => dm.GetGameObject(GameObjectKeys.PlayfieldKey), Times.Once);
+            _dataManager.Verify(dm => dm.Playfield, Times.Once);
         }
         
         [Test]
