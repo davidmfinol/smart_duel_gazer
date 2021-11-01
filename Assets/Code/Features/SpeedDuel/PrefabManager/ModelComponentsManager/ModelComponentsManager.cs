@@ -34,6 +34,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         public void CallSummonMonster() => SummonMonster(_parent.GetInstanceID());
         public void CallRemoveMonster() => RemoveMonster(_parent.GetInstanceID());
         public void CallTakeDamage() => _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
+        public void CallAttack() => Attack(true);
 
         #endregion
 

@@ -121,19 +121,19 @@ namespace Code.Features.DuelRoom
             roomNameInputField.text = roomName;
         }
 
-        private void UpdateErrorText(string error)
+        private void UpdateErrorText(string errorText)
         {
-            errorDescriptionText.text = $"Could not connect to Smart Duel Server\nReason: {error}";
+            errorDescriptionText.text = errorText;
         }
 
         private void UpdateDropdownMenu(List<string> duelistIds)
         {
+            duelistsDropdown.ClearOptions();
             if (duelistIds == null)
             {
-                duelistsDropdown.ClearOptions();
                 return;
             }
-            
+
             duelistsDropdown.AddOptions(duelistIds);
         }
 

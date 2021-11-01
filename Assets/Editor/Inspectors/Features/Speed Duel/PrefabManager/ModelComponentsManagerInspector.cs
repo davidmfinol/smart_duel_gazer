@@ -25,5 +25,10 @@ public class ModelComponentsManagerInspector : Editor
         {
             modelComponentsManager.CallTakeDamage();
         }
+
+        if (GUILayout.Button("Attack"))
+        {
+            modelComponentsManager.CallAttack();
+        }
     }
 }

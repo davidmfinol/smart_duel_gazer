@@ -106,25 +106,25 @@ namespace Editor.Tests.EditModeTests.Features.Onboarding
         [Test]
         public void Given_NoNetworkConnection_When_InitiateLinkPressed_Then_NoConnectionStateEmitted()
         {
+            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.NoConnection };
+            
+            var onNext = new List<OnboardingState>();
+            _viewModel.State.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(false);
             
             _viewModel.OnInitiateLinkPressed();
 
-            _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
+            Assert.AreEqual(expected, onNext);
         }
         
         [Test]
         public void Given_NetworkConnection_When_InitiateLinkPressed_Then_ConnectionSceneShown()
         {
-            var expected = new List<OnboardingState> { OnboardingState.Connecting, OnboardingState.NoConnection };
-            
-            var onNext = new List<OnboardingState>();
-            _viewModel.State.Subscribe(value => onNext.Add(value));
             _networkConnectionProvider.Setup(ncp => ncp.IsConnected()).Returns(true);
             
             _viewModel.OnInitiateLinkPressed();
-
-            Assert.AreEqual(expected, onNext);
+            
+            _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
         }
         
         [Test]

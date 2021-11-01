@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Code.Core.DataManager;
 using Code.Core.DataManager.Connections.Entities;
 using Code.Core.Dialog;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
@@ -17,12 +19,13 @@ namespace Editor.Tests.EditModeTests.Features.Connection
     {
         private ConnectionViewModel _viewModel;
 
+        private ConnectionFormValidators _validators;
         private Mock<IDataManager> _dataManager;
         private Mock<IDialogService> _dialogService;
         private Mock<INavigationService> _navigationService;
-        private Mock<IAppLogger> _logger;
         private Mock<IScreenService> _screenService;
-        private ConnectionFormValidators _validators;
+        private Mock<IStringProvider> _stringProvider;
+        private Mock<IAppLogger> _logger;
 
         private const string ValidIp = "0.0.0.0";
         private const string ValidPort = "8080";
@@ -32,13 +35,16 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         [SetUp]
         public void SetUp()
         {
+            _validators = new ConnectionFormValidators();
             _dataManager = new Mock<IDataManager>();
             _dialogService = new Mock<IDialogService>();
             _navigationService = new Mock<INavigationService>();
             _screenService = new Mock<IScreenService>();
+            _stringProvider = new Mock<IStringProvider>();
             _logger = new Mock<IAppLogger>();
 
-            _validators = new ConnectionFormValidators();
+            _stringProvider.Setup(sp => sp.GetString(
+                It.IsAny<string>(), It.IsAny<object[]>())).Returns<string, object[]>((key, args) => key);
 
             _viewModel = new ConnectionViewModel(
                 _validators,
@@ -46,6 +52,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
                 _dialogService.Object,
                 _navigationService.Object,
                 _screenService.Object,
+                _stringProvider.Object,
                 _logger.Object);
         }
 
@@ -77,8 +84,8 @@ namespace Editor.Tests.EditModeTests.Features.Connection
 
             _viewModel.Init();
 
-            Assert.AreEqual(new List<string> {null, ValidIp}, ipAddressOnNext);
-            Assert.AreEqual(new List<string> {null, ValidPort}, portOnNext);
+            Assert.AreEqual(new List<string> { null, ValidIp }, ipAddressOnNext);
+            Assert.AreEqual(new List<string> { null, ValidPort }, portOnNext);
         }
 
         [Test]
@@ -89,7 +96,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
 
             _viewModel.OnIpAddressChanged(ValidIp);
 
-            Assert.AreEqual(new List<string> {null, ValidIp}, ipAddressOnNext);
+            Assert.AreEqual(new List<string> { null, ValidIp }, ipAddressOnNext);
         }
 
         [Test]
@@ -100,7 +107,7 @@ namespace Editor.Tests.EditModeTests.Features.Connection
 
             _viewModel.OnPortChanged(ValidPort);
 
-            Assert.AreEqual(new List<string> {null, ValidPort}, portOnNext);
+            Assert.AreEqual(new List<string> { null, ValidPort }, portOnNext);
         }
 
         [Test]
@@ -167,17 +174,17 @@ namespace Editor.Tests.EditModeTests.Features.Connection
             _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Never);
         }
 
-        [TestCase(null, ValidPort, "IP address is required.")]
-        [TestCase(ValidIp, null, "Port is required.")]
-        [TestCase("Invalid", ValidPort, "Not a valid IP address.")]
-        [TestCase(ValidIp, "Invalid", "Not a valid port.")]
+        [TestCase(null, ValidPort, LocaleKeys.ConnectionIPAddressRequired)]
+        [TestCase(ValidIp, null, LocaleKeys.ConnectionPortRequired)]
+        [TestCase("Invalid", ValidPort, LocaleKeys.ConnectionIPAddressInvalid)]
+        [TestCase(ValidIp, "Invalid", LocaleKeys.ConnectionPortInvalid)]
         [Parallelizable]
         public void Given_InvalidForm_When_EnterLocalDuelRoomButtonPressed_Then_ErrorMessageShown(string ip, string port,
             string expected)
         {
             _viewModel.OnIpAddressChanged(ip);
             _viewModel.OnPortChanged(port);
-            
+
             _viewModel.OnEnterLocalDuelRoomPressed();
 
             _dialogService.Verify(ds => ds.ShowToast(expected), Times.Once);

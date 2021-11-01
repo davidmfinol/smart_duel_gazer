@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Loco Localization Table_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 59b086d05aee94558b58c42fc4b50e49, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 269755604992
+    m_Localized: 'Smart
+
+      Duel Gazer'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335643926528
+    m_Localized: Smart Duel Gazer is an unofficial Fan Project and is not approved
+      or endorsed by Konami. Portions of the materials used are property of Konami
+      Digital Entertainment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 604192628736
+    m_Localized: Initiate link!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 711596171264
+    m_Localized: Connecting...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 842819166208
+    m_Localized: No Network Detected!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 947290890240
+    m_Localized: Try again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390429005570048
+    m_Localized: Enter online duel room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390941901840384
+    m_Localized: IP address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 390992984268800
+    m_Localized: Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391018401751040
+    m_Localized: Enter local duel room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391197372702720
+    m_Localized: Port is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391305556385792
+    m_Localized: Not a valid port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391378210119680
+    m_Localized: IP address is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 391455343370240
+    m_Localized: Not a valid IP address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413786275045376
+    m_Localized: Connecting...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413989837201408
+    m_Localized: Room name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414405782134784
+    m_Localized: Enter room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414532567556096
+    m_Localized: Who do you want to specate?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414789359624192
+    m_Localized: Spectate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414831214583808
+    m_Localized: Waiting for the duel to start...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 415226519347200
+    m_Localized: Leave room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416700049645568
+    m_Localized: Go back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 418848426680320
+    m_Localized: A new duelist has appeared!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419618656083968
+    m_Localized: Room name is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420733598556160
+    m_Localized: Duelist name is required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 424735769878528
+    m_Localized: 'Could not connect to Smart Duel Server
+
+      Reason: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425008043122688
+    m_Localized: Room data is invalid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425151240855552
+    m_Localized: No duel room data found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 425228759982080
+    m_Localized: Duel room is closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436593490911232
+    m_Localized: Duel is over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436666136256512
+    m_Localized: '{0} won the duel!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 436748487221248
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1
