@@ -22,9 +22,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
         private IDataManager _dataManager;
+        private ISetCardEventHandler _setCardEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private IAppLogger _logger;
-        private SetCardEventHandler _setCardEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
 
         private Animator _animator;
         private CurrentState _currentState;
@@ -33,10 +33,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,            
-            IAppLogger logger,
-            SetCardEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler)
+            IDataManager dataManager,
+            ISetCardEventHandler modelEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
+            IAppLogger logger)
         {
             _dataManager = dataManager;
             _logger = logger;
@@ -57,6 +57,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void OnDisable()
         {
             _currentState = CurrentState.FaceDown;
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, false);
         }
 
         private void OnDestroy()
@@ -96,9 +98,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                 SetMonster();
             }
 
-            _setCardEventHandler.OnSummonSetCard -= OnSummon;
-            _animator.SetBool(AnimatorParameters.AllowDestroyBool, false);
-
             await GetAndDisplayCardImage(modelName);
         }
 
@@ -107,7 +106,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
-            {               
+            {
                 case SetCardEvent.SpellTrapActivate:
                     SpellTrapActivate();
                     break;
@@ -120,6 +119,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                 case SetCardEvent.HideSetCardImage:
                     HideSetCardImage();
                     break;
+                case SetCardEvent.Hurt:
+                    PlayHurtAnimation();
+                    break;
             }
         }
 
@@ -128,9 +130,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
-
-            //TODO: See if this is necessary
-            _animator.SetBool(AnimatorParameters.AllowDestroyBool, true);
         }
 
         #endregion
@@ -141,24 +140,30 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void ActivatePlayfield()
         {
+            _logger.Log(Tag, "ActivatePlayfield");
+
             if (!gameObject.activeSelf) return;
-            
+
             switch (_currentState)
             {
                 case CurrentState.FaceDown:
                     _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
                     break;
                 case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
                     _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
                     break;
                 case CurrentState.SetMonsterRevealed:
-                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
+                    _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
                     break;
             }
         }
 
         private void RemovePlayfield()
         {
+            _logger.Log(Tag, "RemovePlayfield()");
+            
             _animator.SetTrigger(AnimatorParameters.RemoveSetCardTrigger);
         }
 
@@ -168,12 +173,16 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void SpellTrapActivate()
         {
+            _logger.Log(Tag, "SpellTrapAcivate()");
+            
             _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
             _currentState = CurrentState.SpellActivated;
         }
 
         private void ReturnToFaceDown()
         {
+            _logger.Log(Tag, "ReturnToFaceDown()");
+            
             _animator.SetTrigger(AnimatorParameters.ReturnSpellTrapToFaceDown);
             _currentState = CurrentState.FaceDown;
         }
@@ -184,19 +193,33 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void SetMonster()
         {
+            _logger.Log(Tag, "SetMonster()");
+            
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-        
+
         private void RevealSetCardImage()
         {
-            _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
+            _logger.Log(Tag, "RevealSetCardImage()");
+            
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
             _currentState = CurrentState.SetMonsterRevealed;
         }
 
         private void HideSetCardImage()
         {
-            _animator.SetTrigger(AnimatorParameters.HideSetMonsterImageTrigger);
+            _logger.Log(Tag, "HideSetCardImage()");
+            
+            _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, false);
+            _animator.SetTrigger(AnimatorParameters.HideSetCardTrigger);
             _currentState = CurrentState.FaceDown;
+        }
+
+        private void PlayHurtAnimation()
+        {
+            _logger.Log(Tag, "PlayHurtAnimations()");
+            
+            _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
         }
 
         #endregion
@@ -221,6 +244,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void SetRandomErrorImage()
         {
+            _logger.Warning(Tag, "SetRandomErrorImage");
+            
             var randomNum = Random.Range(0, _errorImages.Count);
             _image.material.SetTexture(MainTex, _errorImages[randomNum]);
         }

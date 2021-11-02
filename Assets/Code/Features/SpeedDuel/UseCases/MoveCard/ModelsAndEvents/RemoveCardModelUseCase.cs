@@ -1,8 +1,6 @@
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.DataManager.GameObjects.UseCases;
-using Code.Core.General.Extensions;
 using Code.Features.SpeedDuel.EventHandlers;
-using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;
@@ -18,16 +16,16 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
     {
         private readonly IGetTransformedGameObjectUseCase _getTransformedGameObjectUseCase;
         private readonly IRecycleGameObjectUseCase _recycleGameObjectUseCase;
-        private readonly ModelEventHandler _modelEventHandler;
-        private readonly SetCardEventHandler _setCardEventHandler;
+        private readonly IModelEventHandler _modelEventHandler;
+        private readonly ISetCardEventHandler _setCardEventHandler;
 
         #region Constructor
 
         public RemoveCardModelUseCase(
             IGetTransformedGameObjectUseCase getTransformedGameObjectUseCase,
             IRecycleGameObjectUseCase recycleGameObjectUseCase,
-            ModelEventHandler modelEventHandler,
-            SetCardEventHandler setCardEventHandler)
+            IModelEventHandler modelEventHandler,
+            ISetCardEventHandler setCardEventHandler)
         {
             _getTransformedGameObjectUseCase = getTransformedGameObjectUseCase;
             _recycleGameObjectUseCase = recycleGameObjectUseCase;

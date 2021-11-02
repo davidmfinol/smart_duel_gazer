@@ -23,7 +23,7 @@ Animator:
   m_GameObject: {fileID: 1848461313704707797}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: dc4d50577c31549208f7c151ddb691e2, type: 2}
+  m_Controller: {fileID: 22100000, guid: b42fcd32ef777da4da18d2d2a17c2d6f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -45,7 +45,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 50, y: 50, z: 50}
---- !u!114 &5755268617364871502
+--- !u!114 &4815018047532016015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1848461313704707797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f40a1cb1b685bcc41bf19431922a9f7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7955946389310347952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

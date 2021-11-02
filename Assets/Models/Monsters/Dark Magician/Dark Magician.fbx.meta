@@ -5,16 +5,16 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 5577620199272415434
-    second: Model_skeleton|MotionA
+    second: Summon
   - first:
       74: -4753414617813279217
-    second: Model_skeleton|MotionB
+    second: Idle - Attack
   - first:
       74: -2361512165147288874
-    second: Model_skeleton|MotionC
+    second: Attack 1
   - first:
       74: 2331642159709094490
-    second: Model_skeleton|MotionD
+    second: Epic Attack
   - first:
       74: 1081090318285083515
     second: Model_skeleton|MotionB (1)
@@ -47,7 +47,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Model_skeleton|MotionA
+      name: Summon
       takeName: Model_skeleton|MotionA
       internalID: 0
       firstFrame: 37
@@ -76,7 +76,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionB
+      name: Idle - Attack
       takeName: Model_skeleton|MotionB
       internalID: 0
       firstFrame: 0
@@ -105,7 +105,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionC
+      name: Attack 1
       takeName: Model_skeleton|MotionC
       internalID: 0
       firstFrame: 0
@@ -134,7 +134,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Model_skeleton|MotionD
+      name: Epic Attack
       takeName: Model_skeleton|MotionD
       internalID: 0
       firstFrame: 0
@@ -216,7 +216,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.01
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

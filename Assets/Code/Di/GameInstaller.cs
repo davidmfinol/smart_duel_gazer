@@ -1,4 +1,5 @@
-﻿using Code.Core.Config.Entities;
+﻿using Code.Features.SpeedDuel.UseCases.CardBattle;
+using Code.Core.Config.Entities;
 using Code.Core.Config.Providers;
 using Code.Core.DataManager;
 using Code.Core.DataManager.Connections;
@@ -8,6 +9,7 @@ using Code.Core.DataManager.GameObjects.UseCases;
 using Code.Core.DataManager.Settings;
 using Code.Core.DataManager.Textures;
 using Code.Core.Dialog;
+using Code.Core.Localization;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Core.Screen;
@@ -20,14 +22,15 @@ using Code.Core.Storage.Textures;
 using Code.Core.YGOProDeck;
 using Code.Features.Connection;
 using Code.Features.Connection.Helpers;
+using Code.Features.DuelRoom;
 using Code.Features.Onboarding;
+using Code.Features.SpeedDuel;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using Code.Features.SpeedDuel.UseCases;
-using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using Code.Wrappers.WrapperDialog;
@@ -40,11 +43,17 @@ using Code.Wrappers.WrapperWebSocket;
 using Dpoch.SocketIO;
 using UnityEngine;
 using Zenject;
+using Code.Wrappers.WrapperNetworkConnection;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 
 namespace Code.Di
 {
     public class GameInstaller : MonoInstaller
     {
+        [SerializeField]
+        private LocalizedStringTable localizedStringTable;
+        
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
@@ -58,6 +67,7 @@ namespace Code.Di
             // Config
             Container.Bind<IAppConfig>().FromInstance(new AppConfig());
             Container.Bind<IDelayProvider>().To<DelayProvider>().AsSingle();
+            Container.Bind<ITimeProvider>().To<TimeProvider>().AsSingle();
 
             // Data managers
             Container.Bind<IDataManager>().To<DataManager>().AsSingle();
@@ -83,6 +93,11 @@ namespace Code.Di
 
             // Smart duel server
             Container.Bind<ISmartDuelServer>().To<SmartDuelServer>().AsSingle();
+            
+            // String provider
+            var stringTable =  localizedStringTable.GetTable();
+            Container.Bind<StringTable>().FromInstance(stringTable);
+            Container.Bind<IStringProvider>().To<StringProvider>().AsSingle();
 
             // Logger
             Container.Bind<IAppLogger>().To<AppLogger>().AsSingle();
@@ -96,11 +111,14 @@ namespace Code.Di
             // ViewModels
             Container.Bind<OnboardingViewModel>().AsTransient();
             Container.Bind<ConnectionViewModel>().AsTransient();
+            Container.Bind<SpeedDuelViewModel>().AsTransient();
+            Container.Bind<DuelRoomViewModel>().AsTransient();
 
             // Event Handlers
-            Container.Bind<ModelEventHandler>().AsSingle();
-            Container.Bind<PlayfieldEventHandler>().AsSingle();
-            Container.Bind<SetCardEventHandler>().AsSingle();
+            Container.Bind<IModelEventHandler>().To<ModelEventHandler>().AsSingle();
+            Container.Bind<IPlayfieldEventHandler>().To<PlayfieldEventHandler>().AsSingle();
+            Container.Bind<ISetCardEventHandler>().To<SetCardEventHandler>().AsSingle();
+            Container.Bind<IEndOfDuelUseCase>().To<EndOfDuelUseCase>().AsSingle();
 
             // Prefabs
             Container.BindFactory<GameObject, DestructionParticles, DestructionParticles.Factory>()
@@ -125,7 +143,8 @@ namespace Code.Di
             Container.Bind<IRemoveCardModelUseCase>().To<RemoveCardModelUseCase>().AsSingle();
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
             Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
-            Container.Bind<IMonsterBattleUseCase>().To<MonsterBattleUseCase>().AsSingle();
+            Container.Bind<IMonsterZoneBattleUseCase>().To<MonsterZoneBattleUseCase>().AsSingle();
+            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();            
 
             #endregion
 
@@ -140,6 +159,7 @@ namespace Code.Di
             Container.Bind<IWebSocketFactory>().To<WebSocketFactory>().AsSingle();
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
+            Container.Bind<INetworkConnectionProvider>().To<NetworkConnectionProvider>().AsSingle();
 
             #endregion
         }

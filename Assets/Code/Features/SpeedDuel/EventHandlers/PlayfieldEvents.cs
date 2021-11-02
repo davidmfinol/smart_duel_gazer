@@ -5,8 +5,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface IPlayfieldEventHandler
     {
-        void ActivatePlayfield();
+        event Action<PlayfieldEvent, PlayfieldEventArgs> OnAction;
+        event Action OnActivatePlayfield;
+        event Action OnRemovePlayfield;
+
         void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args);
+        void ActivatePlayfield();
         void RemovePlayfield();
     }
 

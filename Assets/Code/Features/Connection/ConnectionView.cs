@@ -8,6 +8,12 @@ namespace Code.Features.Connection
 {
     public class ConnectionView : MonoBehaviour
     {
+        [SerializeField] private Toggle showSettingsMenuToggle;
+        [SerializeField] private GameObject settingsMenu;
+        [SerializeField] private Toggle developerModeToggle;
+
+        [SerializeField] private GameObject localConnectionForm;
+        
         [SerializeField] private Button enterOnlineDuelRoomButton;
         [SerializeField] private TMP_InputField ipAddressInputField;
         [SerializeField] private TMP_InputField portInputField;
@@ -39,12 +45,19 @@ namespace Code.Features.Connection
 
         private void OnViewModelSet()
         {
+            _connectionViewModel.Init();
             BindViews();
         }
 
         private void BindViews()
         {
-            // Buttons
+            // Toggles
+            _disposables.Add(showSettingsMenuToggle.OnValueChangedAsObservable()
+                .Subscribe(_connectionViewModel.OnSettingsMenuToggled));
+            _disposables.Add(developerModeToggle.OnValueChangedAsObservable()
+                .Subscribe(_connectionViewModel.OnDeveloperModeToggled));
+
+            // Buttons            
             _disposables.Add(enterOnlineDuelRoomButton.onClick.AsObservable()
                 .Subscribe(_ => _connectionViewModel.OnEnterOnlineDuelRoomPressed()));
             _disposables.Add(enterLocalDuelRoomButton.onClick.AsObservable()
@@ -57,6 +70,12 @@ namespace Code.Features.Connection
                 .Subscribe(text => _connectionViewModel.OnPortChanged(text)));
 
             // VM streams
+            _disposables.Add(_connectionViewModel.ShowSettingsMenu
+                .Subscribe(state => UpdateMenuVisibility(settingsMenu, state)));
+            _disposables.Add(_connectionViewModel.IsDeveloperModeEnabled
+                .Subscribe(state => UpdateToggleState(developerModeToggle, state)));
+            _disposables.Add(_connectionViewModel.ShowLocalConnectionMenu
+                .Subscribe(state => UpdateMenuVisibility(localConnectionForm, state)));
             _disposables.Add(_connectionViewModel.IpAddress
                 .Subscribe(ipAddress => UpdateInputFieldTextIfNecessary(ipAddressInputField, ipAddress)));
             _disposables.Add(_connectionViewModel.Port
@@ -69,6 +88,16 @@ namespace Code.Features.Connection
             {
                 inputField.text = text;
             }
+        }
+
+        private void UpdateMenuVisibility(GameObject menu, bool isVisible)
+        {
+            menu.SetActive(isVisible);
+        }
+
+        private void UpdateToggleState(Toggle toggle, bool isOn)
+        {
+            toggle.isOn = isOn;
         }
     }
 }

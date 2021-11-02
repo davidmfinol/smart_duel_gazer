@@ -20,5 +20,15 @@ public class ModelComponentsManagerInspector : Editor
         {
             modelComponentsManager.CallRemoveMonster();
         }
+
+        if (GUILayout.Button("Take Damage"))
+        {
+            modelComponentsManager.CallTakeDamage();
+        }
+
+        if (GUILayout.Button("Attack"))
+        {
+            modelComponentsManager.CallAttack();
+        }
     }
 }

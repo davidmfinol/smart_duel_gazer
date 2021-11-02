@@ -6,6 +6,8 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Features.Connection.Helpers;
 using System;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using UniRx;
 
 namespace Code.Features.Connection
@@ -19,13 +21,27 @@ namespace Code.Features.Connection
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
         private readonly IScreenService _screenService;
+        private readonly IStringProvider _stringProvider;
         private readonly IAppLogger _logger;
+
+        #region Properties
+
+        private readonly BehaviorSubject<bool> _developerModeEnabled = new BehaviorSubject<bool>(false);
+        public IObservable<bool> IsDeveloperModeEnabled => _developerModeEnabled;
+
+        private readonly BehaviorSubject<bool> _showLocalConnectionMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowLocalConnectionMenu => _showLocalConnectionMenu;
+
+        private readonly BehaviorSubject<bool> _showSettingsMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowSettingsMenu => _showSettingsMenu;
 
         private readonly BehaviorSubject<string> _ipAddress = new BehaviorSubject<string>(default);
         public IObservable<string> IpAddress => _ipAddress;
 
         private readonly BehaviorSubject<string> _port = new BehaviorSubject<string>(default);
         public IObservable<string> Port => _port;
+
+        #endregion
 
         #region Constructors
 
@@ -35,6 +51,7 @@ namespace Code.Features.Connection
             IDialogService dialogService,
             INavigationService navigationService,
             IScreenService screenService,
+            IStringProvider stringProvider,
             IAppLogger appLogger)
         {
             _connectionFormValidators = connectionFormValidators;
@@ -43,24 +60,32 @@ namespace Code.Features.Connection
             _dialogService = dialogService;
             _navigationService = navigationService;
             _screenService = screenService;
+            _stringProvider = stringProvider;
             _logger = appLogger;
-
-            Init();
         }
 
         #endregion
 
         #region Initialization
 
-        private void Init()
+        public void Init()
         {
             _logger.Log(Tag, "Init()");
 
             _screenService.UsePortraitOrientation();
 
+            InitSettings();
             InitForm();
         }
 
+        private void InitSettings()
+        {
+            _logger.Log(Tag, "InitSettings()");
+            
+            var isInDeveloperMode = _dataManager.IsDeveloperModeEnabled();
+            _developerModeEnabled.OnNext(isInDeveloperMode);
+        }
+        
         private void InitForm()
         {
             _logger.Log(Tag, "InitForm()");
@@ -79,13 +104,28 @@ namespace Code.Features.Connection
 
         #region Form fields
 
+        public void OnSettingsMenuToggled(bool showSettingsMenu)
+        {
+            _logger.Log(Tag, $"OnSettingsMenuToggled(showSettingsMenu: {showSettingsMenu})");
+
+            _showSettingsMenu.OnNext(showSettingsMenu);
+        }
+
+        public void OnDeveloperModeToggled(bool developerModeEnabled)
+        {
+            _logger.Log(Tag, $"OnDeveloperModeToggled(developerModeEnabled: {developerModeEnabled})");
+
+            _dataManager.SaveDeveloperModeEnabled(developerModeEnabled);
+
+            _showLocalConnectionMenu.OnNext(developerModeEnabled);
+        }
+        
         public void OnIpAddressChanged(string ipAddress)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(ipAddress: {ipAddress})");
 
             _ipAddress.OnNext(ipAddress);
         }
-
 
         public void OnPortChanged(string port)
         {
@@ -140,11 +180,11 @@ namespace Code.Features.Connection
 
             if (string.IsNullOrEmpty(ipAddress))
             {
-                toastMessage = "IP address is required.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionIPAddressRequired);
             }
             else if (!_connectionFormValidators.IsValidIpAddress(ipAddress))
             {
-                toastMessage = "Not a valid IP address.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionIPAddressInvalid);
             }
 
             if (toastMessage != default)
@@ -163,11 +203,11 @@ namespace Code.Features.Connection
 
             if (string.IsNullOrEmpty(port))
             {
-                toastMessage = "Port is required.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionPortRequired);
             }
             else if (!_connectionFormValidators.IsValidPort(port))
             {
-                toastMessage = "Not a valid port.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionPortInvalid);
             }
 
             if (toastMessage != default)
@@ -187,7 +227,7 @@ namespace Code.Features.Connection
 
         #endregion
 
-        #region CleanUp
+        #region Clean-up
 
         public void Dispose()
         {

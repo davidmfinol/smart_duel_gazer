@@ -10,7 +10,7 @@ Animator:
   m_GameObject: {fileID: 7224370241256276407}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b08cd6bb112f24f6a9b999fc087f45d1, type: 2}
+  m_Controller: {fileID: 22100000, guid: c338333d375470b479cec2fef16864c7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -19,6 +19,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3384991512376814555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224370241256276407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f40a1cb1b685bcc41bf19431922a9f7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7530994550969924834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,7 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 55, y: 55, z: 55}
---- !u!114 &7530994550969924835
+--- !u!114 &7738145916669023011
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

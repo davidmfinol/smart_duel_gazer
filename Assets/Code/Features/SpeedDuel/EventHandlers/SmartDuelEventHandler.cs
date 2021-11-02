@@ -4,16 +4,15 @@ using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using Code.Core.Logger;
-using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Core.SmartDuelServer;
 using Code.Core.SmartDuelServer.Entities;
-using Code.Core.SmartDuelServer.Entities.EventData;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
-using Code.Features.SpeedDuel.Models.Zones;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
@@ -31,11 +30,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ISmartDuelServer _smartDuelServer;
         private IDataManager _dataManager;
         private IDialogService _dialogService;
-        private INavigationService _navigationService;
         private ICreatePlayerStateUseCase _createPlayerStateUseCase;
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
         private IMonsterBattleInteractor _monsterBattleInteractor;
+        private IEndOfDuelUseCase _endOfDuel;
+        private IStringProvider _stringProvider;
         private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
@@ -51,21 +51,23 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IDataManager dataManager,
             IScreenService screenService,
             IDialogService dialogService,
-            INavigationService navigationService,
             ICreatePlayerStateUseCase createPlayerStateUseCase,
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
             IMonsterBattleInteractor monsterBattleInteractor,
+            IEndOfDuelUseCase endOfDuel,
+            IStringProvider stringProvider,
             IAppLogger logger)
         {
             _smartDuelServer = smartDuelServer;
             _dataManager = dataManager;
             _dialogService = dialogService;
-            _navigationService = navigationService;
             _createPlayerStateUseCase = createPlayerStateUseCase;
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
             _monsterBattleInteractor = monsterBattleInteractor;
+            _endOfDuel = endOfDuel;
+            _stringProvider = stringProvider;
             _logger = logger;
 
             screenService.UseAutoOrientation();
@@ -142,7 +144,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             if (_speedDuelField != null) return;
 
-            _speedDuelField = FindObjectOfType<PlacementEventHandler>().SpeedDuelField;
+            _speedDuelField = _dataManager.GetPlayfield();
         }
 
         #region Handle card events
@@ -228,10 +230,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
             var targetZone = targetPlayerState.GetZone(data.ZoneType.Value);
 
-            if (attackZone != null && targetZone != null)
-            {
-                _monsterBattleInteractor.Execute(attackZone, targetZone);
-            }
+            _monsterBattleInteractor.Execute(attackZone, targetZone, targetPlayerState, _speedDuelField);
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)
@@ -277,26 +276,14 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             _dialogService.ShowDialog(new DialogConfig
             {
-                Title = "Duel is over",
-                Description = $"{winnerId} won the duel!",
-                PositiveText = "Continue",
-                PositiveAction = () => ExecuteEndOfGame()
+                Title = _stringProvider.GetString(LocaleKeys.SpeedDuelDuelOverDialogTitle),
+                Description = _stringProvider.GetString(LocaleKeys.SpeedDuelDuelOverDialogDescription, winnerId),
+                PositiveText = _stringProvider.GetString(LocaleKeys.GeneralActionContinue),
+                PositiveAction = () => _endOfDuel.Execute()
             });
         }
 
         #endregion
-
-        //Handle Async functions that haven't completed yet
-        private void ExecuteEndOfGame()
-        {
-            _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.PlayfieldKey);
-
-            Destroy(_speedDuelField);
-
-            _navigationService.ShowConnectionScene();
-        }
 
         #endregion
     }

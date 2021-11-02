@@ -84,6 +84,21 @@ namespace Code.Core.DataManager
             return _gameObjectDataManager.GetCardModel(cardId);
         }
 
+        public GameObject GetPlayfield()
+        {
+            return _gameObjectDataManager.GetPlayfield();
+        }
+
+        public void SavePlayfield(GameObject playField)
+        {
+            _gameObjectDataManager.SavePlayfield(playField);
+        }
+
+        public void RemovePlayfield()
+        {
+            _gameObjectDataManager.RemovePlayfield();
+        }
+
         #endregion
 
         #region Texture
@@ -116,9 +131,9 @@ namespace Code.Core.DataManager
             return _settingsDataManager.IsDeveloperModeEnabled();
         }
 
-        public void SaveDeveloperModelEnabled(bool value)
+        public void SaveDeveloperModeEnabled(bool value)
         {
-            _settingsDataManager.SaveDeveloperModelEnabled(value);
+            _settingsDataManager.SaveDeveloperModeEnabled(value);
         }
 
         #endregion
