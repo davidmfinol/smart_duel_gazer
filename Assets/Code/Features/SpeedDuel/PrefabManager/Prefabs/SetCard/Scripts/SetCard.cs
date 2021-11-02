@@ -140,6 +140,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         private void ActivatePlayfield()
         {
+            _logger.Log(Tag, "OnActivatePlayfield");
+
             if (!gameObject.activeSelf) return;
 
             switch (_currentState)
@@ -148,10 +150,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
                     _animator.SetTrigger(AnimatorParameters.FadeInSetCardTrigger);
                     break;
                 case CurrentState.SpellActivated:
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
                     _animator.SetTrigger(AnimatorParameters.ActivateSpellOrTrapTrigger);
                     break;
                 case CurrentState.SetMonsterRevealed:
-                    _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);
+                    _animator.SetTrigger(AnimatorParameters.PlayfieldActivationTrigger);
+                    _animator.SetTrigger(AnimatorParameters.RevealSetMonsterTrigger);
                     break;
             }
         }
