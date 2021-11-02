@@ -57,11 +57,68 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         }
 
         [Test]
+        public void When_ViewModelCreated_Then_ShowSettingsMenuEmitsFalse()
+        {
+            var onNext = new List<bool>();
+            _viewModel.ShowSettingsMenu.Subscribe(value => onNext.Add(value));
+
+            Assert.AreEqual(new List<bool> { false }, onNext);
+        }
+
+        [Test]
+        public void When_ViewModelCreated_Then_IsDeveloperModeEnabledEmitsFalse()
+        {
+            var onNext = new List<bool>();
+            _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
+
+            Assert.AreEqual(new List<bool> { false }, onNext);
+        }
+
+        [Test]
+        public void When_ViewModelCreated_Then_ShowLocalConnectionMenuEmitsFalse()
+        {
+            var onNext = new List<bool>();
+            _viewModel.ShowLocalConnectionMenu.Subscribe(value => onNext.Add(value));
+
+            Assert.AreEqual(new List<bool> { false }, onNext);
+        }
+
+        [Test]
         public void When_ViewModelInitialized_Then_PortraitOrientationUsed()
         {
             _viewModel.Init();
 
             _screenService.Verify(ss => ss.UsePortraitOrientation(), Times.Once);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_DeveloperModeEnabledSettingFetched()
+        {
+            _viewModel.Init();
+
+            _dataManager.Verify(dm => dm.IsDeveloperModeEnabled(), Times.Once);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_IsDeveloperModeEnabledSettingValueEmitted()
+        {
+            const bool developerModeEnabled = true;
+            
+            var onNext = new List<bool>();
+            _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
+            _dataManager.Setup(dm => dm.IsDeveloperModeEnabled()).Returns(developerModeEnabled);
+
+            _viewModel.Init();
+
+            Assert.AreEqual(new List<bool> { false, developerModeEnabled }, onNext);
+        }
+
+        [Test]
+        public void When_ViewModelInitialized_Then_DataManagerReturnsForcedLocalConnectionInfo()
+        {
+            _viewModel.Init();
+
+            _dataManager.Verify(dm => dm.GetConnectionInfo(true), Times.Once);
         }
 
         [Test]
@@ -126,6 +183,39 @@ namespace Editor.Tests.EditModeTests.Features.Connection
             _navigationService.Verify(ns => ns.ShowDuelRoomScene(), Times.Once);
         }
 
+        [TestCase(true)]
+        [TestCase(false)]
+        public void When_SettingsMenuToggled_Then_ShowSettingsMenuEmitsUpdatedState(bool state)
+        {
+            var onNext = new List<bool>();
+            _viewModel.ShowSettingsMenu.Subscribe(value => onNext.Add(value));
+
+            _viewModel.OnSettingsMenuToggled(state);
+
+            Assert.AreEqual(new List<bool> { false, state }, onNext);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void When_DeveloperModeToggled_Then_DataManagerSavesState(bool state)
+        {
+            _viewModel.OnDeveloperModeToggled(state);
+
+            _dataManager.Verify(dm => dm.SaveDeveloperModeEnabled(state), Times.Once);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void When_DeveloperModeToggled_Then_ShowLocalConnectionMenuEmitsUpdatedState(bool state)
+        {
+            var onNext = new List<bool>();
+            _viewModel.ShowLocalConnectionMenu.Subscribe(value => onNext.Add(value));
+
+            _viewModel.OnDeveloperModeToggled(state);
+
+            Assert.AreEqual(new List<bool> { false, state }, onNext);
+        }
+            
         [Test]
         public void Given_ValidForm_When_EnterLocalDuelRoomButtonPressed_Then_ConnectionInfoSaved()
         {

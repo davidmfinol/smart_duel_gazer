@@ -104,6 +104,13 @@ namespace Code.Features.DuelRoom
         #endregion
 
         #region Button Events
+        
+        public void OnBackButtonPressed()
+        {
+            _logger.Log(Tag, "OnBackButtonPressed()");
+
+            _navigationService.ShowConnectionScene();
+        }
 
         public void OnEnterRoomPressed()
         {

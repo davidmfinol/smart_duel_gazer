@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Code.Core.DataManager;
+using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
 using Code.Core.Localization;
@@ -143,7 +144,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             if (_speedDuelField != null) return;
 
-            _speedDuelField = FindObjectOfType<PlacementEventHandler>().SpeedDuelField;
+            _speedDuelField = _dataManager.GetPlayfield();
         }
 
         #region Handle card events

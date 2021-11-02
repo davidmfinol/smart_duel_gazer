@@ -26,6 +26,15 @@ namespace Code.Features.Connection
 
         #region Properties
 
+        private readonly BehaviorSubject<bool> _developerModeEnabled = new BehaviorSubject<bool>(false);
+        public IObservable<bool> IsDeveloperModeEnabled => _developerModeEnabled;
+
+        private readonly BehaviorSubject<bool> _showLocalConnectionMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowLocalConnectionMenu => _showLocalConnectionMenu;
+
+        private readonly BehaviorSubject<bool> _showSettingsMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowSettingsMenu => _showSettingsMenu;
+
         private readonly BehaviorSubject<string> _ipAddress = new BehaviorSubject<string>(default);
         public IObservable<string> IpAddress => _ipAddress;
 
@@ -65,9 +74,18 @@ namespace Code.Features.Connection
 
             _screenService.UsePortraitOrientation();
 
+            InitSettings();
             InitForm();
         }
 
+        private void InitSettings()
+        {
+            _logger.Log(Tag, "InitSettings()");
+            
+            var isInDeveloperMode = _dataManager.IsDeveloperModeEnabled();
+            _developerModeEnabled.OnNext(isInDeveloperMode);
+        }
+        
         private void InitForm()
         {
             _logger.Log(Tag, "InitForm()");
@@ -86,6 +104,22 @@ namespace Code.Features.Connection
 
         #region Form fields
 
+        public void OnSettingsMenuToggled(bool showSettingsMenu)
+        {
+            _logger.Log(Tag, $"OnSettingsMenuToggled(showSettingsMenu: {showSettingsMenu})");
+
+            _showSettingsMenu.OnNext(showSettingsMenu);
+        }
+
+        public void OnDeveloperModeToggled(bool developerModeEnabled)
+        {
+            _logger.Log(Tag, $"OnDeveloperModeToggled(developerModeEnabled: {developerModeEnabled})");
+
+            _dataManager.SaveDeveloperModeEnabled(developerModeEnabled);
+
+            _showLocalConnectionMenu.OnNext(developerModeEnabled);
+        }
+        
         public void OnIpAddressChanged(string ipAddress)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(ipAddress: {ipAddress})");
