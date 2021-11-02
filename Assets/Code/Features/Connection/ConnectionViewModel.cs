@@ -29,11 +29,11 @@ namespace Code.Features.Connection
         private readonly BehaviorSubject<bool> _developerModeEnabled = new BehaviorSubject<bool>(false);
         public IObservable<bool> IsDeveloperModeEnabled => _developerModeEnabled;
 
-        private readonly BehaviorSubject<bool> _toggleLocalConnectionMenu = new BehaviorSubject<bool>(false);
-        public IObservable<bool> ToggleLocalConnectionMenu => _toggleLocalConnectionMenu;
+        private readonly BehaviorSubject<bool> _showLocalConnectionMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowLocalConnectionMenu => _showLocalConnectionMenu;
 
-        private readonly BehaviorSubject<bool> _toggleSettingsMenu = new BehaviorSubject<bool>(false);
-        public IObservable<bool> ToggleSettingsMenu => _toggleSettingsMenu;
+        private readonly BehaviorSubject<bool> _showSettingsMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowSettingsMenu => _showSettingsMenu;
 
         private readonly BehaviorSubject<string> _ipAddress = new BehaviorSubject<string>(default);
         public IObservable<string> IpAddress => _ipAddress;
@@ -104,20 +104,20 @@ namespace Code.Features.Connection
 
         #region Form fields
 
-        public void OnSettingsMenuToggled(bool state)
+        public void OnSettingsMenuToggled(bool showSettingsMenu)
         {
-            _logger.Log(Tag, $"OnSettingsMenuToggled(State: {state})");
+            _logger.Log(Tag, $"OnSettingsMenuToggled(showSettingsMenu: {showSettingsMenu})");
 
-            _toggleSettingsMenu.OnNext(state);
+            _showSettingsMenu.OnNext(showSettingsMenu);
         }
 
-        public void OnDeveloperModeToggled(bool state)
+        public void OnDeveloperModeToggled(bool developerModeEnabled)
         {
-            _logger.Log(Tag, $"OnDeveloperModeToggled(State: {state})");
+            _logger.Log(Tag, $"OnDeveloperModeToggled(developerModeEnabled: {developerModeEnabled})");
 
-            _dataManager.SaveDeveloperModeEnabled(state);
+            _dataManager.SaveDeveloperModeEnabled(developerModeEnabled);
 
-            _toggleLocalConnectionMenu.OnNext(state);
+            _showLocalConnectionMenu.OnNext(developerModeEnabled);
         }
         
         public void OnIpAddressChanged(string ipAddress)

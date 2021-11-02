@@ -56,19 +56,17 @@ namespace Editor.Tests.EditModeTests.Features.Connection
                 _logger.Object);
         }
 
-        #region Initialization
-
         [Test]
-        public void When_ViewModelCreated_Then_ToggleSettingsMenuEmitsFalse()
+        public void When_ViewModelCreated_Then_ShowSettingsMenuEmitsFalse()
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleSettingsMenu.Subscribe(value => onNext.Add(value));
+            _viewModel.ShowSettingsMenu.Subscribe(value => onNext.Add(value));
 
             Assert.AreEqual(new List<bool> { false }, onNext);
         }
 
         [Test]
-        public void When_ViewModelCreated_Then_ToggleDeveloperModeEmitsFalse()
+        public void When_ViewModelCreated_Then_IsDeveloperModeEnabledEmitsFalse()
         {
             var onNext = new List<bool>();
             _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
@@ -77,16 +75,16 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         }
 
         [Test]
-        public void When_ViewModelCreated_Then_ToggleLocalConnectionMenuEmitsFalse()
+        public void When_ViewModelCreated_Then_ShowLocalConnectionMenuEmitsFalse()
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleLocalConnectionMenu.Subscribe(value => onNext.Add(value));
+            _viewModel.ShowLocalConnectionMenu.Subscribe(value => onNext.Add(value));
 
             Assert.AreEqual(new List<bool> { false }, onNext);
         }
 
         [Test]
-        public void When_ViewModelInitialized_PortraitOrientationUsed()
+        public void When_ViewModelInitialized_Then_PortraitOrientationUsed()
         {
             _viewModel.Init();
 
@@ -94,24 +92,25 @@ namespace Editor.Tests.EditModeTests.Features.Connection
         }
 
         [Test]
-        public void When_ViewModelInitialized_Then_DataManagerGetsSavedDeveloperModeSetting()
+        public void When_ViewModelInitialized_Then_DeveloperModeEnabledSettingFetched()
         {
             _viewModel.Init();
 
             _dataManager.Verify(dm => dm.IsDeveloperModeEnabled(), Times.Once);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void When_ViewModelInitialized_Then_ToggleDeveloperModeEmitsStateFromDataManager(bool state)
+        [Test]
+        public void When_ViewModelInitialized_Then_IsDeveloperModeEnabledSettingValueEmitted()
         {
+            const bool developerModeEnabled = true;
+            
             var onNext = new List<bool>();
             _viewModel.IsDeveloperModeEnabled.Subscribe(value => onNext.Add(value));
-            _dataManager.Setup(dm => dm.IsDeveloperModeEnabled()).Returns(state);
+            _dataManager.Setup(dm => dm.IsDeveloperModeEnabled()).Returns(developerModeEnabled);
 
             _viewModel.Init();
 
-            Assert.AreEqual(new List<bool> { false, state }, onNext);
+            Assert.AreEqual(new List<bool> { false, developerModeEnabled }, onNext);
         }
 
         [Test]
@@ -120,66 +119,6 @@ namespace Editor.Tests.EditModeTests.Features.Connection
             _viewModel.Init();
 
             _dataManager.Verify(dm => dm.GetConnectionInfo(true), Times.Once);
-        }
-
-        [Test]
-        public void Given_NullConnectionInfo_When_ViewModelInitialized_Then_ipAddressEmitsNoEvents()
-        {
-            var onNext = new List<string>();
-            _viewModel.IpAddress.Subscribe(value => onNext.Add(value));
-            ConnectionInfo nullInfo = null;
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(nullInfo);
-
-            _viewModel.Init();
-
-            Assert.AreEqual(new List<string> { null }, onNext);
-        }
-
-        [Test]
-        public void Given_NullConnectionInfo_When_ViewModelInitialized_Then_PortEmitsNoEvents()
-        {
-            var onNext = new List<string>();
-            _viewModel.Port.Subscribe(value => onNext.Add(value));
-            ConnectionInfo nullInfo = null;
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(nullInfo);
-
-            _viewModel.Init();
-
-            Assert.AreEqual(new List<string> { null }, onNext);
-        }
-
-        [Test]
-        public void Given_ConnectionInfo_When_ViewModelInitialized_Then_ipAddressEmitsipAddressValue()
-        {
-            var onNext = new List<string>();
-            _viewModel.IpAddress.Subscribe(value => onNext.Add(value));
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(ConnectionInfo);
-
-            _viewModel.Init();
-
-            Assert.AreEqual(new List<string> { null, ValidIp }, onNext);
-        }
-
-        [Test]
-        public void Given_ConnectionInfo_When_ViewModelInitialized_Then_PortEmitsPortValue()
-        {
-            var onNext = new List<string>();
-            _viewModel.Port.Subscribe(value => onNext.Add(value));
-            _dataManager.Setup(dm => dm.GetConnectionInfo(true)).Returns(ConnectionInfo);
-
-            _viewModel.Init();
-
-            Assert.AreEqual(new List<string> { null, ValidPort }, onNext);
-        }
-
-        #endregion
-
-        [Test]
-        public void When_ViewModelInitialized_Then_PortraitOrientationUsed()
-        {
-            _viewModel.Init();
-
-            _screenService.Verify(ss => ss.UsePortraitOrientation(), Times.Once);
         }
 
         [Test]
@@ -246,10 +185,10 @@ namespace Editor.Tests.EditModeTests.Features.Connection
 
         [TestCase(true)]
         [TestCase(false)]
-        public void When_ToggleSettingsMenuPressed_Then_OnToggleSettingsMenuEmitsGivenValue(bool state)
+        public void When_SettingsMenuToggled_Then_ShowSettingsMenuEmitsUpdatedState(bool state)
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleSettingsMenu.Subscribe(value => onNext.Add(value));
+            _viewModel.ShowSettingsMenu.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnSettingsMenuToggled(state);
 
@@ -267,10 +206,10 @@ namespace Editor.Tests.EditModeTests.Features.Connection
 
         [TestCase(true)]
         [TestCase(false)]
-        public void When_DeveloperModeToggled_Then_OnToggleLocalConnectionMenuEmitsGivenState(bool state)
+        public void When_DeveloperModeToggled_Then_ShowLocalConnectionMenuEmitsUpdatedState(bool state)
         {
             var onNext = new List<bool>();
-            _viewModel.ToggleLocalConnectionMenu.Subscribe(value => onNext.Add(value));
+            _viewModel.ShowLocalConnectionMenu.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnDeveloperModeToggled(state);
 

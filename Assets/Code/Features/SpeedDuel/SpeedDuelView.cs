@@ -18,27 +18,17 @@ namespace Code.Features.SpeedDuel
 
         private const int ExitAnimationsTimeInMs = 700;
 
-        [FormerlySerializedAs("menus")] [SerializeField]
-        private GameObject menu;
-
-        [FormerlySerializedAs("togglePlayfieldMenusToggle")] [SerializeField]
-        private Toggle showPlayfieldMenusToggle;
-
-        [FormerlySerializedAs("hidePlaymatToggle")] [SerializeField]
-        private Toggle playmatVisibilityToggle;
-
+        [SerializeField] private Button backButton;
+        [SerializeField] private GameObject menu;
+        [SerializeField] private Toggle showPlayfieldMenusToggle;
+        [SerializeField] private Toggle playmatVisibilityToggle;
         [SerializeField] private Toggle flipPlayfieldToggle;
         [SerializeField] private Button removePlayfieldButton;
         [SerializeField] private Slider rotationSlider;
         [SerializeField] private Slider scaleSlider;
-
-        [FormerlySerializedAs("animator")] [SerializeField]
-        private Animator playfieldAnimator;
-
+        [SerializeField] private Animator playfieldAnimator;
         [SerializeField] private GameObject settingsMenu;
-
-        [SerializeField] private Button backButton;
-
+        
         private SpeedDuelViewModel _speedDuelViewModel;
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;

@@ -45,7 +45,7 @@ namespace Code.Features.Connection
 
         private void OnViewModelSet()
         {
-            _connectionViewModel?.Init();
+            _connectionViewModel.Init();
             BindViews();
         }
 
@@ -70,12 +70,12 @@ namespace Code.Features.Connection
                 .Subscribe(text => _connectionViewModel.OnPortChanged(text)));
 
             // VM streams
-            _disposables.Add(_connectionViewModel.ToggleSettingsMenu
-                .Subscribe(state => UpdateMenuState(settingsMenu, state)));
+            _disposables.Add(_connectionViewModel.ShowSettingsMenu
+                .Subscribe(state => UpdateMenuVisibility(settingsMenu, state)));
             _disposables.Add(_connectionViewModel.IsDeveloperModeEnabled
                 .Subscribe(state => UpdateToggleState(developerModeToggle, state)));
-            _disposables.Add(_connectionViewModel.ToggleLocalConnectionMenu
-                .Subscribe(state => UpdateMenuState(localConnectionForm, state)));
+            _disposables.Add(_connectionViewModel.ShowLocalConnectionMenu
+                .Subscribe(state => UpdateMenuVisibility(localConnectionForm, state)));
             _disposables.Add(_connectionViewModel.IpAddress
                 .Subscribe(ipAddress => UpdateInputFieldTextIfNecessary(ipAddressInputField, ipAddress)));
             _disposables.Add(_connectionViewModel.Port
@@ -90,14 +90,14 @@ namespace Code.Features.Connection
             }
         }
 
-        private void UpdateMenuState(GameObject menu, bool state)
+        private void UpdateMenuVisibility(GameObject menu, bool isVisible)
         {
-            menu.SetActive(state);
+            menu.SetActive(isVisible);
         }
 
-        private void UpdateToggleState(Toggle toggle, bool state)
+        private void UpdateToggleState(Toggle toggle, bool isOn)
         {
-            toggle.isOn = state;
+            toggle.isOn = isOn;
         }
     }
 }

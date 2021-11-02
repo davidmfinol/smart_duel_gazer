@@ -20,24 +20,25 @@ namespace Editor.Tests.EditModeTests.Core.DataManager.Settings
                 _settingsStorageProvider.Object);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void When_IsDeveloperModeEnabled_Then_SettingIsReturned(bool state)
+        [Test]
+        public void When_IsDeveloperModeEnabledCalled_Then_SettingValueReturned()
         {
-            _settingsStorageProvider.Setup(ssp => ssp.IsDeveloperModeEnabled()).Returns(state);
+            const bool expected = true;
+            _settingsStorageProvider.Setup(ssp => ssp.IsDeveloperModeEnabled()).Returns(expected);
 
-            var expected = _settingsDataManager.IsDeveloperModeEnabled();
+            var result = _settingsDataManager.IsDeveloperModeEnabled();
 
-            Assert.AreEqual(state, expected);
+            Assert.AreEqual(expected, result);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void When_SaveDeveloperModeEnabled_Then_StorageProviderSavesState(bool state)
+        [Test]
+        public void When_SaveDeveloperModeEnabledCalled_Then_SettingValueSaved()
         {
-            _settingsDataManager.SaveDeveloperModeEnabled(state);
+            const bool developerModeEnabled = true;
+            
+            _settingsDataManager.SaveDeveloperModeEnabled(developerModeEnabled);
 
-            _settingsStorageProvider.Verify(ssp => ssp.SaveDeveloperModeEnabled(state), Times.Once);
+            _settingsStorageProvider.Verify(ssp => ssp.SaveDeveloperModeEnabled(developerModeEnabled), Times.Once);
         }
     }
 }
