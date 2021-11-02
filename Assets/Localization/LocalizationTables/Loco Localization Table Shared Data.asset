@@ -143,6 +143,10 @@ MonoBehaviour:
     m_Key: general_action_continue
     m_Metadata:
       m_Items: []
+  - m_Id: 1780886226853888
+    m_Key: user_settings_label_developer_mode
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

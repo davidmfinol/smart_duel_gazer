@@ -152,5 +152,9 @@ MonoBehaviour:
     m_Localized: Continue
     m_Metadata:
       m_Items: []
+  - m_Id: 1780886226853888
+    m_Localized: Developer mode
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

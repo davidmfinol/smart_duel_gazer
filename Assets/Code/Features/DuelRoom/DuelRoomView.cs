@@ -11,6 +11,8 @@ namespace Code.Features.DuelRoom
 {
     public class DuelRoomView : MonoBehaviour
     {
+        [SerializeField] private Button backButton;
+        
         [SerializeField] private GameObject loadingState;
 
         [SerializeField] private GameObject enterRoomNameState;
@@ -70,6 +72,7 @@ namespace Code.Features.DuelRoom
         private void BindViews()
         {
             // Buttons
+            backButton.OnClickAsObservable().Subscribe(_ => _duelRoomViewModel.OnBackButtonPressed());
             enterRoomButton.OnClickAsObservable()
                 .Subscribe(_ => _duelRoomViewModel.OnEnterRoomPressed());
             spectateButton.OnClickAsObservable()

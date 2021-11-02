@@ -131,6 +131,14 @@ namespace Editor.Tests.EditModeTests.Features.DuelRoom
         #region Button Events
 
         [Test]
+        public void When_BackButtonPressed_Then_ConnectionSceneShown()
+        {
+            _viewModel.OnBackButtonPressed();
+            
+            _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
+        }
+
+        [Test]
         public void Given_ValidRoomName_When_EnterRoomButtonPressed_Then_GetDuelistsInRoomEventSent()
         {
             var expected = new SmartDuelEvent(
