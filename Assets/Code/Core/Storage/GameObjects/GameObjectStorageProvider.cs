@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Code.Wrappers.WrapperResources;
+using UnityEngine;
 using Zenject;
 
 namespace Code.Core.Storage.GameObjects
 {
     public interface IGameObjectStorageProvider
     {
-        public UnityEngine.GameObject GetGameObject(string key);
-        public void SaveGameObject(string key, UnityEngine.GameObject model);
+        public GameObject GetGameObject(string key);
+        public void SaveGameObject(string key, GameObject model);
         public void RemoveGameObject(string key);
-        public UnityEngine.GameObject GetCardModel(int cardId);
-        public UnityEngine.GameObject Playfield { get; }
-        public void SavePlayfield(UnityEngine.GameObject playfield);
+        public GameObject GetCardModel(int cardId);
+        public GameObject GetPlayfield();
+        public void SavePlayfield(GameObject playfield);
         public void RemovePlayfield();
     }
     
@@ -22,10 +23,9 @@ namespace Code.Core.Storage.GameObjects
 
         private readonly IResourcesProvider _resourcesProvider;
 
-        private readonly Dictionary<string, Queue<UnityEngine.GameObject>> _gameObjects = new Dictionary<string, Queue<UnityEngine.GameObject>>();
-        private UnityEngine.GameObject[] _cardModels;
-
-        public UnityEngine.GameObject Playfield { get; private set; }
+        private readonly Dictionary<string, Queue<GameObject>> _gameObjects = new Dictionary<string, Queue<GameObject>>();
+        private GameObject[] _cardModels;
+        private GameObject _playfield;
 
         [Inject]
         public GameObjectStorageProvider(
@@ -36,7 +36,7 @@ namespace Code.Core.Storage.GameObjects
 
         #region General
 
-        public UnityEngine.GameObject GetGameObject(string key)
+        public GameObject GetGameObject(string key)
         {
             if (!_gameObjects.ContainsKey(key) || _gameObjects[key].Count == 0)
             {
@@ -46,11 +46,11 @@ namespace Code.Core.Storage.GameObjects
             return _gameObjects[key].Dequeue();
         }
 
-        public void SaveGameObject(string key, UnityEngine.GameObject model)
+        public void SaveGameObject(string key, GameObject model)
         {
             if (!_gameObjects.ContainsKey(key))
             {
-                _gameObjects.Add(key, new Queue<UnityEngine.GameObject>());
+                _gameObjects.Add(key, new Queue<GameObject>());
             }
 
             _gameObjects[key].Enqueue(model);
@@ -68,7 +68,7 @@ namespace Code.Core.Storage.GameObjects
 
         #region Card model
 
-        public UnityEngine.GameObject GetCardModel(int cardId)
+        public GameObject GetCardModel(int cardId)
         {
             var modelName = cardId.ToString();
             
@@ -88,21 +88,26 @@ namespace Code.Core.Storage.GameObjects
 
         private void LoadCardModels()
         {
-            _cardModels = _resourcesProvider.LoadAll<UnityEngine.GameObject>(MonsterResourcesPath);
+            _cardModels = _resourcesProvider.LoadAll<GameObject>(MonsterResourcesPath);
         }
 
         #endregion
 
         #region Playfield
 
-        public void SavePlayfield(UnityEngine.GameObject playfield)
+        public GameObject GetPlayfield()
         {
-            Playfield = playfield;
+            return _playfield;
+        }
+
+        public void SavePlayfield(GameObject playfield)
+        {
+            _playfield = playfield;
         }
 
         public void RemovePlayfield()
         {
-            Playfield = null;
+            _playfield = null;
         }
 
         #endregion

@@ -176,7 +176,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _objectPlaced = true;
             placementIndicator.SetActive(false);
 
-            var playfield = _dataManager.Playfield;
+            var playfield = _dataManager.GetPlayfield();
             if (playfield == null)
             {
                 CreatePlayfield();

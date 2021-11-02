@@ -84,7 +84,10 @@ namespace Code.Core.DataManager
             return _gameObjectDataManager.GetCardModel(cardId);
         }
 
-        public GameObject Playfield => _gameObjectDataManager.Playfield;
+        public GameObject GetPlayfield()
+        {
+            return _gameObjectDataManager.GetPlayfield();
+        }
 
         public void SavePlayfield(GameObject playField)
         {
