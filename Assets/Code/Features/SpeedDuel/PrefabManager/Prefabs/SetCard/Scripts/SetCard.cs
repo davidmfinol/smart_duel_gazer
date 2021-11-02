@@ -21,9 +21,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         [SerializeField] private Renderer _image;
         [SerializeField] private List<Texture> _errorImages = new List<Texture>();
 
-        private IDataManager _dataManager;        
+        private IDataManager _dataManager;
         private ISetCardEventHandler _setCardEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private IAppLogger _logger;
 
         private Animator _animator;
@@ -33,9 +33,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
 
         [Inject]
         public void Construct(
-            IDataManager dataManager,            
+            IDataManager dataManager,
             ISetCardEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
             IAppLogger logger)
         {
             _dataManager = dataManager;
@@ -106,7 +106,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
             if (!gameObject.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
-            {               
+            {
                 case SetCardEvent.SpellTrapActivate:
                     SpellTrapActivate();
                     break;
@@ -141,7 +141,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         private void ActivatePlayfield()
         {
             if (!gameObject.activeSelf) return;
-            
+
             switch (_currentState)
             {
                 case CurrentState.FaceDown:
@@ -185,7 +185,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts
         {
             transform.localRotation = Quaternion.Euler(0, 90, 0);
         }
-        
+
         private void RevealSetCardImage()
         {
             _animator.SetBool(AnimatorParameters.ShowSetCardImageBool, true);

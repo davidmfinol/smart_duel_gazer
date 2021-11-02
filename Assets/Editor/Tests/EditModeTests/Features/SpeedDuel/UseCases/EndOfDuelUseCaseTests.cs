@@ -6,7 +6,7 @@ using Code.Features.SpeedDuel.UseCases;
 using Moq;
 using NUnit.Framework;
 
-namespace Editor.Tests.EditModeTests.Features
+namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
 {
     public class EndOfDuelUseCaseTests
     {
@@ -39,13 +39,20 @@ namespace Editor.Tests.EditModeTests.Features
 
         [TestCase(GameObjectKeys.ParticlesKey)]
         [TestCase(GameObjectKeys.SetCardKey)]
-        [TestCase(GameObjectKeys.PlayfieldKey)]
         [Parallelizable]
         public void When_ExecuteCalled_GameObjectRemoved(string key)
         {
             _endOfDuel.Execute();
 
             _dataManger.Verify(dm => dm.RemoveGameObject(key), Times.Once);
+        }
+
+        [Test]
+        public void When_ExectuteCalled_PlayfieldRemoved()
+        {
+            _endOfDuel.Execute();
+
+            _dataManger.Verify(dm => dm.RemovePlayfield(), Times.Once);
         }
     }
 }

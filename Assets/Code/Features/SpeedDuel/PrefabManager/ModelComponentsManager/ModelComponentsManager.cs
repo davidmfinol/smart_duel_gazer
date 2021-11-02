@@ -16,7 +16,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private const string Tag = "ModelComponentsManager";
         
         private IModelEventHandler _modelEventHandler;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
 
@@ -43,7 +43,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         [Inject]
         public void Construct(
             IModelEventHandler modelEventHandler,
-            PlayfieldEventHandler playfieldEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
             IDelayProvider delayProvider,
             IAppLogger appLogger)
         {

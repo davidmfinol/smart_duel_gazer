@@ -1,3 +1,4 @@
+using Code.Core.Logger;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.UI_Components.Constants;
@@ -8,7 +9,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 {
     public class PlayfieldComponentsManager : MonoBehaviour
     {
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private const string Tag = "PlayfieldComponentsManager";
+
+        private IPlayfieldEventHandler _playfieldEventHandler;
+        private IAppLogger _logger;
 
         private Animator[] _animators;
         private MeshRenderer[] _renderers;
@@ -16,10 +20,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
         #region Constructor
 
         [Inject]
-        public void Construct (
-            PlayfieldEventHandler playfieldEventHandler)
+        public void Construct(
+            IPlayfieldEventHandler playfieldEventHandler,
+            IAppLogger appLogger)
         {
             _playfieldEventHandler = playfieldEventHandler;
+            _logger = appLogger;
         }
 
         #endregion
@@ -47,7 +53,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void OnActivatePlayfield()
         {
-            foreach(Animator animator in _animators)
+            _logger.Log(Tag, "OnActivatePlayfield()");
+
+            foreach (var animator in _animators)
             {
                 animator.SetTrigger(AnimatorParameters.ActivatePlayfieldTrigger);
             }
@@ -55,63 +63,77 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
         private void OnAction(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args)
         {
+            _logger.Log(Tag, $"OnAction(playfieldEvent: {playfieldEvent})");
+
             switch (playfieldEvent)
             {
                 case PlayfieldEvent.Rotate:
-                    RotatePlayfield(args.FloatValue);
+                    RotatePlayfield(args);
                     break;
                 case PlayfieldEvent.Scale:
-                    ScalePlayfield(args.FloatValue);
+                    ScalePlayfield(args);
                     break;
                 case PlayfieldEvent.Flip:
-                    FlipPlayfield(args.BoolValue);
+                    FlipPlayfield(args);
                     break;
                 case PlayfieldEvent.Hide:
-                    HidePlayfield(args.BoolValue);
+                    HidePlayfield(args);
+                    break;
+                default:
+                    _logger.Log(Tag, $"Unexpected action: {playfieldEvent}");
                     break;
             }
         }
 
         private void OnRemovePlayfield()
         {
-            foreach (Animator animator in _animators)
+            _logger.Log(Tag, "OnRemovePlayfield()");
+
+            foreach (var animator in _animators)
             {
                 animator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
             }
         }
 
-        #region Functions
-
-        private void FlipPlayfield(bool state)
+        private void FlipPlayfield(PlayfieldEventArgs args)
         {
-            if (state)
+            _logger.Log(Tag, $"FlipPlayfield(args: {args})");
+
+            if (!(args is PlayfieldEventValue<bool> state)) return;
+
+            var localRotation = state.Value ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+            transform.localRotation = localRotation;
+        }
+
+        private void HidePlayfield(PlayfieldEventArgs args)
+        {
+            _logger.Log(Tag, $"HidePlayfield(args: {args})");
+
+            if (!(args is PlayfieldEventValue<bool> state)) return;
+
+            foreach (var meshRenderer in _renderers)
             {
-                transform.localRotation = Quaternion.Euler(0, 180, 0);
-                return;
-            }
-
-            transform.localRotation = Quaternion.Euler(0, 0, 0);
-        }
-
-        private void HidePlayfield(bool value)
-        {
-            foreach (MeshRenderer renderer in _renderers)
-            {
-                renderer.enabled = value;
+                meshRenderer.enabled = state.Value;
             }
         }
 
-        private void RotatePlayfield(float rotation)
+        private void RotatePlayfield(PlayfieldEventArgs args)
         {
-            transform.rotation = Quaternion.Euler(0, rotation, 0);
+            _logger.Log(Tag, $"RotatePlayfield(args: {args})");
+
+            if (!(args is PlayfieldEventValue<float> rotation)) return;
+
+            transform.rotation = Quaternion.Euler(0, rotation.Value, 0);
         }
 
-        private void ScalePlayfield(float scale)
+        private void ScalePlayfield(PlayfieldEventArgs args)
         {
-            transform.localScale = new Vector3(scale, scale, scale);
-        }
+            _logger.Log(Tag, $"ScalePlayfield(args: {args})");
 
-        #endregion
+            if (!(args is PlayfieldEventValue<float> scale)) return;
+
+            transform.localScale = new Vector3(scale.Value, scale.Value, scale.Value);
+        }
 
         public class Factory : PlaceholderFactory<GameObject, PlayfieldComponentsManager>
         {
