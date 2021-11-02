@@ -15,6 +15,8 @@ using Code.Core.Logger;
 using System.Linq;
 using System.Collections.Generic;
 using Castle.Core.Internal;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 
 namespace Code.Features.DuelRoom
 {
@@ -29,6 +31,7 @@ namespace Code.Features.DuelRoom
         private readonly IDialogService _dialogService;
         private readonly ISmartDuelServer _smartDuelServer;
         private readonly IDelayProvider _delayProvider;
+        private readonly IStringProvider _stringProvider;
         private readonly IScreenService _screenService;
         private readonly IAppLogger _logger;
 
@@ -61,6 +64,7 @@ namespace Code.Features.DuelRoom
             IDialogService dialogService,
             ISmartDuelServer smartDuelServer,
             IDelayProvider delayProvider,
+            IStringProvider stringProvider,
             IScreenService screenService,
             IAppLogger appLogger)
         {
@@ -69,6 +73,7 @@ namespace Code.Features.DuelRoom
             _dialogService = dialogService;
             _smartDuelServer = smartDuelServer;
             _delayProvider = delayProvider;
+            _stringProvider = stringProvider;
             _screenService = screenService;
             _logger = appLogger;
         }
@@ -106,7 +111,8 @@ namespace Code.Features.DuelRoom
 
             if (string.IsNullOrWhiteSpace(_roomName.Value))
             {
-                _dialogService.ShowToast("Room name is required");
+                var message = _stringProvider.GetString(LocaleKeys.DuelRoomRoomNameRequired);
+                _dialogService.ShowToast(message);
                 return;
             }
 
@@ -119,7 +125,8 @@ namespace Code.Features.DuelRoom
             
             if (string.IsNullOrWhiteSpace(duelist))
             {
-                _dialogService.ShowToast("Duelist name is required");
+                var message = _stringProvider.GetString(LocaleKeys.DuelRoomDuelistNameRequired);
+                _dialogService.ShowToast(message);
                 return;
             }
 
@@ -195,7 +202,8 @@ namespace Code.Features.DuelRoom
             var currentDuelistIds = _duelistIds.Value;
             if (!currentDuelistIds.IsNullOrEmpty())
             {
-                _dialogService.ShowToast("A new duelist has appeared!");
+                var message = _stringProvider.GetString(LocaleKeys.DuelRoomDuelistAppeared);
+                _dialogService.ShowToast(message);
             }
 
             var duelistIds = data.DuelistsIds!.ToList();
@@ -292,8 +300,10 @@ namespace Code.Features.DuelRoom
         {
             _logger.Log(Tag, $"HandleErrorEvent(error: {error})");
 
+            var fullErrorText = _stringProvider.GetString(LocaleKeys.DuelistRoomConnectionErrorPrefix, error);
+
             _roomState.OnNext(DuelRoomState.Error);
-            _errorText.OnNext(error);
+            _errorText.OnNext(fullErrorText);
         }
 
         #endregion
@@ -306,7 +316,8 @@ namespace Code.Features.DuelRoom
             
             if (!(e.Data is RoomEventData data))
             {
-                HandleErrorEvent("Room Data is Invalid!");
+                var error = _stringProvider.GetString(LocaleKeys.DuelistRoomConnectionErrorDataInvalid);
+                HandleErrorEvent(error);
                 return;
             }
 
@@ -358,7 +369,8 @@ namespace Code.Features.DuelRoom
             var duelRoom = data.DuelRoom;
             if (duelRoom == null)
             {
-                HandleErrorEvent("No duel room data found");
+                var error = _stringProvider.GetString(LocaleKeys.DuelistRoomConnectionErrorNoData);
+                HandleErrorEvent(error);
                 return;
             }
 
@@ -373,8 +385,9 @@ namespace Code.Features.DuelRoom
         private void HandleRoomCloseEvent()
         {
             _logger.Log(Tag, "HandleRoomSpectateEvent()");
-            
-            HandleErrorEvent("Duel room is closed");
+
+            var error = _stringProvider.GetString(LocaleKeys.DuelistRoomConnectionErrorRoomClosed);
+            HandleErrorEvent(error);
         }
 
         #endregion

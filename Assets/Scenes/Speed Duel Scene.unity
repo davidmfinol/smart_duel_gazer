@@ -2057,7 +2057,6 @@ GameObject:
   - component: {fileID: 1650324140}
   - component: {fileID: 1650324139}
   - component: {fileID: 1650324138}
-  - component: {fileID: 1650324137}
   m_Layer: 5
   m_Name: BackButton
   m_TagString: Untagged
@@ -2084,19 +2083,6 @@ RectTransform:
   m_AnchoredPosition: {x: 40, y: -40}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1650324137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650324135}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a93bb874f9e902143bac65b1f319a01c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _button: {fileID: 1650324138}
 --- !u!114 &1650324138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2332,12 +2318,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _menus: {fileID: 439207711}
-  _toggleViewToggle: {fileID: 1714322488955655463}
+  _togglePlayfieldMenusToggle: {fileID: 1714322488955655463}
   _hidePlaymatToggle: {fileID: 6449482835655837761}
   _flipPlayfieldToggle: {fileID: 301659727}
   _removePlayfieldButton: {fileID: 6449482836187114997}
   _rotationSlider: {fileID: 1939941656498817586}
   _scaleSlider: {fileID: 1457861429}
+  _animator: {fileID: 1879231185}
+  _settingsMenu: {fileID: 747528651}
+  _backButton: {fileID: 1650324138}
 --- !u!95 &1879231185
 Animator:
   serializedVersion: 3

@@ -20,7 +20,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         [SerializeField] private GameObject placementIndicator;
 
         private IDataManager _dataManager;
-        private PlayfieldEventHandler _playfieldEventHandler;
+        private IPlayfieldEventHandler _playfieldEventHandler;
         private PlayfieldComponentsManager.Factory _playfieldFactory;
         private IAppLogger _logger;
 
@@ -28,23 +28,18 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private GameObject _prefabManager;
+        private GameObject _speedDuelField;
 
         private Pose _placementPose;
         private TrackableId _placementTrackableId;
         private bool _objectPlaced;
-
-        #region Properties
-
-        public GameObject SpeedDuelField { get; private set; }
-
-        #endregion
 
         #region Construct
 
         [Inject]
         public void Construct(
             IDataManager dataManager,
-            PlayfieldEventHandler playfieldEventHandler,
+            IPlayfieldEventHandler playfieldEventHandler,
             PlayfieldComponentsManager.Factory playfieldFactory,
             IAppLogger logger)
         {
@@ -181,7 +176,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _objectPlaced = true;
             placementIndicator.SetActive(false);
 
-            var playfield = _dataManager.GetGameObject(GameObjectKeys.PlayfieldKey);
+            var playfield = _dataManager.GetPlayfield();
             if (playfield == null)
             {
                 CreatePlayfield();
@@ -198,16 +193,17 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _logger.Log(Tag, "CreatePlayfield()");
             
-            SpeedDuelField = _playfieldFactory.Create(playfieldPrefab).gameObject;
+            _speedDuelField = _playfieldFactory.Create(playfieldPrefab).gameObject;
+            _dataManager.SavePlayfield(_speedDuelField);
 
             // Move Playfield to Scene Root rather than Zenject Project Context
-            SpeedDuelField.transform.SetParent(transform);
-            SpeedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
+            _speedDuelField.transform.SetParent(transform);
+            _speedDuelField.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
 
             // Make Prefab Manager a child of Playfield for proper model scaling
-            _prefabManager.transform.SetParent(SpeedDuelField.transform);
-            _prefabManager.transform.SetPositionAndRotation(SpeedDuelField.transform.position,
-                SpeedDuelField.transform.rotation);
+            _prefabManager.transform.SetParent(_speedDuelField.transform);
+            _prefabManager.transform.SetPositionAndRotation(_speedDuelField.transform.position,
+                _speedDuelField.transform.rotation);
         }
 
         private void SetPlayfieldScale()
@@ -218,7 +214,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var planeSize = GetPlaneSize(plane);
             if (planeSize <= 0) return;
 
-            SpeedDuelField.transform.localScale = new Vector3(planeSize, planeSize, planeSize);
+            _speedDuelField.transform.localScale = new Vector3(planeSize, planeSize, planeSize);
         }
 
         private float GetPlaneSize(ARPlane plane)
@@ -253,8 +249,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _objectPlaced = false;
             placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
-
-            _dataManager.SaveGameObject(GameObjectKeys.PlayfieldKey, SpeedDuelField);
         }
     }
 }

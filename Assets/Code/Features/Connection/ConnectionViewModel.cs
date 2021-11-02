@@ -6,6 +6,8 @@ using Code.Core.Navigation;
 using Code.Core.Screen;
 using Code.Features.Connection.Helpers;
 using System;
+using Code.Core.Localization;
+using Code.Core.Localization.Entities;
 using UniRx;
 
 namespace Code.Features.Connection
@@ -19,6 +21,7 @@ namespace Code.Features.Connection
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
         private readonly IScreenService _screenService;
+        private readonly IStringProvider _stringProvider;
         private readonly IAppLogger _logger;
 
         #region Properties
@@ -48,6 +51,7 @@ namespace Code.Features.Connection
             IDialogService dialogService,
             INavigationService navigationService,
             IScreenService screenService,
+            IStringProvider stringProvider,
             IAppLogger appLogger)
         {
             _connectionFormValidators = connectionFormValidators;
@@ -56,6 +60,7 @@ namespace Code.Features.Connection
             _dialogService = dialogService;
             _navigationService = navigationService;
             _screenService = screenService;
+            _stringProvider = stringProvider;
             _logger = appLogger;
         }
 
@@ -121,7 +126,7 @@ namespace Code.Features.Connection
 
             _ipAddress.OnNext(ipAddress);
         }
-        
+
         public void OnPortChanged(string port)
         {
             _logger.Log(Tag, $"OnIpAddressSubmitted(port: {port})");
@@ -175,11 +180,11 @@ namespace Code.Features.Connection
 
             if (string.IsNullOrEmpty(ipAddress))
             {
-                toastMessage = "IP address is required.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionIPAddressRequired);
             }
             else if (!_connectionFormValidators.IsValidIpAddress(ipAddress))
             {
-                toastMessage = "Not a valid IP address.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionIPAddressInvalid);
             }
 
             if (toastMessage != default)
@@ -198,11 +203,11 @@ namespace Code.Features.Connection
 
             if (string.IsNullOrEmpty(port))
             {
-                toastMessage = "Port is required.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionPortRequired);
             }
             else if (!_connectionFormValidators.IsValidPort(port))
             {
-                toastMessage = "Not a valid port.";
+                toastMessage = _stringProvider.GetString(LocaleKeys.ConnectionPortInvalid);
             }
 
             if (toastMessage != default)

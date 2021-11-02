@@ -4,6 +4,5 @@ namespace Code.Core.DataManager.GameObjects.Entities
     {
         public const string SetCardKey = "SetCard";
         public const string ParticlesKey = "Particles";
-        public const string PlayfieldKey = "Playfield";
     }
 }
