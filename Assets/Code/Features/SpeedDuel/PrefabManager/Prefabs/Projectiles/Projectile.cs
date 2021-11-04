@@ -1,33 +1,109 @@
+using Code.Core.Config.Providers;
+using Code.Core.DataManager;
+using Code.Core.General.Extensions;
+using Code.Core.Logger;
+using Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities;
+using System.Collections;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
+using Zenject;
 
 namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles
 {
+    [RequireComponent(typeof(ObservableTriggerTrigger))]
     public class Projectile : MonoBehaviour
     {
+        private const string Tag = "Projectile";
+        
         [SerializeField] private float _speed = 10;
 
-        private Vector3 _targetPosition;
+        private ITimeProvider _timeProvider;
+        private IDataManager _dataManager;
+        private IAppLogger _logger;
+
+        private ObservableTriggerTrigger _collisionTrigger;
+
+        private string _targetName;
         private Vector3 _shootDir;
 
-        void Update()
-        {
-            transform.position += _speed * Time.deltaTime * _shootDir;
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-            if(transform.position == _targetPosition)
+        #region Constructor
+
+        [Inject]
+        public void Construct(
+            ITimeProvider timeProvider,
+            IDataManager dataManager,
+            IAppLogger appLogger)
+        {
+            _timeProvider = timeProvider;
+            _dataManager = dataManager;
+            _logger = appLogger;
+        }
+
+        #endregion
+
+        #region LifeCycle
+
+        private void Awake()
+        {
+            _collisionTrigger = GetComponent<ObservableTriggerTrigger>();
+
+            _disposables.Add(_collisionTrigger.OnTriggerEnterAsObservable()
+                .Subscribe(HandleCollision));
+        }
+
+        private void Update()
+        {
+            transform.position += _speed * _timeProvider.TimeSinceLastFrame * _shootDir;
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.Dispose();
+        }
+
+        #endregion
+
+        public void SetTarget(string targetName, Vector3 shootDirection)
+        {
+            _logger.Log(Tag, $"targetName: {targetName}, shootDirection: {shootDirection}");
+            
+            _targetName = targetName;
+            _shootDir = shootDirection;
+
+            StartCoroutine(DeactivateIfMissedCollider());
+        }
+
+        private void HandleCollision(Collider collider)
+        {
+            _logger.Log(Tag, $"HandleCollision(collider: {collider})");
+            
+            var hitObject = collider.GetComponentInParent<ModelSettings>().transform.parent;
+
+            if(hitObject.name == _targetName)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
+                _dataManager.SaveGameObject(transform.name.RemoveCloneSuffix(), gameObject);
             }
         }
 
-        public void SetTarget(Transform target, Vector3 shootDirection)
+        private IEnumerator DeactivateIfMissedCollider()
         {
-            _targetPosition = target.position;
-            _shootDir = shootDirection;
+            yield return new WaitForSeconds(3);
+
+            _logger.Log(Tag, "DeactivateIfMissedCollider()");
+            
+            if(gameObject.activeSelf)
+            {
+                gameObject.SetActive(false);
+                _dataManager.SaveGameObject(transform.name.RemoveCloneSuffix(), gameObject);
+            }
         }
 
-        private void OnTriggerEnter(Collider other)
+        public class Factory : PlaceholderFactory<GameObject, Projectile>
         {
-            Destroy(gameObject);
         }
     }
 }

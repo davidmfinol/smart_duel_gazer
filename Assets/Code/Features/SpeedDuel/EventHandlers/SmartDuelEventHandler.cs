@@ -230,7 +230,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
             var targetZone = targetPlayerState.GetZone(data.ZoneType.Value);
 
-            _monsterBattleInteractor.Execute(attackZone, targetZone, targetPlayerState, _speedDuelField);
+            _monsterBattleInteractor.Execute(attackZone, targetZone, targetPlayerState);
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)

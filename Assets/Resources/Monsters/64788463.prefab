@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!65 &6620550919651642505
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130528740542605754}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.1073812, y: 0.04501737, z: 0.6676052}
-  m_Center: {x: 0.002133247, y: 0.0002231493, z: 0.31322896}
 --- !u!54 &2971603569329385878
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -29,18 +16,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &4049048670444025723
-MonoBehaviour:
+--- !u!65 &6620550919651642505
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1492421735916733622}
+  m_GameObject: {fileID: 130528740542605754}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cadcfd987fed8a044b75709fc19ad0f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  serializedVersion: 2
+  m_Size: {x: 0.1073812, y: 0.04501737, z: 0.6676052}
+  m_Center: {x: 0.002133247, y: 0.0002231493, z: 0.31322896}
 --- !u!65 &7295296741084388600
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -54,6 +42,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5385151, y: 0.77760655, z: 0.45635858}
   m_Center: {x: -0.0034590063, y: -0.03836609, z: 0.01732656}
+--- !u!114 &4049048670444025723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492421735916733622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadcfd987fed8a044b75709fc19ad0f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7813862105806915589
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,15 +216,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.007
+      value: 0.006
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.007
+      value: 0.006
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.007
+      value: 0.006
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e6f173fb84b0f48468036050db9e0faf, type: 3}
       propertyPath: m_LocalPosition.x

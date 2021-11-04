@@ -13,7 +13,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
 
     public class ModelActionAttackEvent : ModelActionEventArgs
     {
-        public GameObject TargetMonster { get; set; }
+        public GameObject AttackTargetGameObject { get; set; }
         public Transform PlayfieldTargetTransform { get; set; }
         public bool IsAttackingMonster { get; set; }
     }

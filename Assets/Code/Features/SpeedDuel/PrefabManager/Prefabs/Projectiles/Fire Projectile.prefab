@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7975484284853592927}
   - component: {fileID: 5274327108065896781}
   - component: {fileID: 8897165595491665252}
+  - component: {fileID: 6515170895432133141}
   m_Layer: 0
   m_Name: Fire Projectile
   m_TagString: Untagged
@@ -127,6 +128,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 3
+--- !u!114 &6515170895432133141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417369935255252929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadcfd987fed8a044b75709fc19ad0f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1914885785040573164
 GameObject:
   m_ObjectHideFlags: 0

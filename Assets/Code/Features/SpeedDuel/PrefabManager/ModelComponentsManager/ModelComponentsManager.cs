@@ -7,6 +7,8 @@ using UnityEngine;
 using Zenject;
 using UniRx;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles;
+using Code.Core.DataManager;
+using System;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 {
@@ -17,16 +19,18 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private const string Tag = "ModelComponentsManager";
 
         private IModelEventHandler _modelEventHandler;
-        private IPlayfieldEventHandler _playfieldEventHandler;        
+        private IPlayfieldEventHandler _playfieldEventHandler;
+        private IDataManager _dataManager;
         private IAppLogger _logger;
 
         private ModelAnimatorManager _animatorManager;
         private ModelCollidersManager _colliderManager;
         private ModelMovementManager _movementManager;
+        private ModelSettings _settings;
         private SkinnedMeshRenderer[] _renderers;
-        private ModelSettings _settings;        
+        private Projectile.Factory _projectileFactory;
         private GameObject _parent;
-        private GameObject _target;
+        private GameObject _currentTarget;
         private bool _areRenderersEnabled;
         private bool _isInBattle = false;        
         private bool _isAttackingMonster;
@@ -48,10 +52,14 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         public void Construct(
             IModelEventHandler modelEventHandler,
             IPlayfieldEventHandler playfieldEventHandler,
+            IDataManager dataManager,
+            Projectile.Factory projectileFactory,
             IAppLogger appLogger)
         {
             _modelEventHandler = modelEventHandler;
             _playfieldEventHandler = playfieldEventHandler;
+            _dataManager = dataManager;
+            _projectileFactory = projectileFactory;
             _logger = appLogger;
         }
 
@@ -64,8 +72,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             _animatorManager = GetComponent<ModelAnimatorManager>();
             _colliderManager = GetComponent<ModelCollidersManager>();
             _movementManager = GetComponent<ModelMovementManager>();
-            _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             _settings = GetComponent<ModelSettings>();
+            _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
 
             _parent = transform.parent.gameObject;
             SubscribeToEvents();
@@ -90,11 +98,13 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void SubscribeToEvents()
         {
+            // Model Event Handler Events
             _modelEventHandler.OnActivateModel += ActivateModel;
             _modelEventHandler.OnSummon += SummonMonster;
             _modelEventHandler.OnAction += Action;
             _modelEventHandler.OnRemove += RemoveMonster;
 
+            // Playfield Event Handler Events
             _playfieldEventHandler.OnActivatePlayfield += ActivatePlayfield;
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
 
@@ -159,7 +169,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #region Functions
 
-        #region Playfield Functions
+        #region Playfield Event Functions
 
         private void ActivatePlayfield()
         {
@@ -175,7 +185,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #endregion
 
-        #region ModelFunctions
+        #region Model Event Functions
 
         private void AttackDeclaration(ModelActionEventArgs args)
         {
@@ -185,36 +195,35 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
             _isInBattle = true;
             _isAttackingMonster = eventArgs.IsAttackingMonster;
-            
-            if(!_isAttackingMonster)
+
+            if (!_isAttackingMonster)
             {
                 _animatorManager.HandleDefendingMonster();
                 return;
             }
 
-            var target = eventArgs.PlayfieldTargetTransform;
-            if(target == null)
+            HandleAttackingMonster(eventArgs);
+        }
+
+        private void HandleAttackingMonster(ModelActionAttackEvent eventArgs)
+        {
+            if (_settings.HasProjectileAttack)
             {
-                DamageStep(args);
+                DamageStep(eventArgs);
                 return;
             }
 
-            if(_settings.HasProjectileAttack)
-            {
-                _target = eventArgs.TargetMonster;
-                _animatorManager.PlayAttackAnimation();                
-                return;
-            }
-
-            _movementManager.Activate(_parent.transform, target.position);
+            var targetTransform = eventArgs.PlayfieldTargetTransform;
+            _movementManager.Activate(_parent.transform, targetTransform.position);
         }
 
         private void DamageStep(ModelActionEventArgs args)
         {
             _logger.Log(Tag, $"DamageStep(args: {args})");
             
-            if (!(args is ModelActionAttackEvent)) return;
+            if (!(args is ModelActionAttackEvent eventArgs)) return;
 
+            _currentTarget = eventArgs.AttackTargetGameObject;
             _animatorManager.PlayAttackAnimation();
         }
 
@@ -260,17 +269,22 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         {
             _logger.Log(Tag, "FireProjectile()");
 
-            var targetTransform = _target.GetComponentInChildren<ModelSettings>().Target;
+            if (!_settings.HasProjectileAttack || _settings.ProjectileSpawnPoints == null) return;
 
-            if (targetTransform == null || _settings.ProjectileSpawnPoints == null 
-                || !_settings.HasProjectileAttack) return;
-            
-            foreach (Transform spawnPoint in _settings.ProjectileSpawnPoints)
-            {
-                var projectile = Instantiate(_settings.Projectile, spawnPoint.position, spawnPoint.rotation);
+            var targetTransform = _currentTarget.GetComponentInChildren<ModelSettings>().Target;            
+            foreach (var spawnPoint in _settings.ProjectileSpawnPoints)
+            {                
+                var projectile = _dataManager.GetGameObject(_settings.Projectile.name);
+                if (projectile == null)
+                {
+                    projectile = _projectileFactory.Create(_settings.Projectile).gameObject;
+                }
+
+                projectile.SetActive(true);
+                projectile.transform.position = spawnPoint.position;
                 projectile.transform.LookAt(targetTransform);
 
-                projectile.GetComponent<Projectile>().SetTarget(targetTransform, projectile.transform.forward);
+                projectile.GetComponent<Projectile>().SetTarget(_currentTarget.name, projectile.transform.forward);
             }            
         }
 

@@ -46,6 +46,7 @@ using Zenject;
 using Code.Wrappers.WrapperNetworkConnection;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
+using Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles;
 
 namespace Code.Di
 {
@@ -129,6 +130,8 @@ namespace Code.Di
                 .FromFactory<PrefabFactory<SetCard>>();
             Container.BindFactory<GameObject, PlayfieldComponentsManager, PlayfieldComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<PlayfieldComponentsManager>>();
+            Container.BindFactory<GameObject, Projectile, Projectile.Factory>()
+                .FromFactory<PrefabFactory<Projectile>>();
 
             // Use cases
             Container.Bind<ICreatePlayCardUseCase>().To<CreatePlayCardUseCase>().AsSingle();
