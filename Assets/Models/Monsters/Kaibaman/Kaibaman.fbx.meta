@@ -18,6 +18,9 @@ ModelImporter:
   - first:
       74: -7730399547379643060
     second: Model_skeleton|MotionD.001
+  - first:
+      74: 5444591138368582983
+    second: Attack
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -47,11 +50,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Summoning
-      takeName: Model_skeleton|MotionA.001
+      name: Attack
+      takeName: Model_skeleton|MotionD.001
       internalID: 0
-      firstFrame: 23
-      lastFrame: 128
+      firstFrame: 0
+      lastFrame: 148
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -165,7 +168,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.1
+    globalScale: 3
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -216,7 +219,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.001
+    globalScale: 3
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

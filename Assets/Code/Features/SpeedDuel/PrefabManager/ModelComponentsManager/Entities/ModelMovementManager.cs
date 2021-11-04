@@ -2,18 +2,16 @@ using Code.Core.Config.Providers;
 using Code.Core.Logger;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.EventHandlers.Entities;
-using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 {
-    public class ModelMovementHandler : MonoBehaviour
+    public class ModelMovementManager : MonoBehaviour
     {
-        private const string Tag = "ModelMovementHandler";
+        private const string Tag = "ModelMovementManager";
         
         private IModelEventHandler _modelEventHandler;
-        private IDelayProvider _delayProvider;
         private ITimeProvider _timeProvider;
         private IAppLogger _logger;
         
@@ -25,20 +23,17 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         private float _startTime;
         private float _journeyLength;
         private bool _isMoving = false;
-        private bool _hasAttacked = false;
-        private int _waitTimeForEnemyAnimations = 600;
+        private bool _hasAttacked;
 
         #region Constructor
 
         [Inject]
         public void Construct(
             IModelEventHandler modelEventHandler,
-            IDelayProvider delayProvider,
             ITimeProvider timeProvider,
             IAppLogger appLogger)
         {
             _modelEventHandler = modelEventHandler;
-            _delayProvider = delayProvider;
             _timeProvider = timeProvider;
             _logger = appLogger;
         }
@@ -47,7 +42,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         #region LifeCycle
 
-        private async void Update()
+        // TODO: Make time for movement constant so that scaling doesn't change how long it takes
+        private void Update()
         {
             if (!_isMoving) return;
 
@@ -55,7 +51,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
             if (distCovered >= _journeyLength)
             {
-                await HandleEndOfJourney();
+                HandleEndOfJourney();
                 return;
             }
 
@@ -64,46 +60,42 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         }
 
         #endregion
-
+        
         public void Activate(Transform attackingMonster, Vector3 targetPosition)
         {
-            _logger.Log(Tag, $"{attackingMonster.name} is attacking position {targetPosition}");
+            _logger.Log(Tag, $"Activate(attackingMonster: {attackingMonster.name}, targetPosition: {targetPosition}");
             
             _modelTransform = attackingMonster;
             _targetPosition = targetPosition;
 
             _startingPosition = _modelTransform.position;
-
             _startTime = _timeProvider.SceneRunTime;
-            _journeyLength = Vector3.Distance(_modelTransform.position, _targetPosition);
+            _journeyLength = Vector3.Distance(_startingPosition, _targetPosition);
 
             _isMoving = true;
             _hasAttacked = false;
         }
 
-        private async Task HandleEndOfJourney()
+        private void HandleEndOfJourney()
         {
+            _logger.Log(Tag, "HandleEndOfJourney()");
+
             if (transform.position == _startingPosition)
             {
-                _logger.Log(Tag, $"{transform.parent.name} has completed it's movement");
-                
-                _isMoving = false;                
+                _isMoving = false;
                 return;
             }
 
-            if (!_hasAttacked)
-            {
-                _modelEventHandler.Action(ModelEvent.Attack, transform.parent.gameObject.GetInstanceID());
-                _hasAttacked = true;
-            }            
+            if (_hasAttacked) return;
 
-            await _delayProvider.Wait(_waitTimeForEnemyAnimations);
-            ReturnToOriginalPosition();
+            var eventArgs = new ModelActionAttackEvent { IsAttackingMonster = true };
+            _modelEventHandler.Action(ModelEvent.DamageStep, transform.parent.gameObject.GetInstanceID(), eventArgs);
+            _hasAttacked = true;
         }
 
-        private void ReturnToOriginalPosition()
+        public void ReturnToZone()
         {
-            _logger.Log(Tag, $"{transform.parent.name} is returning to it's original position at {_startingPosition}");
+            _logger.Log(Tag, "ReturnToZone()");
             
             _modelTransform = transform;
             _targetPosition = _startingPosition;

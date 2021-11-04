@@ -4,6 +4,7 @@ using UnityEngine;
 using Code.Features.SpeedDuel.EventHandlers;
 using Code.Features.SpeedDuel.Models;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Code.Features.SpeedDuel.EventHandlers.Entities;
 
 namespace Code.Features.SpeedDuel.UseCases.CardBattle
 {
@@ -38,7 +39,8 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
             if (playerZone.MonsterModel != null)
             {
                 var model = playerZone.MonsterModel;
-                _modelEventHandler.RaiseDirectAttack(model.GetInstanceID(), playMatZone);
+                var eventArgs = new ModelActionAttackEvent { IsAttackingMonster = true, PlayfieldTargetTransform = playMatZone };
+                _modelEventHandler.Action(ModelEvent.AttackDeclaration, model.GetInstanceID(), eventArgs);
             }
         }
     }

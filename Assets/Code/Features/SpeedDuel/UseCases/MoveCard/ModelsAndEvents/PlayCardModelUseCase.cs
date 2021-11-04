@@ -139,16 +139,16 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
                 instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
 
                 var modelID = instantiatedMonsterModel.GetInstanceID();
-                _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, true);
-                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID);
+                _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, new ModelActionBoolEvent { State = true });
+                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID, new ModelActionBoolEvent { State = true });
             }
             else
             {
                 _handlePlayCardModelEventsUseCase.Execute(SetCardEvent.RevealSetCardImage, updatedCard, setCard.GetInstanceID(), true);
 
                 var modelID = instantiatedMonsterModel.GetInstanceID();
-                _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, true);
-                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID);
+                _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, new ModelActionBoolEvent { State = true });
+                _modelEventHandler.Action(ModelEvent.RevealSetMonsterModel, modelID, new ModelActionBoolEvent { State = true });
 
                 instantiatedMonsterModel.PlaceOnTopOfSetCard(setCard);
             }
@@ -178,7 +178,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
                 _handlePlayCardModelEventsUseCase.Execute(default, updatedCard, setCardID, true);
             }
 
-            _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, false);
+            _modelEventHandler.Action(ModelEvent.ChangeMonsterVisibility, modelID, new ModelActionBoolEvent { State = false });
             _setCardEventHandler.Action(SetCardEvent.HideSetCardImage, setCardID);
         }
     }

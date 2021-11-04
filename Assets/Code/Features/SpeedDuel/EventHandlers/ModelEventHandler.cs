@@ -6,17 +6,15 @@ namespace Code.Features.SpeedDuel.EventHandlers
 {
     public interface IModelEventHandler
     {
-        event Action<ModelEvent, int, bool> OnAction;
+        event Action<ModelEvent, int, ModelActionEventArgs> OnAction;
         event Action<int> OnActivateModel;
-        event Action<int, Transform> OnDirectAttack;
         event Action<SkinnedMeshRenderer[]> OnMonsterRemoval;
         event Action<int> OnRemove;
         event Action<int> OnSummon;
 
-        void Action(ModelEvent eventName, int instanceID, bool state = true);
+        void Action(ModelEvent eventName, int instanceID, ModelActionEventArgs args);
         void Activate(int instanceID);
         void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers);
-        public void RaiseDirectAttack(int instanceId, Transform targetZone);
         void Remove(int instanceID);
         void Summon(int instanceID);
     }
@@ -25,8 +23,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
     {
         private event Action<int> _OnActivateModel;
         private event Action<int> _OnSummon;
-        private event Action<ModelEvent, int, bool> _OnAction;
-        private event Action<int, Transform> _OnDirectAttack;
+        private event Action<ModelEvent, int, ModelActionEventArgs> _OnAction;
         private event Action<int> _OnRemove;
 
         private event Action<SkinnedMeshRenderer[]> _OnMonsterRemoval;
@@ -45,16 +42,10 @@ namespace Code.Features.SpeedDuel.EventHandlers
             remove => _OnSummon -= value;
         }
 
-        public event Action<ModelEvent, int, bool> OnAction
+        public event Action<ModelEvent, int, ModelActionEventArgs> OnAction
         {
             add => _OnAction += value;
             remove => _OnAction -= value;
-        }
-
-        public event Action<int, Transform> OnDirectAttack
-        {
-            add => _OnDirectAttack += value;
-            remove => _OnDirectAttack -= value;
         }
 
         public event Action<int> OnRemove
@@ -81,14 +72,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _OnSummon?.Invoke(instanceID);
         }
 
-        public void Action(ModelEvent eventName, int instanceID, bool state = true)
-        {
-            _OnAction?.Invoke(eventName, instanceID, state);
-        }
-
-        public void RaiseDirectAttack(int instanceId, Transform targetZone)
-        {
-            _OnDirectAttack?.Invoke(instanceId, targetZone);
+        public void Action(ModelEvent eventName, int instanceID, ModelActionEventArgs args)
+        {            
+            _OnAction?.Invoke(eventName, instanceID, args);
         }
 
         public void RaiseMonsterRemovalEvent(SkinnedMeshRenderer[] renderers)

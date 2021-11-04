@@ -2,13 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using UniRx;
-using Code.Features.SpeedDuel.EventHandlers.Entities;
 using Code.Core.Logger;
 using Code.UI_Components.Constants;
 using System.Threading.Tasks;
 using Code.Core.Config.Providers;
 using Code.Features.SpeedDuel.Models;
-using UnityEngine.Serialization;
 
 namespace Code.Features.SpeedDuel
 {

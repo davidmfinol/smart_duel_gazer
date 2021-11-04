@@ -32,7 +32,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
             }
             else if (targetZone is SingleCardZone targetSingleCardZone)
             {
-                _monsterZoneBattleUseCase.Execute(playerSingleCardZone, targetSingleCardZone);
+                _monsterZoneBattleUseCase.Execute(playerSingleCardZone, targetSingleCardZone, targetState.PlayMatZonesPath, speedDuelField);
             }
         }
     }

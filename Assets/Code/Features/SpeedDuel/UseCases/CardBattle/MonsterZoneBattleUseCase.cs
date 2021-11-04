@@ -8,7 +8,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
 {
     public interface IMonsterZoneBattleUseCase
     {
-        void Execute(SingleCardZone playerZone, SingleCardZone targetzone);
+        void Execute(SingleCardZone playerZone, SingleCardZone targetzone, string path, UnityEngine.GameObject speedDuelField);
     }
 
     public class MonsterZoneBattleUseCase : IMonsterZoneBattleUseCase
@@ -29,23 +29,33 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
             _logger = appLogger;
         }
 
-        public void Execute(SingleCardZone playerZone, SingleCardZone targetzone)
+        public void Execute(SingleCardZone playerZone, SingleCardZone targetZone, string path, UnityEngine.GameObject speedDuelField)
         {
-            ExecuteAttackEvent(playerZone, true);
-            ExecuteAttackEvent(targetzone, false);
+            ExecuteAttackEvent(playerZone, targetZone, path, true, speedDuelField);
+            ExecuteAttackEvent(targetZone, targetZone, path, false, speedDuelField);
         }
 
-        private void ExecuteAttackEvent(SingleCardZone zone, bool isAttackingMonster)
+        private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string path, bool isAttackingMonster, 
+            UnityEngine.GameObject speedDuelField)
         {
-            _logger.Log(Tag, $"Execute({zone.Card.Id}, isAttackingMonster: {isAttackingMonster})");
+            _logger.Log(Tag, $"Execute({playerZone.Card.Id}, isAttackingMonster: {isAttackingMonster})");
 
-            if (isAttackingMonster && zone.Card.CardPosition != CardPosition.FaceUp) return;
+            if (isAttackingMonster && playerZone.Card.CardPosition != CardPosition.FaceUp) return;
 
-            var cardId = GetCardModelInstanceId(zone);
-            var setCardId = GetSetCardInstanceId(zone);
+            var cardId = GetCardModelInstanceId(playerZone);
+            var setCardId = GetSetCardInstanceId(playerZone);
             if (cardId.HasValue)
             {
-                _modelEventHandler.Action(ModelEvent.Attack, cardId.Value, isAttackingMonster);
+                var targetTransformPath = $"{path}/{targetZone.ZoneType}/{targetZone.ZoneType}AttackZone";
+                var targetTransform = speedDuelField.transform.Find(targetTransformPath);
+                
+                var eventArgs = new ModelActionAttackEvent 
+                { 
+                    IsAttackingMonster = isAttackingMonster, 
+                    PlayfieldTargetTransform = targetTransform,
+                    TargetMonster = targetZone.MonsterModel
+                };
+                _modelEventHandler.Action(ModelEvent.AttackDeclaration, cardId.Value, eventArgs);
             }
 
             if (setCardId.HasValue && !isAttackingMonster)

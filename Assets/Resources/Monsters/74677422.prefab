@@ -1345,7 +1345,9 @@ GameObject:
   - component: {fileID: 1200450754672817456}
   - component: {fileID: 2200898869502814708}
   - component: {fileID: 3595071617392940911}
-  - component: {fileID: 8019097170468017143}
+  - component: {fileID: 4994911300265735053}
+  - component: {fileID: 4012894030845396609}
+  - component: {fileID: 6415404712067353442}
   m_Layer: 0
   m_Name: Red-Eyes Black Dragon
   m_TagString: Untagged
@@ -1413,7 +1415,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 60, y: 60, z: 60}
---- !u!114 &8019097170468017143
+  _hasProjectileAttack: 0
+--- !u!114 &4994911300265735053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222926965302088005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edee27012fb1ac843993f67ce11acfa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4012894030845396609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222926965302088005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e67b4b6395895e241ae2d203ff806c7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6415404712067353442
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
