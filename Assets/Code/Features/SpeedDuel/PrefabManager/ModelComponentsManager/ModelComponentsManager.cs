@@ -42,7 +42,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         public void CallSummonMonster() => SummonMonster(_parent.GetInstanceID());
         public void CallRemoveMonster() => RemoveMonster(_parent.GetInstanceID());
         public void CallTakeDamage() => _animatorManager.HandleTakeDamage();
-        public void CallAttack() => AttackDeclaration(new ModelActionAttackEvent { IsAttackingMonster = true });
+        public void CallAttack() => _animatorManager.PlayAttackAnimation();
 
         #endregion
 
@@ -189,7 +189,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void AttackDeclaration(ModelActionEventArgs args)
         {
-            _logger.Log(Tag, $"Attack(args: {args})");
+            _logger.Log(Tag, $"AttackDeclaration(args: {args})");
 
             if (!(args is ModelActionAttackEvent eventArgs)) return;
 
@@ -207,6 +207,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void HandleAttackingMonster(ModelActionAttackEvent eventArgs)
         {
+            _logger.Log(Tag, $"HandleAttackingMonster(eventArgs: {eventArgs})");
+            
             if (_settings.HasProjectileAttack)
             {
                 DamageStep(eventArgs);

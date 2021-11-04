@@ -29,7 +29,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         #region Properties
 
-        private readonly BehaviorSubject<bool> _activateParticles = new BehaviorSubject<bool>(false);
+        private readonly Subject<bool> _activateParticles = new Subject<bool>();
         public IObservable<bool> ActivateParticles => _activateParticles;
 
         #endregion
@@ -62,7 +62,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         private void OnDestroy()
         {
             _activateParticles?.Dispose();
-
             _disposables.Dispose();
         }
 
@@ -103,6 +102,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
             if (_isInDefence) return;
 
+            // If Model was in Attack Mode before battle, return there
             await _delayProvider.Wait(_waitForHurtTrigger);
             _animator.SetBool(AnimatorParameters.DefenceBool, false);
         }
@@ -129,6 +129,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
             _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
         }
 
+        // Fired from an Animation Event contained within the 'Attack With Trigger' Animation
         public void HandleAttackAnimationProjectileEvent()
         {
             _logger.Log(Tag, "HandleAttackAnimationEvent()");

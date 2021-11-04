@@ -9,7 +9,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
 {
     public interface IMonsterZoneBattleUseCase
     {
-        void Execute(SingleCardZone playerZone, SingleCardZone targetzone, string path);
+        void Execute(SingleCardZone playerZone, SingleCardZone targetzone, string zonePath);
     }
 
     public class MonsterZoneBattleUseCase : IMonsterZoneBattleUseCase
@@ -37,18 +37,18 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
 
         #endregion
 
-        public void Execute(SingleCardZone playerZone, SingleCardZone targetZone, string path)
+        public void Execute(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath)
         {
-            _logger.Log(Tag, $"Execute(playerZone: {playerZone}, targetZone: {targetZone}, path: {path}");
+            _logger.Log(Tag, $"Execute(playerZone: {playerZone}, targetZone: {targetZone}, zonePath: {zonePath}");
                         
-            ExecuteAttackEvent(playerZone, targetZone, path, true);
-            ExecuteAttackEvent(targetZone, targetZone, path, false);
+            ExecuteAttackEvent(playerZone, targetZone, zonePath, true);
+            ExecuteAttackEvent(targetZone, targetZone, zonePath, false);
         }
 
-        private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string path, bool isAttackingMonster)
+        private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath, bool isAttackingMonster)
         {
             _logger.Log(Tag, $"ExecuteAttackEvent(playerZone: {playerZone.Card.Id}, targetZone: {targetZone}, " +
-                $"path: {path}, isAttackingMonster: {isAttackingMonster})");
+                $"zonePath: {zonePath}, isAttackingMonster: {isAttackingMonster})");
 
             // Check if Card is Attacking while in Defence position
             if (isAttackingMonster && playerZone.Card.CardPosition != CardPosition.FaceUp) return;
@@ -58,7 +58,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
             if (cardId.HasValue)
             {
                 var speedDuelField = _dataManager.GetPlayfield();
-                var targetTransformPath = $"{path}/{targetZone.ZoneType}/{targetZone.ZoneType}AttackZone";
+                var targetTransformPath = $"{zonePath}/{targetZone.ZoneType}/{targetZone.ZoneType}AttackZone";
                 var targetTransform = speedDuelField.transform.Find(targetTransformPath);
                 
                 var eventArgs = new ModelActionAttackEvent 
