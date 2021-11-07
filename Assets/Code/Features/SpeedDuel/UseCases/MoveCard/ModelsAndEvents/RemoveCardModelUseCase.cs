@@ -62,7 +62,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             _modelEventHandler.Remove(modelID);
 
             _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
-            _recycleGameObjectUseCase.Execute(oldCard.Id.ToString(), monsterModel);
+            _recycleGameObjectUseCase.Execute(oldCard.YugiohCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;
 

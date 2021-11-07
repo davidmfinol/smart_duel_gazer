@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Code.Features.SpeedDuel.Models.Zones
 {
     public class SingleCardZone : Zone
     {
-        public PlayCard Card { get; private set; }
+        [JsonProperty("card")] public PlayCard Card { get; set; }
         public GameObject SetCardModel { get; private set; }
         public GameObject MonsterModel { get; private set; }
 

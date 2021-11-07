@@ -14,7 +14,8 @@ namespace Code.Features.SpeedDuel.UseCases
         public PlayCard Execute(int cardId, int copyNumber, ZoneType zoneType = ZoneType.Deck,
             CardPosition position = CardPosition.FaceUp)
         {
-            return new PlayCard(cardId, copyNumber, zoneType, position);
+            var yugiohCard = new YugiohCard(cardId);
+            return new PlayCard(yugiohCard, copyNumber, zoneType, position);
         }
     }
 }
