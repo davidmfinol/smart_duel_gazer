@@ -37,7 +37,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
 
         private void ExecuteAttackEvent(SingleCardZone zone, bool isAttackingMonster)
         {
-            _logger.Log(Tag, $"Execute({zone.Card.Id}, isAttackingMonster: {isAttackingMonster})");
+            _logger.Log(Tag, $"Execute({zone.Card.YugiohCard.Id}, isAttackingMonster: {isAttackingMonster})");
 
             if (isAttackingMonster && zone.Card.CardPosition != CardPosition.FaceUp) return;
 

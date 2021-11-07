@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
+using Newtonsoft.Json;
 
 namespace Code.Features.SpeedDuel.Models.Zones
 {
     public class MultiCardZone : Zone
     {
-        public IList<PlayCard> Cards { get; private set; }
+        [JsonProperty("cards")] public IList<PlayCard> Cards { get; set; }
 
         public MultiCardZone(ZoneType zoneType) : base(zoneType)
         {

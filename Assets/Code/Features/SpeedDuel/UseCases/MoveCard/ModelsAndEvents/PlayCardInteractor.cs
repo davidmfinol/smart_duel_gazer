@@ -7,7 +7,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
     public interface IPlayCardInteractor
     {
-        Zone Execute(PlayerState playerState, SingleCardZone zone, PlayCard updatedCard, GameObject speedDuelField);
+        Zone Execute(PlayerState playerState, SingleCardZone zone, PlayCard card, GameObject speedDuelField);
     }
 
     public class PlayCardInteractor : IPlayCardInteractor
@@ -30,19 +30,19 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         #endregion
 
-        public Zone Execute(PlayerState playerState, SingleCardZone zone, PlayCard updatedCard, GameObject speedDuelField)
+        public Zone Execute(PlayerState playerState, SingleCardZone zone, PlayCard card, GameObject speedDuelField)
         {
-            var playMatZonePath = $"{playerState.PlayMatZonesPath}/{updatedCard.ZoneType.ToString()}";
+            var playMatZonePath = $"{playerState.PlayMatZonesPath}/{card.ZoneType.ToString()}";
             var playMatZone = speedDuelField.transform.Find(playMatZonePath);
 
-            var monsterModel = _dataManager.GetCardModel(updatedCard.Id);
+            var monsterModel = _dataManager.GetCardModel(card.YugiohCard.Id);
             if (!monsterModel)
             {
-                return _playCardImageUseCase.Execute(zone, updatedCard, playMatZone);
+                return _playCardImageUseCase.Execute(zone, card, playMatZone);
             }
 
             monsterModel.SetActive(true);
-            return _playCardModelUseCase.Execute(zone, updatedCard, playMatZone, monsterModel, speedDuelField);
+            return _playCardModelUseCase.Execute(zone, card, playMatZone, monsterModel, speedDuelField);
         }
     }
 }

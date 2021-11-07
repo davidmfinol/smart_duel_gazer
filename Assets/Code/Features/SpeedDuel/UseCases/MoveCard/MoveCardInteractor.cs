@@ -51,27 +51,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard
                     speedDuelField);
             }
 
-            return UpdatePlayerState(playerState, updatedZones);
-        }
-
-        private static PlayerState UpdatePlayerState(PlayerState playerState, IEnumerable<Zone> updatedZones)
-        {
-            var zones = updatedZones.ToList();
-
-            return playerState.CopyWith(
-                zones.First(z => z.ZoneType == ZoneType.Hand) as MultiCardZone,
-                zones.First(z => z.ZoneType == ZoneType.Field) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.MainMonster1) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.MainMonster2) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.MainMonster3) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.Graveyard) as MultiCardZone,
-                zones.First(z => z.ZoneType == ZoneType.Banished) as MultiCardZone,
-                zones.First(z => z.ZoneType == ZoneType.ExtraDeck) as MultiCardZone,
-                zones.First(z => z.ZoneType == ZoneType.SpellTrap1) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.SpellTrap2) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.SpellTrap3) as SingleCardZone,
-                zones.First(z => z.ZoneType == ZoneType.Deck) as MultiCardZone
-            );
+            return playerState.CopyWith(updatedZones.ToList());
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         public void Execute(SetCardEvent setCardEvent, PlayCard updatedCard, int instanceID, bool isMonster)
         {
-            var cardId = updatedCard.Id.ToString();
+            var cardId = updatedCard.YugiohCard.Id.ToString();
 
             _setCardEventHandler.Summon(instanceID, cardId, isMonster);
             _setCardEventHandler.Action(setCardEvent, instanceID);

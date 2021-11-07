@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Code.Core.DataManager.Connections;
 using Code.Core.DataManager.Connections.Entities;
 using Code.Core.DataManager.DuelRooms;
@@ -83,6 +84,8 @@ namespace Code.Core.DataManager
         {
             return _gameObjectDataManager.GetCardModel(cardId);
         }
+
+        public IObservable<GameObject> PlayfieldStream => _gameObjectDataManager.PlayfieldStream;
 
         public GameObject GetPlayfield()
         {
