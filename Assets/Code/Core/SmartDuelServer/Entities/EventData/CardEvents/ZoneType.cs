@@ -13,6 +13,7 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.CardEvents
         SpellTrap1 = 9,
         SpellTrap2 = 10,
         SpellTrap3 = 11,
-        Deck = 12
+        Deck = 12,
+        Skill = 13
     }
 }

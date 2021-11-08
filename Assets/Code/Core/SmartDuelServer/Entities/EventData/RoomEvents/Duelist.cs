@@ -20,5 +20,6 @@ namespace Code.Core.SmartDuelServer.Entities.EventData.RoomEvents
         [JsonProperty("spellTrapZone2")] public SingleCardZone SpellTrapZone2 { get; set; }
         [JsonProperty("spellTrapZone3")] public SingleCardZone SpellTrapZone3 { get; set; }
         [JsonProperty("deckZone")] public MultiCardZone DeckZone { get; set; }
+        [JsonProperty("skillZone")] public SingleCardZone SkillZone { get; set; }
     }
 }

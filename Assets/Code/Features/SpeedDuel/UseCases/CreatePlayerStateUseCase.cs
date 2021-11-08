@@ -32,7 +32,8 @@ namespace Code.Features.SpeedDuel.UseCases
                 duelist.SpellTrapZone1,
                 duelist.SpellTrapZone2,
                 duelist.SpellTrapZone3,
-                duelist.DeckZone
+                duelist.DeckZone,
+                duelist.SkillZone
             );
 
             return playerState;
