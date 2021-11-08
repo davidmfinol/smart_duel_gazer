@@ -23,6 +23,7 @@ namespace Code.Features.SpeedDuel.Models
         private SingleCardZone SpellTrapZone2 { get; }
         private SingleCardZone SpellTrapZone3 { get; }
         private MultiCardZone DeckZone { get; }
+        private SingleCardZone SkillZone { get; }
 
         public PlayerState(
             string duelistId,
@@ -39,7 +40,8 @@ namespace Code.Features.SpeedDuel.Models
             SingleCardZone spellTrapZone1,
             SingleCardZone spellTrapZone2,
             SingleCardZone spellTrapZone3,
-            MultiCardZone deckZone
+            MultiCardZone deckZone,
+            SingleCardZone skillZone
         )
         {
             DuelistId = duelistId;
@@ -57,6 +59,7 @@ namespace Code.Features.SpeedDuel.Models
             SpellTrapZone2 = spellTrapZone2;
             SpellTrapZone3 = spellTrapZone3;
             DeckZone = deckZone;
+            SkillZone = skillZone;
         }
 
         public PlayerState CopyWith(IList<Zone> newZones)
@@ -76,7 +79,8 @@ namespace Code.Features.SpeedDuel.Models
                 newZones.First(z => z.ZoneType == ZoneType.SpellTrap1) as SingleCardZone,
                 newZones.First(z => z.ZoneType == ZoneType.SpellTrap2) as SingleCardZone,
                 newZones.First(z => z.ZoneType == ZoneType.SpellTrap3) as SingleCardZone,
-                newZones.First(z => z.ZoneType == ZoneType.Deck) as MultiCardZone
+                newZones.First(z => z.ZoneType == ZoneType.Deck) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Skill) as SingleCardZone
             );
         }
 
@@ -100,7 +104,8 @@ namespace Code.Features.SpeedDuel.Models
                 SpellTrapZone1,
                 SpellTrapZone2,
                 SpellTrapZone3,
-                DeckZone
+                DeckZone,
+                SkillZone
             };
         }
 
@@ -117,7 +122,8 @@ namespace Code.Features.SpeedDuel.Models
                 .Concat(SpellTrapZone1.GetCards())
                 .Concat(SpellTrapZone2.GetCards())
                 .Concat(SpellTrapZone3.GetCards())
-                .Concat(DeckZone.GetCards());
+                .Concat(DeckZone.GetCards())
+                .Concat(SkillZone.GetCards());
         }
     }
 }
