@@ -47,7 +47,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
 
         private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath, bool isAttackingMonster)
         {
-            _logger.Log(Tag, $"ExecuteAttackEvent(playerZone: {playerZone.Card.Id}, targetZone: {targetZone}, " +
+            _logger.Log(Tag, $"ExecuteAttackEvent(playerZone: {playerZone.Card.YugiohCard.Id}, targetZone: {targetZone}, " +
                 $"zonePath: {zonePath}, isAttackingMonster: {isAttackingMonster})");
 
             // Check if Card is Attacking while in Defence position
