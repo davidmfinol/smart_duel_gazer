@@ -15,7 +15,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
     public interface IPlayCardModelUseCase
     {
-        Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
+        Zone Execute(SingleCardZone zone, PlayCard card, Transform playMatZone, GameObject monsterModel,
             GameObject speedDuelField);
     }
 
@@ -53,30 +53,30 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         #endregion
 
-        public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone, GameObject monsterModel,
+        public Zone Execute(SingleCardZone zone, PlayCard card, Transform playMatZone, GameObject monsterModel,
             GameObject speedDuelField)
         {
             var instantiatedMonsterModel = GetInstantiatedModel(zone, playMatZone, monsterModel, speedDuelField);
             var currentSetCardModel = zone.SetCardModel;
 
             GameObject newSetCardModel = null;
-            switch (updatedCard.CardPosition)
+            switch (card.CardPosition)
             {
                 case CardPosition.FaceUp:
                     HandleFaceUpPosition(instantiatedMonsterModel, playMatZone, currentSetCardModel,
                         out newSetCardModel);
                     break;
                 case CardPosition.FaceUpDefence:
-                    HandleFaceUpDefencePosition(updatedCard, instantiatedMonsterModel, playMatZone, currentSetCardModel,
+                    HandleFaceUpDefencePosition(card, instantiatedMonsterModel, playMatZone, currentSetCardModel,
                         out newSetCardModel);
                     break;
                 case CardPosition.FaceDownDefence:
-                    HandleFaceDownDefencePosition(updatedCard, playMatZone, currentSetCardModel, instantiatedMonsterModel,
+                    HandleFaceDownDefencePosition(card, playMatZone, currentSetCardModel, instantiatedMonsterModel,
                         out newSetCardModel);
                     break;
             }
 
-            return zone.CopyWith(updatedCard, newSetCardModel, instantiatedMonsterModel);
+            return zone.CopyWith(card, newSetCardModel, instantiatedMonsterModel);
         }
 
         private GameObject GetInstantiatedModel(SingleCardZone zone, Transform playMatZone, GameObject monsterModel, 
@@ -155,7 +155,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         }
 
         private void HandleFaceDownDefencePosition(PlayCard updatedCard, Transform playMatZone, GameObject currentSetCardModel,
-            GameObject instantiatedMonsterModel, out GameObject newSetCardModel)
+            Object instantiatedMonsterModel, out GameObject newSetCardModel)
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
@@ -170,7 +170,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             {
                 if (!setCard)
                 {
-                    //TODO: Create function to instantiate new SetCards
+                    // TODO: Create function to instantiate new SetCards
                     _logger.Warning(Tag, "The setCard queue is empty :(");
                     return;
                 }

@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Code.Core.DataManager;
-using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Dialog;
 using Code.Core.Dialog.Entities;
 using Code.Core.Localization;
@@ -13,9 +13,11 @@ using Code.Core.SmartDuelServer.Entities;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Core.SmartDuelServer.Entities.EventData.RoomEvents;
 using Code.Features.SpeedDuel.Models;
+using Code.Features.SpeedDuel.Models.Zones;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.CardBattle;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
+using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -34,14 +36,17 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private ICreatePlayCardUseCase _createPlayCardUseCase;
         private IMoveCardInteractor _moveCardInteractor;
         private IMonsterBattleInteractor _monsterBattleInteractor;
+        private IPlayCardInteractor _playCardInteractor;
         private IEndOfDuelUseCase _endOfDuel;
         private IStringProvider _stringProvider;
         private IAppLogger _logger;
 
         private Core.SmartDuelServer.Entities.EventData.RoomEvents.DuelRoom _duelRoom;
         private SpeedDuelState _speedDuelState;
-        private IDisposable _smartDuelEventSubscription;
         private GameObject _speedDuelField;
+
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly IList<SmartDuelEvent> _missedSmartDuelEvents = new List<SmartDuelEvent>();
 
         #region Constructors
 
@@ -55,6 +60,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             ICreatePlayCardUseCase createPlayCardUseCase,
             IMoveCardInteractor moveCardInteractor,
             IMonsterBattleInteractor monsterBattleInteractor,
+            IPlayCardInteractor playCardInteractor,
             IEndOfDuelUseCase endOfDuel,
             IStringProvider stringProvider,
             IAppLogger logger)
@@ -66,6 +72,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _createPlayCardUseCase = createPlayCardUseCase;
             _moveCardInteractor = moveCardInteractor;
             _monsterBattleInteractor = monsterBattleInteractor;
+            _playCardInteractor = playCardInteractor;
             _endOfDuel = endOfDuel;
             _stringProvider = stringProvider;
             _logger = logger;
@@ -73,7 +80,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             screenService.UseAutoOrientation();
 
             InitSpeedDuelState();
-            InitSmartDuelEventSubscription();
+            InitSubscriptions();
         }
 
         #endregion
@@ -82,8 +89,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void OnDestroy()
         {
-            _smartDuelEventSubscription?.Dispose();
-            _smartDuelEventSubscription = null;
+            _disposables.Dispose();
 
             _smartDuelServer?.Dispose();
         }
@@ -106,11 +112,67 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _speedDuelState = new SpeedDuelState(userState, opponentState);
         }
 
-        private void InitSmartDuelEventSubscription()
+        private void InitSubscriptions()
         {
-            _smartDuelEventSubscription = _smartDuelServer.CardEvents
+            _disposables.Add(_dataManager.PlayfieldStream.Subscribe(OnPlayfieldUpdated));
+
+            _disposables.Add(_smartDuelServer.CardEvents
                 .Merge(_smartDuelServer.RoomEvents)
-                .Subscribe(OnSmartDuelEventReceived);
+                .Subscribe(OnSmartDuelEventReceived));
+        }
+
+        #endregion
+
+        #region Playfield
+
+        private void OnPlayfieldUpdated(GameObject playfield)
+        {
+            _logger.Log(Tag, "OnPlayfieldUpdated()");
+
+            if (playfield == null)
+            {
+                return;
+            }
+            
+            _speedDuelField = playfield;
+            InitPlayfieldState(_speedDuelField);
+            HandleMissedSmartDuelEvents();
+        }
+
+        private void InitPlayfieldState(GameObject playfield)
+        {
+            _logger.Log(Tag, "InitPlayfieldState()");
+
+            foreach (var oldPlayerState in _speedDuelState.GetPlayerStates())
+            {
+                var oldZones = oldPlayerState.GetZones();
+                var newZones = oldZones.ToList();
+
+                foreach (var oldZone in oldZones)
+                {
+                    if (!(oldZone is SingleCardZone singleCardZone) || singleCardZone.Card == null)
+                    {
+                        continue;
+                    }
+
+                    var newZone = _playCardInteractor.Execute(oldPlayerState, singleCardZone, singleCardZone.Card, playfield);
+                    newZones.Remove(oldZone);
+                    newZones.Add(newZone);
+                }
+
+                var newPlayerState = oldPlayerState.CopyWith(newZones);
+                UpdateSpeedDuelState(oldPlayerState, newPlayerState);
+            }
+        }
+
+        private void HandleMissedSmartDuelEvents()
+        {
+            foreach (var smartDuelEvent in _missedSmartDuelEvents)
+            {
+                OnSmartDuelEventReceived(smartDuelEvent);
+            }
+            
+            _missedSmartDuelEvents.Clear();
         }
 
         #endregion
@@ -121,10 +183,9 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _logger.Log(Tag, $"OnSmartDuelEventReceived(scope: {e.Scope}, action: {e.Action})");
 
-            FetchSpeedDuelFieldIfNecessary();
             if (_speedDuelField == null)
             {
-                _logger.Warning(Tag, "Speed Duel Field isn't placed yet");
+                _missedSmartDuelEvents.Add(e);
                 return;
             }
 
@@ -138,13 +199,6 @@ namespace Code.Features.SpeedDuel.EventHandlers
                     HandleRoomEvent(e);
                     break;
             }
-        }
-
-        private void FetchSpeedDuelFieldIfNecessary()
-        {
-            if (_speedDuelField != null) return;
-
-            _speedDuelField = _dataManager.GetPlayfield();
         }
 
         #region Handle card events
@@ -183,11 +237,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()
-                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
 
             if (playCard == null)
             {
-                var tokenCount = playerState.GetCards().Count(card => card.Id == TokenId);
+                var tokenCount = playerState.GetCards().Count(card => card.YugiohCard.Id == TokenId);
                 playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount + 1);
             }
 
@@ -203,7 +257,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
             var playCard = playerState.GetCards()
-                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
 
             var updatedPlayerState =
                 _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
@@ -224,7 +278,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
             var attackerState = playerStates.First(ps => ps.DuelistId == data.DuelistId);
             var attackingCard = attackerState.GetCards()
-                .FirstOrDefault(card => card.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
             var attackZone = attackingCard == null ? null : attackerState.GetZone(attackingCard.ZoneType);
 
             var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);

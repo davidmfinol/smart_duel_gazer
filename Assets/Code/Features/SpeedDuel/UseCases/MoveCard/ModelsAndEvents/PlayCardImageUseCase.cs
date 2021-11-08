@@ -10,7 +10,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 {
     public interface IPlayCardImageUseCase
     {
-        Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone);
+        Zone Execute(SingleCardZone zone, PlayCard card, Transform playMatZone);
     }
 
     public class PlayCardImageUseCase : IPlayCardImageUseCase
@@ -30,17 +30,17 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         #endregion
 
-        public Zone Execute(SingleCardZone zone, PlayCard updatedCard, Transform playMatZone)
+        public Zone Execute(SingleCardZone zone, PlayCard card, Transform playMatZone)
         {
             var setCardModel = zone.SetCardModel
                 ? zone.SetCardModel
                 : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
 
-            var modelEvent = GetModelEvent(zone, updatedCard);
-            var isMonster = updatedCard.CardPosition.IsDefence();
-            _handlePlayCardModelEventsUseCase.Execute(modelEvent, updatedCard, setCardModel.GetInstanceID(), isMonster);
+            var modelEvent = GetModelEvent(zone, card);
+            var isMonster = card.CardPosition.IsDefence();
+            _handlePlayCardModelEventsUseCase.Execute(modelEvent, card, setCardModel.GetInstanceID(), isMonster);
 
-            return zone.CopyWith(updatedCard, setCardModel);
+            return zone.CopyWith(card, setCardModel);
         }
 
         private static SetCardEvent GetModelEvent(SingleCardZone zone, PlayCard updatedCard)

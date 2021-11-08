@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Code.Core.SmartDuelServer.Entities.EventData.CardEvents;
 using Code.Features.SpeedDuel.Models.Zones;
+using Zenject.Internal;
 
 namespace Code.Features.SpeedDuel.Models
 {
@@ -10,67 +11,77 @@ namespace Code.Features.SpeedDuel.Models
         public string DuelistId { get; }
         public bool IsOpponent { get; }
         public string PlayMatZonesPath { get; }
-        private MultiCardZone HandZone { get; set; }
-        private SingleCardZone FieldZone { get; set; }
-        private SingleCardZone MainMonsterZone1 { get; set; }
-        private SingleCardZone MainMonsterZone2 { get; set; }
-        private SingleCardZone MainMonsterZone3 { get; set; }
-        private MultiCardZone GraveyardZone { get; set; }
-        private MultiCardZone BanishedZone { get; set; }
-        private MultiCardZone ExtraDeckZone { get; set; }
-        private SingleCardZone SpellTrapZone1 { get; set; }
-        private SingleCardZone SpellTrapZone2 { get; set; }
-        private SingleCardZone SpellTrapZone3 { get; set; }
-        public MultiCardZone DeckZone { get; private set; }
+        private MultiCardZone HandZone { get; }
+        private SingleCardZone FieldZone { get; }
+        private SingleCardZone MainMonsterZone1 { get; }
+        private SingleCardZone MainMonsterZone2 { get; }
+        private SingleCardZone MainMonsterZone3 { get; }
+        private MultiCardZone GraveyardZone { get; }
+        private MultiCardZone BanishedZone { get; }
+        private MultiCardZone ExtraDeckZone { get; }
+        private SingleCardZone SpellTrapZone1 { get; }
+        private SingleCardZone SpellTrapZone2 { get; }
+        private SingleCardZone SpellTrapZone3 { get; }
+        private MultiCardZone DeckZone { get; }
+        private SingleCardZone SkillZone { get; }
 
-        public PlayerState(string duelistId, bool isOpponent, string playMatZonesPath)
+        public PlayerState(
+            string duelistId,
+            bool isOpponent,
+            string playMatZonesPath,
+            MultiCardZone handZone,
+            SingleCardZone fieldZone,
+            SingleCardZone mainMonsterZone1,
+            SingleCardZone mainMonsterZone2,
+            SingleCardZone mainMonsterZone3,
+            MultiCardZone graveyardZone,
+            MultiCardZone banishedZone,
+            MultiCardZone extraDeckZone,
+            SingleCardZone spellTrapZone1,
+            SingleCardZone spellTrapZone2,
+            SingleCardZone spellTrapZone3,
+            MultiCardZone deckZone,
+            SingleCardZone skillZone
+        )
         {
             DuelistId = duelistId;
             IsOpponent = isOpponent;
             PlayMatZonesPath = playMatZonesPath;
-            HandZone = new MultiCardZone(ZoneType.Hand);
-            FieldZone = new SingleCardZone(ZoneType.Field);
-            MainMonsterZone1 = new SingleCardZone(ZoneType.MainMonster1);
-            MainMonsterZone2 = new SingleCardZone(ZoneType.MainMonster2);
-            MainMonsterZone3 = new SingleCardZone(ZoneType.MainMonster3);
-            GraveyardZone = new MultiCardZone(ZoneType.Graveyard);
-            BanishedZone = new MultiCardZone(ZoneType.Banished);
-            ExtraDeckZone = new MultiCardZone(ZoneType.ExtraDeck);
-            SpellTrapZone1 = new SingleCardZone(ZoneType.SpellTrap1);
-            SpellTrapZone2 = new SingleCardZone(ZoneType.SpellTrap2);
-            SpellTrapZone3 = new SingleCardZone(ZoneType.SpellTrap3);
-            DeckZone = new MultiCardZone(ZoneType.Deck);
+            HandZone = handZone;
+            FieldZone = fieldZone;
+            MainMonsterZone1 = mainMonsterZone1;
+            MainMonsterZone2 = mainMonsterZone2;
+            MainMonsterZone3 = mainMonsterZone3;
+            GraveyardZone = graveyardZone;
+            BanishedZone = banishedZone;
+            ExtraDeckZone = extraDeckZone;
+            SpellTrapZone1 = spellTrapZone1;
+            SpellTrapZone2 = spellTrapZone2;
+            SpellTrapZone3 = spellTrapZone3;
+            DeckZone = deckZone;
+            SkillZone = skillZone;
         }
 
-        public PlayerState CopyWith(
-            MultiCardZone handZone = null,
-            SingleCardZone fieldZone = null,
-            SingleCardZone mainMonsterZone1 = null,
-            SingleCardZone mainMonsterZone2 = null,
-            SingleCardZone mainMonsterZone3 = null,
-            MultiCardZone graveyardZone = null,
-            MultiCardZone banishedZone = null,
-            MultiCardZone extraDeckZone = null,
-            SingleCardZone spellTrapZone1 = null,
-            SingleCardZone spellTrapZone2 = null,
-            SingleCardZone spellTrapZone3 = null,
-            MultiCardZone deckZone = null)
+        public PlayerState CopyWith(IList<Zone> newZones)
         {
-            return new PlayerState(DuelistId, IsOpponent, PlayMatZonesPath)
-            {
-                HandZone = handZone ?? HandZone,
-                FieldZone = fieldZone ?? FieldZone,
-                MainMonsterZone1 = mainMonsterZone1 ?? MainMonsterZone1,
-                MainMonsterZone2 = mainMonsterZone2 ?? MainMonsterZone2,
-                MainMonsterZone3 = mainMonsterZone3 ?? MainMonsterZone3,
-                GraveyardZone = graveyardZone ?? GraveyardZone,
-                BanishedZone = banishedZone ?? BanishedZone,
-                ExtraDeckZone = extraDeckZone ?? ExtraDeckZone,
-                SpellTrapZone1 = spellTrapZone1 ?? SpellTrapZone1,
-                SpellTrapZone2 = spellTrapZone2 ?? SpellTrapZone2,
-                SpellTrapZone3 = spellTrapZone3 ?? SpellTrapZone3,
-                DeckZone = deckZone ?? DeckZone
-            };
+            return new PlayerState(
+                DuelistId,
+                IsOpponent,
+                PlayMatZonesPath,
+                newZones.First(z => z.ZoneType == ZoneType.Hand) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Field) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.MainMonster1) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.MainMonster2) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.MainMonster3) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Graveyard) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Banished) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.ExtraDeck) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.SpellTrap1) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.SpellTrap2) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.SpellTrap3) as SingleCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Deck) as MultiCardZone,
+                newZones.First(z => z.ZoneType == ZoneType.Skill) as SingleCardZone
+            );
         }
 
         public Zone GetZone(ZoneType zoneType)
@@ -93,7 +104,8 @@ namespace Code.Features.SpeedDuel.Models
                 SpellTrapZone1,
                 SpellTrapZone2,
                 SpellTrapZone3,
-                DeckZone
+                DeckZone,
+                SkillZone
             };
         }
 
@@ -110,7 +122,8 @@ namespace Code.Features.SpeedDuel.Models
                 .Concat(SpellTrapZone1.GetCards())
                 .Concat(SpellTrapZone2.GetCards())
                 .Concat(SpellTrapZone3.GetCards())
-                .Concat(DeckZone.GetCards());
+                .Concat(DeckZone.GetCards())
+                .Concat(SkillZone.GetCards());
         }
     }
 }
