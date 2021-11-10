@@ -1,17 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &3732600367900548716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4346414276849626789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cadcfd987fed8a044b75709fc19ad0f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &3648855479792672521
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25,19 +13,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.3486688, y: 0.35158765, z: 0.3262394}
   m_Center: {x: -0.012855567, y: -0.027584556, z: 0.02745262}
---- !u!65 &6349410275363800790
-BoxCollider:
+--- !u!114 &3732600367900548716
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357822801449428537}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_GameObject: {fileID: 4346414276849626789}
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.1513039, y: 0.09030124, z: 0.10814505}
-  m_Center: {x: -0.001343236, y: 0.0032948728, z: -0.0000000024611913}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadcfd987fed8a044b75709fc19ad0f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &4166140779611104736
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -54,6 +41,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!65 &6349410275363800790
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4357822801449428537}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.1513039, y: 0.09030124, z: 0.10814505}
+  m_Center: {x: -0.001343236, y: 0.0032948728, z: -0.0000000024611913}
 --- !u!1 &7315483507538726984
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,6 +221,18 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 94405637c2e648c4ea6c39e1f6b2f8b9, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 94405637c2e648c4ea6c39e1f6b2f8b9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 94405637c2e648c4ea6c39e1f6b2f8b9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 94405637c2e648c4ea6c39e1f6b2f8b9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 94405637c2e648c4ea6c39e1f6b2f8b9, type: 3}
       propertyPath: m_LocalPosition.x

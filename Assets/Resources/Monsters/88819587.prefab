@@ -63,7 +63,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 60, y: 60, z: 60}
+  _target: {fileID: 0}
   _hasProjectileAttack: 0
+  _projectileSpawnPoints: []
+  _projectilePrefab: {fileID: 0}
 --- !u!114 &2490465923016466069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,18 +77,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f40a1cb1b685bcc41bf19431922a9f7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8801769721857533530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3336745516193129408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edee27012fb1ac843993f67ce11acfa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6804207475905753249
@@ -112,6 +103,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8801769721857533530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3336745516193129408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edee27012fb1ac843993f67ce11acfa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2490465923016466065
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -122,6 +125,18 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 68a1c4e3e43956944bfdb32edb073d1b, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 68a1c4e3e43956944bfdb32edb073d1b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 68a1c4e3e43956944bfdb32edb073d1b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 68a1c4e3e43956944bfdb32edb073d1b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68a1c4e3e43956944bfdb32edb073d1b, type: 3}
       propertyPath: m_LocalPosition.x

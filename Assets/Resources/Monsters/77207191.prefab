@@ -32,10 +32,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 1, y: 1, z: 1}
-  _hasProjectileAttack: 0
-  _firePoint: {fileID: 0}
-  _projectilePrefab: {fileID: 0}
   _target: {fileID: 6998926852283158124}
+  _hasProjectileAttack: 0
+  _projectileSpawnPoints: []
+  _projectilePrefab: {fileID: 0}
 --- !u!114 &2330520829181570064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +245,18 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 53e3c19b9c0d74ebbb5a66f831a6a1dd, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 53e3c19b9c0d74ebbb5a66f831a6a1dd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 53e3c19b9c0d74ebbb5a66f831a6a1dd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 53e3c19b9c0d74ebbb5a66f831a6a1dd, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53e3c19b9c0d74ebbb5a66f831a6a1dd, type: 3}
       propertyPath: m_LocalPosition.x

@@ -2317,6 +2317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8494504c4d014d779eb3d1fbfd7bd88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backButton: {fileID: 1650324138}
   menu: {fileID: 439207711}
   showPlayfieldMenusToggle: {fileID: 1714322488955655463}
   playmatVisibilityToggle: {fileID: 6449482835655837761}
@@ -2326,7 +2327,6 @@ MonoBehaviour:
   scaleSlider: {fileID: 1457861429}
   playfieldAnimator: {fileID: 1879231185}
   settingsMenu: {fileID: 747528651}
-  backButton: {fileID: 1650324138}
 --- !u!95 &1879231185
 Animator:
   serializedVersion: 3

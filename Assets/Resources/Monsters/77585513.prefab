@@ -44,7 +44,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 55, y: 55, z: 55}
+  _target: {fileID: 0}
   _hasProjectileAttack: 0
+  _projectileSpawnPoints: []
+  _projectilePrefab: {fileID: 0}
 --- !u!114 &5428508445916646589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +125,18 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: c324550a2ba6f4b45a00f4e7ebc28016, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c324550a2ba6f4b45a00f4e7ebc28016, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c324550a2ba6f4b45a00f4e7ebc28016, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c324550a2ba6f4b45a00f4e7ebc28016, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c324550a2ba6f4b45a00f4e7ebc28016, type: 3}
       propertyPath: m_LocalPosition.x
