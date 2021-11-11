@@ -1280,7 +1280,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a02d1d374d074a489a067c5127ab47c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
+  _destructionParticles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
+  _activateEffectParticles: {fileID: 6539554599090701411, guid: cca986e9bb309aa45a3d1dbf7c036c30, type: 3}
   _setCard: {fileID: 5233387070911847034, guid: 9055234d2df24ad4ea34b214b7f14c82, type: 3}
 --- !u!1 &1043626536
 GameObject:
@@ -2317,6 +2318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8494504c4d014d779eb3d1fbfd7bd88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backButton: {fileID: 1650324138}
   menu: {fileID: 439207711}
   showPlayfieldMenusToggle: {fileID: 1714322488955655463}
   playmatVisibilityToggle: {fileID: 6449482835655837761}
@@ -2326,7 +2328,6 @@ MonoBehaviour:
   scaleSlider: {fileID: 1457861429}
   playfieldAnimator: {fileID: 1879231185}
   settingsMenu: {fileID: 747528651}
-  backButton: {fileID: 1650324138}
 --- !u!95 &1879231185
 Animator:
   serializedVersion: 3

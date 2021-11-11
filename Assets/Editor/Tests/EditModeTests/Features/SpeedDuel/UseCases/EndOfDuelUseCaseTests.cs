@@ -37,7 +37,7 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
             _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
         }
 
-        [TestCase(GameObjectKeys.ParticlesKey)]
+        [TestCase(GameObjectKeys.DestructionParticlesKey)]
         [TestCase(GameObjectKeys.SetCardKey)]
         [Parallelizable]
         public void When_ExecuteCalled_GameObjectRemoved(string key)

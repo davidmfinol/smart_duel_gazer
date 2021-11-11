@@ -46,6 +46,7 @@ using Zenject;
 using Code.Wrappers.WrapperNetworkConnection;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
+using Code.Features.SpeedDuel.UseCases.CardDeclare;
 
 namespace Code.Di
 {
@@ -129,6 +130,8 @@ namespace Code.Di
                 .FromFactory<PrefabFactory<SetCard>>();
             Container.BindFactory<GameObject, PlayfieldComponentsManager, PlayfieldComponentsManager.Factory>()
                 .FromFactory<PrefabFactory<PlayfieldComponentsManager>>();
+            Container.BindFactory<GameObject, ActivateEffectParticles, ActivateEffectParticles.Factory>()
+                .FromFactory<PrefabFactory<ActivateEffectParticles>>();
 
             // Use cases
             Container.Bind<ICreatePlayCardUseCase>().To<CreatePlayCardUseCase>().AsSingle();
@@ -144,7 +147,8 @@ namespace Code.Di
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
             Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
             Container.Bind<IMonsterZoneBattleUseCase>().To<MonsterZoneBattleUseCase>().AsSingle();
-            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();            
+            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();
+            Container.Bind<ICardDeclareUseCase>().To<CardDeclareUseCase>().AsSingle();
 
             #endregion
 

@@ -20,6 +20,7 @@
         public const string CardPlayAction = "play";
         public const string CardRemoveAction = "remove";
         public const string CardAttackAction = "attack";
+        public const string CardDeclareAction = "declare";
 
         public const string RoomGetDuelistsAction = "get-duelists";
         public const string RoomSpectateAction = "spectate";

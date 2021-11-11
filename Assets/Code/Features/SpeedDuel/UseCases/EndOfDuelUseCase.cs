@@ -37,7 +37,7 @@ namespace Code.Features.SpeedDuel.UseCases
         {
             _logger.Log(Tag, "Execute()");
 
-            _dataManager.RemoveGameObject(GameObjectKeys.ParticlesKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.DestructionParticlesKey);
             _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
             _dataManager.RemovePlayfield();
 
