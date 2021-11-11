@@ -2,6 +2,7 @@ using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.Logger;
 using Code.Features.SpeedDuel.Models.Zones;
+using UnityEngine;
 
 namespace Code.Features.SpeedDuel.UseCases.CardDeclare
 {
@@ -31,8 +32,18 @@ namespace Code.Features.SpeedDuel.UseCases.CardDeclare
 
             if (!(zone is SingleCardZone singleCardZone)) return;
 
+            Vector3 targetPosition;
+            if(singleCardZone.MonsterModel == null)
+            {
+                targetPosition = singleCardZone.SetCardModel.transform.position;
+            }
+            else
+            {
+                targetPosition = singleCardZone.MonsterModel.transform.position;
+            }
+
             var activateEffectParticles = _dataManager.GetGameObject(GameObjectKeys.ActivateEffectParticlesKey);
-            activateEffectParticles.transform.position = singleCardZone.MonsterModel.transform.position;
+            activateEffectParticles.transform.position = targetPosition;
             activateEffectParticles.SetActive(true);
         }
     }
