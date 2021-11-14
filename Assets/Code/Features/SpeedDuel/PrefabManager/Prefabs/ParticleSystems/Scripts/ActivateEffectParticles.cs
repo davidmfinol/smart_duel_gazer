@@ -38,8 +38,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
         {
             _logger.Log(Tag, "OnParticleSystemStopped()");
 
-            gameObject.SetActive(false);
-            _dataManager.SaveGameObject(GameObjectKeys.ActivateEffectParticlesKey, gameObject);
+            var go = gameObject;
+            go.SetActive(false);
+            _dataManager.SaveGameObject(GameObjectKeys.ActivateEffectParticlesKey, go);
         }
 
         #endregion

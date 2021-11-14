@@ -49,7 +49,7 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
         }
 
         [Test]
-        public void When_ExectuteCalled_PlayfieldRemoved()
+        public void When_ExecuteCalled_PlayfieldRemoved()
         {
             _endOfDuel.Execute();
 

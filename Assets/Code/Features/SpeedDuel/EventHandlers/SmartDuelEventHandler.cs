@@ -16,7 +16,6 @@ using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.Models.Zones;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Features.SpeedDuel.UseCases.CardBattle;
-using Code.Features.SpeedDuel.UseCases.CardDeclare;
 using Code.Features.SpeedDuel.UseCases.MoveCard;
 using Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents;
 using UniRx;
@@ -38,7 +37,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private IMoveCardInteractor _moveCardInteractor;
         private IMonsterBattleInteractor _monsterBattleInteractor;
         private IPlayCardInteractor _playCardInteractor;
-        private ICardDeclareUseCase _cardDeclareUseCase;
+        private IDeclareCardUseCase _declareCardUseCase;
         private IEndOfDuelUseCase _endOfDuel;
         private IStringProvider _stringProvider;
         private IAppLogger _logger;
@@ -63,7 +62,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             IMoveCardInteractor moveCardInteractor,
             IMonsterBattleInteractor monsterBattleInteractor,
             IPlayCardInteractor playCardInteractor,
-            ICardDeclareUseCase cardDeclareUseCase,
+            IDeclareCardUseCase declareCardUseCase,
             IEndOfDuelUseCase endOfDuel,
             IStringProvider stringProvider,
             IAppLogger logger)
@@ -76,7 +75,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _moveCardInteractor = moveCardInteractor;
             _monsterBattleInteractor = monsterBattleInteractor;
             _playCardInteractor = playCardInteractor;
-            _cardDeclareUseCase = cardDeclareUseCase;
+            _declareCardUseCase = declareCardUseCase;
             _endOfDuel = endOfDuel;
             _stringProvider = stringProvider;
             _logger = logger;
@@ -228,7 +227,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
                     HandleAttackCardEvent(data);
                     break;
                 case SmartDuelEventConstants.CardDeclareAction:
-                    HandleCardDeclareEvent(data);
+                    HandleDeclareCardEvent(data);
                     break;
             }
         }
@@ -294,7 +293,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _monsterBattleInteractor.Execute(attackZone, targetZone, targetPlayerState, _speedDuelField);
         }
 
-        private void HandleCardDeclareEvent(CardEventData data)
+        private void HandleDeclareCardEvent(CardEventData data)
         {
             _logger.Log(Tag, 
                 $"HandleDeclareCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), copyNumber: {data.CopyNumber}))");
@@ -306,7 +305,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
             var declaredCardZone = declaredCard == null ? null : declaredPlayerState.GetZone(declaredCard.ZoneType);
 
-            _cardDeclareUseCase.Execute(declaredCardZone);
+            _declareCardUseCase.Execute(declaredCardZone);
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)
