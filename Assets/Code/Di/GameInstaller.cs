@@ -46,7 +46,6 @@ using Zenject;
 using Code.Wrappers.WrapperNetworkConnection;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
-using Code.Features.SpeedDuel.UseCases.CardDeclare;
 
 namespace Code.Di
 {
@@ -148,7 +147,7 @@ namespace Code.Di
             Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
             Container.Bind<IMonsterZoneBattleUseCase>().To<MonsterZoneBattleUseCase>().AsSingle();
             Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();
-            Container.Bind<ICardDeclareUseCase>().To<CardDeclareUseCase>().AsSingle();
+            Container.Bind<IDeclareCardUseCase>().To<DeclareCardUseCase>().AsSingle();
 
             #endregion
 

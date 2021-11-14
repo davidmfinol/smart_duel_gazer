@@ -4,21 +4,21 @@ using Code.Core.Logger;
 using Code.Features.SpeedDuel.Models.Zones;
 using UnityEngine;
 
-namespace Code.Features.SpeedDuel.UseCases.CardDeclare
+namespace Code.Features.SpeedDuel.UseCases
 {
-    public interface ICardDeclareUseCase
+    public interface IDeclareCardUseCase
     {
         void Execute(Zone zone);
     }
 
-    public class CardDeclareUseCase : ICardDeclareUseCase
+    public class DeclareCardUseCase : IDeclareCardUseCase
     {
-        private const string Tag = "CardDeclareUseCase";
-        
+        private const string Tag = "DeclareCardUseCase";
+
         private readonly IDataManager _dataManager;
         private readonly IAppLogger _logger;
-        
-        public CardDeclareUseCase(
+
+        public DeclareCardUseCase(
             IDataManager dataManager,
             IAppLogger appLogger)
         {
@@ -32,15 +32,9 @@ namespace Code.Features.SpeedDuel.UseCases.CardDeclare
 
             if (!(zone is SingleCardZone singleCardZone)) return;
 
-            Vector3 targetPosition;
-            if(singleCardZone.MonsterModel == null)
-            {
-                targetPosition = singleCardZone.SetCardModel.transform.position;
-            }
-            else
-            {
-                targetPosition = singleCardZone.MonsterModel.transform.position;
-            }
+            var targetPosition = singleCardZone.MonsterModel == null
+                ? singleCardZone.SetCardModel.transform.position
+                : singleCardZone.MonsterModel.transform.position;
 
             var activateEffectParticles = _dataManager.GetGameObject(GameObjectKeys.ActivateEffectParticlesKey);
             activateEffectParticles.transform.position = targetPosition;
