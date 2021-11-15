@@ -55,13 +55,13 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         private void RemoveMonsterModel(PlayCard oldCard, GameObject monsterModel, GameObject setCardModel)
         {
-            var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey,
+            var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.DestructionParticlesKey,
                 monsterModel.transform.position, monsterModel.transform.rotation);
 
             var modelID = monsterModel.GetInstanceID();
             _modelEventHandler.Remove(modelID);
 
-            _recycleGameObjectUseCase.Execute(GameObjectKeys.ParticlesKey, destructionParticles);
+            _recycleGameObjectUseCase.Execute(GameObjectKeys.DestructionParticlesKey, destructionParticles);
             _recycleGameObjectUseCase.Execute(oldCard.YugiohCard.Id.ToString(), monsterModel);
 
             if (!setCardModel) return;

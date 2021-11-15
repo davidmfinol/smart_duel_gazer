@@ -37,7 +37,8 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
             _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
         }
 
-        [TestCase(GameObjectKeys.ParticlesKey)]
+        [TestCase(GameObjectKeys.DestructionParticlesKey)]
+        [TestCase(GameObjectKeys.ActivateEffectParticlesKey)]
         [TestCase(GameObjectKeys.SetCardKey)]
         [Parallelizable]
         public void When_ExecuteCalled_GameObjectRemoved(string key)
@@ -48,7 +49,7 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
         }
 
         [Test]
-        public void When_ExectuteCalled_PlayfieldRemoved()
+        public void When_ExecuteCalled_PlayfieldRemoved()
         {
             _endOfDuel.Execute();
 

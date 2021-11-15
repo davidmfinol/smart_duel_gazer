@@ -132,6 +132,8 @@ namespace Code.Di
                 .FromFactory<PrefabFactory<PlayfieldComponentsManager>>();
             Container.BindFactory<GameObject, Projectile, Projectile.Factory>()
                 .FromFactory<PrefabFactory<Projectile>>();
+            Container.BindFactory<GameObject, ActivateEffectParticles, ActivateEffectParticles.Factory>()
+                .FromFactory<PrefabFactory<ActivateEffectParticles>>();
 
             // Use cases
             Container.Bind<ICreatePlayCardUseCase>().To<CreatePlayCardUseCase>().AsSingle();
@@ -147,7 +149,8 @@ namespace Code.Di
             Container.Bind<IHandlePlayCardModelEventsUseCase>().To<HandlePlayCardModelEventsUseCase>().AsSingle();
             Container.Bind<IMonsterBattleInteractor>().To<MonsterBattleInteractor>().AsSingle();
             Container.Bind<IMonsterZoneBattleUseCase>().To<MonsterZoneBattleUseCase>().AsSingle();
-            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();            
+            Container.Bind<IDirectAttackUseCase>().To<DirectAttackUseCase>().AsSingle();
+            Container.Bind<IDeclareCardUseCase>().To<DeclareCardUseCase>().AsSingle();
 
             #endregion
 
