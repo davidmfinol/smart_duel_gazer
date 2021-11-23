@@ -71,6 +71,7 @@
 
         void RunSocketThread() {
             ws = new WebSocket(uri.ToString());
+            ws.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
             bool receivedSocketHandshake = false;
             EngineIOHandshakeData engineHandshakeData = null;
             DateTime lastPingSent = DateTime.Now;

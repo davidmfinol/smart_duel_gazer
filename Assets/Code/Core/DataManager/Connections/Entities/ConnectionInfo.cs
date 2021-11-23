@@ -20,6 +20,11 @@ namespace Code.Core.DataManager.Connections.Entities
             return IpAddress == other.IpAddress && Port == other.Port;
         }
 
+        public override string ToString()
+        {
+            return $"ConnectionInfo(IpAddress: {IpAddress}, Port: {Port})";
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

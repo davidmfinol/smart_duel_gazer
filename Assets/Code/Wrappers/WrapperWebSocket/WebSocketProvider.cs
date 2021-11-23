@@ -66,7 +66,11 @@ namespace Code.Wrappers.WrapperWebSocket
 
             _socket.OnOpen += () => OnEventReceived(scope, SmartDuelEventConstants.GlobalConnectAction);
             _socket.OnConnectFailed += () => OnEventReceived(scope, SmartDuelEventConstants.GlobalConnectErrorAction);
-            _socket.OnError += _ => OnEventReceived(scope, SmartDuelEventConstants.GlobalErrorAction);
+            _socket.OnError += error =>
+            {
+                _logger.Exception(Tag, "Socket exception occurred", error);
+                OnEventReceived(scope, SmartDuelEventConstants.GlobalErrorAction);
+            };
         }
 
         private void RegisterRoomHandlers()
