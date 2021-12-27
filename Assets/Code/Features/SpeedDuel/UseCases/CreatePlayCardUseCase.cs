@@ -5,17 +5,17 @@ namespace Code.Features.SpeedDuel.UseCases
 {
     public interface ICreatePlayCardUseCase
     {
-        PlayCard Execute(int cardId, int copyNumber, ZoneType zoneType = ZoneType.Deck,
+        PlayCard Execute(string duelistId, int cardId, int copyNumber, ZoneType zoneType = ZoneType.Deck,
             CardPosition position = CardPosition.FaceUp);
     }
 
     public class CreatePlayCardUseCase : ICreatePlayCardUseCase
     {
-        public PlayCard Execute(int cardId, int copyNumber, ZoneType zoneType = ZoneType.Deck,
+        public PlayCard Execute(string duelistId, int cardId, int copyNumber, ZoneType zoneType = ZoneType.Deck,
             CardPosition position = CardPosition.FaceUp)
         {
             var yugiohCard = new YugiohCard(cardId);
-            return new PlayCard(yugiohCard, copyNumber, zoneType, position);
+            return new PlayCard(duelistId, yugiohCard, copyNumber, zoneType, position);
         }
     }
 }
