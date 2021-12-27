@@ -75,11 +75,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _modelScale: {x: 1, y: 1, z: 1}
-  _target: {fileID: 0}
-  _hasProjectileAttack: 0
-  _projectileSpawnPoints: []
-  _projectilePrefab: {fileID: 0}
---- !u!114 &6620991465942671617
+--- !u!114 &3814304891870739609
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,30 +85,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1081e8259ac1634b90901af9e184ca8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6886433796933373201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7188439304923424450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edee27012fb1ac843993f67ce11acfa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &9009409836573209906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7188439304923424450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67b4b6395895e241ae2d203ff806c7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7999271069496613779
@@ -125,18 +97,6 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2e1098f7bffb5e24d88fd5f5e8af399d, type: 3}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 2e1098f7bffb5e24d88fd5f5e8af399d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 2e1098f7bffb5e24d88fd5f5e8af399d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 2e1098f7bffb5e24d88fd5f5e8af399d, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e1098f7bffb5e24d88fd5f5e8af399d, type: 3}
       propertyPath: m_LocalPosition.x
