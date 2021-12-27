@@ -136,7 +136,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 return;
             }
-            
+
             _speedDuelField = playfield;
             InitPlayfieldState(_speedDuelField);
             HandleMissedSmartDuelEvents();
@@ -174,7 +174,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
             {
                 OnSmartDuelEventReceived(smartDuelEvent);
             }
-            
+
             _missedSmartDuelEvents.Clear();
         }
 
@@ -226,8 +226,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
                 case SmartDuelEventConstants.CardAttackAction:
                     HandleAttackCardEvent(data);
                     break;
+
                 case SmartDuelEventConstants.CardDeclareAction:
                     HandleDeclareCardEvent(data);
+                    break;
+
+                case SmartDuelEventConstants.CardGiveToOpponentAction:
+                    HandleGiveCardToOpponentEvent(data);
                     break;
             }
         }
@@ -236,19 +241,21 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _logger.Log(Tag, $"HandlePlayCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
 
-            if (data.CardPosition == null)
-            {
-                return;
-            }
+            if (!data.CardPosition.HasValue) return;
 
-            var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
-            var playCard = playerState.GetCards()
-                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            var speedDuelState = _speedDuelState;
+            var playCard = speedDuelState.GetPlayCard(data.DuelistId, data.CardId, data.CopyNumber);
 
+            PlayerState playerState;
             if (playCard == null)
             {
+                playerState = speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
                 var tokenCount = playerState.GetCards().Count(card => card.YugiohCard.Id == TokenId);
-                playCard = _createPlayCardUseCase.Execute(TokenId, tokenCount + 1);
+                playCard = _createPlayCardUseCase.Execute(data.DuelistId, TokenId, tokenCount + 1);
+            }
+            else
+            {
+                playerState = speedDuelState.GetPlayerWithCard(playCard);
             }
 
             var newZone = playerState.GetZones().FirstOrDefault(zone => zone.ZoneType == data.ZoneType);
@@ -261,12 +268,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
         {
             _logger.Log(Tag, $"HandleRemoveCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId})");
 
-            var playerState = _speedDuelState.GetPlayerStates().First(ps => ps.DuelistId == data.DuelistId);
-            var playCard = playerState.GetCards()
-                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            var speedDuelState = _speedDuelState;
+            var playCard = speedDuelState.GetPlayCard(data.DuelistId, data.CardId, data.CopyNumber);
+            var playerState = speedDuelState.GetPlayerWithCard(playCard);
 
-            var updatedPlayerState =
-                _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
+            var updatedPlayerState = _moveCardInteractor.Execute(playerState, playCard, CardPosition.Destroy);
             UpdateSpeedDuelState(playerState, updatedPlayerState);
         }
 
@@ -275,19 +281,15 @@ namespace Code.Features.SpeedDuel.EventHandlers
             _logger.Log(Tag,
                 $"HandleAttackCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), zoneType: {data.ZoneType})");
 
-            if (!data.ZoneType.HasValue)
-            {
-                return;
-            }
+            if (!data.ZoneType.HasValue) return;
 
-            var playerStates = _speedDuelState.GetPlayerStates();
+            var speedDuelState = _speedDuelState;
+            var attackingCard = speedDuelState.GetPlayCard(data.DuelistId, data.CardId, data.CopyNumber);
 
-            var attackerState = playerStates.First(ps => ps.DuelistId == data.DuelistId);
-            var attackingCard = attackerState.GetCards()
-                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            var attackerState = speedDuelState.GetPlayerWithCard(attackingCard);
             var attackZone = attackingCard == null ? null : attackerState.GetZone(attackingCard.ZoneType);
 
-            var targetPlayerState = playerStates.First(ps => ps.DuelistId != data.DuelistId);
+            var targetPlayerState = speedDuelState.GetPlayerStates().First(ps => ps.DuelistId != attackerState.DuelistId);
             var targetZone = targetPlayerState.GetZone(data.ZoneType.Value);
 
             _monsterBattleInteractor.Execute(attackZone, targetZone, targetPlayerState, _speedDuelField);
@@ -295,17 +297,60 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         private void HandleDeclareCardEvent(CardEventData data)
         {
-            _logger.Log(Tag, 
+            _logger.Log(Tag,
                 $"HandleDeclareCardEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), copyNumber: {data.CopyNumber}))");
 
-            var playerStates = _speedDuelState.GetPlayerStates();
-
-            var declaredPlayerState = playerStates.First(ps => ps.DuelistId == data.DuelistId);
-            var declaredCard = declaredPlayerState.GetCards()
-                .FirstOrDefault(card => card.YugiohCard.Id == data.CardId && card.CopyNumber == data.CopyNumber);
+            var speedDuelState = _speedDuelState;
+            var declaredCard = speedDuelState.GetPlayCard(data.DuelistId, data.CardId, data.CopyNumber);
+            var declaredPlayerState = speedDuelState.GetPlayerWithCard(declaredCard);
             var declaredCardZone = declaredCard == null ? null : declaredPlayerState.GetZone(declaredCard.ZoneType);
 
             _declareCardUseCase.Execute(declaredCardZone);
+        }
+
+        private void HandleGiveCardToOpponentEvent(CardEventData data)
+        {
+            _logger.Log(Tag,
+                $"HandleGiveCardToOpponentEvent(duelistId: {data.DuelistId}, cardId: {data.CardId}), copyNumber: {data.CopyNumber}))");
+
+            var speedDuelState = _speedDuelState;
+            var card = speedDuelState.GetPlayCard(data.DuelistId, data.CardId, data.CopyNumber);
+            if (card == null)
+            {
+                return;
+            }
+
+            var oldUserState = speedDuelState.GetPlayerWithCard(card);
+            var oldUserZone = oldUserState.GetZone(card.ZoneType);
+            var updatedUserZone = oldUserZone;
+            if (oldUserZone is MultiCardZone userMultiCardZone)
+            {
+                var userCards = userMultiCardZone.Cards.ToList();
+                userCards.Remove(card);
+                updatedUserZone = userMultiCardZone.CopyWith(userCards);
+            }
+
+            var updatedUserZones = oldUserState.GetZones().ToList();
+            updatedUserZones.Remove(oldUserZone);
+            updatedUserZones.Add(updatedUserZone);
+            var updatedUserState = oldUserState.CopyWith(updatedUserZones);
+
+            var oldOpponentState = speedDuelState.GetPlayerStates().First(ps => ps.DuelistId != oldUserState.DuelistId);
+            var oldOpponentZone = oldOpponentState.GetZone(ZoneType.Hand);
+            var updatedOpponentZone = oldOpponentZone;
+            if (oldOpponentZone is MultiCardZone opponentMultiCardZone)
+            {
+                var opponentCards = opponentMultiCardZone.Cards.ToList();
+                opponentCards.Add(card);
+                updatedOpponentZone = opponentMultiCardZone.CopyWith(opponentCards);
+            }
+
+            var updatedOpponentZones = oldOpponentState.GetZones().ToList();
+            updatedOpponentZones.Remove(oldOpponentZone);
+            updatedOpponentZones.Add(updatedOpponentZone);
+            var updatedOpponentState = oldOpponentState.CopyWith(updatedOpponentZones);
+
+            _speedDuelState = speedDuelState.CopyWith(updatedUserState, updatedOpponentState);
         }
 
         private void UpdateSpeedDuelState(PlayerState oldPlayerState, PlayerState updatedPlayerState)

@@ -156,5 +156,25 @@ MonoBehaviour:
     m_Localized: Developer mode
     m_Metadata:
       m_Items: []
+  - m_Id: 21692174725799936
+    m_Localized: View playmat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21692215590903808
+    m_Localized: Flip 180
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21692250760142848
+    m_Localized: Rotation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21692284297797632
+    m_Localized: Scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21692306313699328
+    m_Localized: Enable tap to attack
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

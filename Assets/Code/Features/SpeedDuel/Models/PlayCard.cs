@@ -18,8 +18,9 @@ namespace Code.Features.SpeedDuel.Models
         [JsonConverter(typeof(StringEnumConverter))]
         public ZoneType ZoneType { get; set; }
 
-        public PlayCard(YugiohCard yugiohCard, int copyNumber, ZoneType zoneType, CardPosition cardPosition)
+        public PlayCard(string duelistId, YugiohCard yugiohCard, int copyNumber, ZoneType zoneType, CardPosition cardPosition)
         {
+            DuelistId = duelistId;
             YugiohCard = yugiohCard;
             CopyNumber = copyNumber;
             ZoneType = zoneType;
@@ -29,6 +30,7 @@ namespace Code.Features.SpeedDuel.Models
         public PlayCard CopyWith(ZoneType zoneType = default, CardPosition cardPosition = default)
         {
             return new PlayCard(
+                DuelistId,
                 YugiohCard,
                 CopyNumber,
                 zoneType != default ? zoneType : ZoneType,

@@ -33,7 +33,9 @@ namespace Code.Core.DataManager.Connections
 
         private ConnectionInfo GetOnlineConnectionInfo()
         {
-            return new ConnectionInfo(_appConfig.SmartDuelServerAddress, _appConfig.SmartDuelServerPort);
+            return _appConfig.UseSecureSdsConnection
+                ? new ConnectionInfo(_appConfig.SecureSdsAddress, _appConfig.SecureSdsPort)
+                : new ConnectionInfo(_appConfig.SdsAddress, _appConfig.SdsPort);
         }
 
         private ConnectionInfo GetLocalConnectionInfo()

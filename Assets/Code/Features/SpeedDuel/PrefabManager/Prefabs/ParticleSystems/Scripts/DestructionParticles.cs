@@ -39,6 +39,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.ParticleSystems.Scripts
 
         #endregion
 
+        // TODO: renderers can be empty for custom models
         private void OnMonsterDestruction(SkinnedMeshRenderer[] renderers)
         {
             SetMeshShape(renderers[0]);
