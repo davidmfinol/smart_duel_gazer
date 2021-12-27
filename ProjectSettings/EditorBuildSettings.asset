@@ -17,6 +17,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Speed Duel Scene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 0
+    path: Assets/Scenes/Nreal/Onboarding Scene.unity
+    guid: 55e3a1adbdbc34eaaba9a1fa6ea8234a
+  - enabled: 0
+    path: Assets/Scenes/Nreal/Connection Scene.unity
+    guid: fa187d9189ad04e56a74203b1335f1af
+  - enabled: 0
+    path: Assets/Scenes/Nreal/Duel Room Scene.unity
+    guid: 3b58bf221069443d09be8a633e6d2c04
+  - enabled: 0
+    path: Assets/Scenes/Nreal/Speed Duel Scene.unity
+    guid: cdd92058d14c94f4fbc99cb689a87cfd
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: f11997d799f3c4a4199c168314b61545, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 4175e6ccaee864e75b197a751a7bc233, type: 2}

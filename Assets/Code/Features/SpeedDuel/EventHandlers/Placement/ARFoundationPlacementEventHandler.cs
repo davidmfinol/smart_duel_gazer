@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Code.Core.DataManager;
-using Code.Core.DataManager.GameObjects.Entities;
 using Code.Core.General.Extensions;
 using Code.Core.Logger;
 using Code.Features.SpeedDuel.PrefabManager;
@@ -10,11 +9,11 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Zenject;
 
-namespace Code.Features.SpeedDuel.EventHandlers
+namespace Code.Features.SpeedDuel.EventHandlers.Placement
 {
-    public class PlacementEventHandler : MonoBehaviour
+    public class ARFoundationPlacementEventHandler : MonoBehaviour
     {
-        private const string Tag = "PlacementEventHandler";
+        private const string Tag = "ARFoundationPlacementEventHandler";
         
         [SerializeField] private GameObject playfieldPrefab;
         [SerializeField] private GameObject placementIndicator;
