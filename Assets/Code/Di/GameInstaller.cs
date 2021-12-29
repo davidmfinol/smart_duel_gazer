@@ -44,6 +44,7 @@ using Dpoch.SocketIO;
 using UnityEngine;
 using Zenject;
 using Code.Wrappers.WrapperNetworkConnection;
+using Code.Wrappers.WrapperNreal;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
 
@@ -163,6 +164,7 @@ namespace Code.Di
             Container.Bind<IWebSocketProvider>().To<WebSocketProvider>().AsTransient();
             Container.Bind<SocketIO>().FromFactory<SocketIOFactory>();
             Container.Bind<INetworkConnectionProvider>().To<NetworkConnectionProvider>().AsSingle();
+            Container.Bind<INrealSessionManagerWrapper>().To<NrealSessionManagerWrapper>().AsSingle();
 
             #endregion
         }

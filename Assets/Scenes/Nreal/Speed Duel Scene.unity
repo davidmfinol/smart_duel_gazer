@@ -788,8 +788,8 @@ GameObject:
   - component: {fileID: 223974228}
   - component: {fileID: 223974227}
   - component: {fileID: 223974231}
-  - component: {fileID: 223974229}
   - component: {fileID: 223974230}
+  - component: {fileID: 223974229}
   m_Layer: 0
   m_Name: PlayfieldManager
   m_TagString: PlayfieldManager
@@ -832,10 +832,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 223974226}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2808874a8df43e4aab45def7eb613e9, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fe8f0877708447fbf6458bf68739894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectedPlanePrefab: {fileID: 1027744598515304, guid: 484172a328164874f9cc052dd9702481, type: 3}
+  detectedPlanePrefab: {fileID: 1027744598515304, guid: 484172a328164874f9cc052dd9702481, type: 3}
 --- !u!114 &223974230
 MonoBehaviour:
   m_ObjectHideFlags: 0
