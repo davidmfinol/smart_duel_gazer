@@ -6,7 +6,6 @@ using Code.Core.Config.Providers;
 using Code.Core.Logger;
 using Zenject;
 using Animations.Behaviours;
-using Code.Features.SpeedDuel.EventHandlers.Entities;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 {

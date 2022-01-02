@@ -61,7 +61,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         #endregion
         
-        public void Activate(Transform attackingMonster, Vector3 targetPosition)
+        public void ActivateMovement(Transform attackingMonster, Vector3 targetPosition)
         {
             _logger.Log(Tag, $"Activate(attackingMonster: {attackingMonster.name}, targetPosition: {targetPosition}");
             

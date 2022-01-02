@@ -8,7 +8,6 @@ using Zenject;
 using UniRx;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles;
 using Code.Core.DataManager;
-using System;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 {
@@ -216,7 +215,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             }
 
             var targetTransform = eventArgs.PlayfieldTargetTransform;
-            _movementManager.Activate(_parent.transform, targetTransform.position);
+            _movementManager.ActivateMovement(_parent.transform, targetTransform.position);
         }
 
         private void DamageStep(ModelActionEventArgs args)
