@@ -4,7 +4,6 @@ using Code.Wrappers.WrapperResources;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Editor.Tests.EditModeTests.Core.Storage.GameObjects
 {
@@ -17,12 +16,14 @@ namespace Editor.Tests.EditModeTests.Core.Storage.GameObjects
         private const string Key = "key";
         private const string MonsterResourcesPath = "Monsters";
 
-        private readonly GameObject _gameObject = new GameObject();
+        private GameObject _gameObject;
 
         [SetUp]
         public void SetUp()
         {
             _resourcesProvider = new Mock<IResourcesProvider>();
+            
+            _gameObject = new GameObject();
 
             _gameObjectStorageProvider = new GameObjectStorageProvider(
                 _resourcesProvider.Object);
@@ -37,9 +38,9 @@ namespace Editor.Tests.EditModeTests.Core.Storage.GameObjects
         }
 
         [Test]
-        public void Given_QueueIsEmpty_When_GetGameObjectCalled_NullReturned()
+        public void Given_GameObjectExists_And_IsActiveInHierarchy_When_GetGameObjectCalled_NullReturned()
         {
-            _gameObjectStorageProvider.SaveGameObject(Key, null);
+            _gameObjectStorageProvider.SaveGameObject(Key, _gameObject);
 
             var result = _gameObjectStorageProvider.GetGameObject(Key);
 
@@ -47,19 +48,20 @@ namespace Editor.Tests.EditModeTests.Core.Storage.GameObjects
         }
 
         [Test]
-        public void Given_GameObjectExists_When_GetGameObjectCalled_GameObjectReturned()
+        public void Given_GameObjectExists_And_IsNotActiveInHierarchy_When_GetGameObjectCalled_GameObjectReturned()
         {
-            var expected = new Object() as UnityEngine.GameObject;
-            _gameObjectStorageProvider.SaveGameObject(Key, expected);
+            _gameObject.SetActive(false);
+            _gameObjectStorageProvider.SaveGameObject(Key, _gameObject);
 
             var result = _gameObjectStorageProvider.GetGameObject(Key);
 
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(_gameObject, result);
         }
 
         [Test]
         public void When_SaveGameObjectCalled_Then_GameObjectSaved()
         {
+            _gameObject.SetActive(false);
             _gameObjectStorageProvider.SaveGameObject(Key, _gameObject);
             var result = _gameObjectStorageProvider.GetGameObject(Key);
 
@@ -80,6 +82,7 @@ namespace Editor.Tests.EditModeTests.Core.Storage.GameObjects
         [Test]
         public void Given_CardModelsLoaded_When_GetCardModelCalled_Then_CardModelReturned()
         {
+            _gameObject.SetActive(false);
             _gameObjectStorageProvider.SaveGameObject("123", _gameObject);
 
             var result = _gameObjectStorageProvider.GetCardModel(123);
