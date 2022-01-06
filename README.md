@@ -1,20 +1,31 @@
 # Smart Duel Gazer
 
-Smart Duel Gazer (SDG) is a Unity application used for playing the popular TCG named Yu-Gi-Oh!. It is an extension to the [Smart Duel Disk][Smart Duel Disk].
+Smart Duel Gazer (SDG) is a Unity project for enhancing the experience of playing card games using augmented reality. It's currently only used to visualise the actions performed in the [Smart Duel Disk][Smart Duel Disk].
 
 ## How does it work?
 
-Let's say you summon a Blue-Eyes White Dragon in the Smart Duel Disk (SDD). The SDD will then send an event to the Smart Duel Gazer (SDG) to let it know that a BEWD has been summoned. The user performs the action using the SDD and the SDG will visualise this action.
+Let's say you're playing a Yu-Gi-Oh! duel and you summon a Blue-Eyes White Dragon (BEWD) in the Smart Duel Disk (SDD). The SDD will then send an event to the [Smart Duel Server][Smart Duel Server] (SDS) to let it know that a BEWD has been summoned. The SDS will then send an event to the SDG, informing it that a BEWD has been summoned in a specific zone on the field. To keep it short: the user performs an action using the SDD and the SDG will visualise it using 3D models and/or VFX.
 
-The SDD runs on an Android/iOS device and is something you wear on your arm, like a duel disk. The SDG runs on AR glasses / an AR headset / Google Cardboard / ... which is something you wear on your head.
+The SDD runs on an Android/iOS device and is something you wear on your arm, like a duel disk. The SDG runs on AR glasses / an AR headset / ... which is something you wear on your head.
+
+## Do I need AR glasses to be able to use the SDG?
+
+No, it's not necessary, but it is recommended. You can also install the app on an Android phone or iPhone, but that means you'll need to hold your phone to watch a duel. Wearing AR glasses is definitely a more fun experience.
 
 ## Which AR glasses / AR headsets are supported?
 
-We're currently looking into running the app on an Android device and integrate the Google Cardboard API to let the user wear their device on their head. We thought about programming for the HoloLens but it's too expensive for consumers. AR glasses would be ideal, but those don't exist yet. We'll have to wait until 2023/2024 for this technology to become available.
+We're currently working on adding support for the [Nreal Light][Nreal Light] AR glasses. They're some of the first AR glasses to hit the market.
+In 2022 we're also going to look into adding support for the [Oculus Quest 2][Oculus Quest 2].
+
+A lot of people have asked us to look into Google Cardboard as well, but it was deprecated in 2021, so we're not going to do that.
 
 ## How to install the app?
 
-The app currently isn't published in the Play Store but luckily on Android it's possible to download and install the app without it. Head over to [the releases page][Releases] to download and install the latest version of the app.
+iPhone users:
+ - Download & install Apple's TestFlight (https://apps.apple.com/en/app/testflight/id899247664)
+ - Download the Smart Duel Gazer via TestFlight: https://testflight.apple.com/join/3eAV5YYt
+
+Android users: https://play.google.com/store/apps/details?id=com.crowncorp.duelgazer
 
 ## I'm a Unity developer, can I help?
 
@@ -22,10 +33,14 @@ Yes! If you're interested in helping out, send me a message on [our Discord serv
 
 ## Getting started
 
-1. Download Unity Version 2020.2.1f1 at [unity3d.com][Unity download]
-2. Build and run the app
+1. Download Unity Version 2020.2.3f1 at [unity3d.com][Unity download]
+2. Install the Android module if you want to make a build for Android / the Nreal Light
+3. Install the iOS module if you want to make a build for iOS
+4. Build and run the app
 
 [Smart Duel Disk]: https://github.com/BramDC3/smart_duel_disk
-[Releases]: https://github.com/BramDC3/smart_duel_gazer/releases
+[Smart Duel Server]: https://github.com/BramDC3/smart_duel_server
+[Nreal Light]: https://www.nreal.ai/light
+[Oculus Quest 2]: https://www.oculus.com/quest-2/
 [Discord link]: https://discord.gg/XCcfcbBcjE
 [Unity download]: https://unity3d.com/get-unity/download
