@@ -84,6 +84,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         {
             _logger.Log(Tag, "RemoveMonster");
             
+            // Death state is a custom animation that not all models have (ie. Buster Blader)
             if (_animator.HasState(0, AnimatorParameters.DeathTrigger))
             {
                 _animator.SetTrigger(AnimatorParameters.DeathTrigger);

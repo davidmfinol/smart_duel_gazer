@@ -27,7 +27,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private ModelMovementManager _movementManager;
         private ModelSettings _settings;
         private SkinnedMeshRenderer[] _renderers;
-        private Projectile.Factory _projectileFactory;
         private GameObject _parent;
         private GameObject _currentTarget;
         private bool _areRenderersEnabled;
@@ -52,13 +51,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
             IModelEventHandler modelEventHandler,
             IPlayfieldEventHandler playfieldEventHandler,
             IDataManager dataManager,
-            Projectile.Factory projectileFactory,
             IAppLogger appLogger)
         {
             _modelEventHandler = modelEventHandler;
             _playfieldEventHandler = playfieldEventHandler;
             _dataManager = dataManager;
-            _projectileFactory = projectileFactory;
             _logger = appLogger;
         }
 
@@ -274,11 +271,12 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
             var targetTransform = _currentTarget.GetComponentInChildren<ModelSettings>().Target;            
             foreach (var spawnPoint in _settings.ProjectileSpawnPoints)
-            {                
-                var projectile = _dataManager.GetGameObject(_settings.Projectile.name);
+            {
+                var projectile = _dataManager.GetGameObject(_settings.ProjectileKey);
                 if (projectile == null)
                 {
-                    projectile = _projectileFactory.Create(_settings.Projectile).gameObject;
+                    _logger.Warning(Tag, "Projectile Key Didn't Work!");
+                    return;
                 }
 
                 projectile.SetActive(true);

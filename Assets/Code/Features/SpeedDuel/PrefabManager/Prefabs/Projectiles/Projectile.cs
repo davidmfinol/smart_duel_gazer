@@ -85,7 +85,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles
             if(hitObject.name == _targetName)
             {
                 gameObject.SetActive(false);
-                _dataManager.SaveGameObject(transform.name.RemoveCloneSuffix(), gameObject);
             }
         }
 
@@ -98,7 +97,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles
             if(gameObject.activeSelf)
             {
                 gameObject.SetActive(false);
-                _dataManager.SaveGameObject(transform.name.RemoveCloneSuffix(), gameObject);
             }
         }
 

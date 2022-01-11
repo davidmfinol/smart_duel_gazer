@@ -5,16 +5,17 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 {
     public class ModelSettings : MonoBehaviour
     {
-        [SerializeField] private Vector3 _modelScale;
+        private Vector3 _modelScale = new Vector3( 1, 1, 1);
+
         [SerializeField] private Transform _target;
         [SerializeField] private bool _hasProjectileAttack;
         [SerializeField] private List<Transform> _projectileSpawnPoints;
-        [SerializeField] private GameObject _projectilePrefab;        
 
-        public Vector3 ModelScale => _modelScale;
-        public Transform Target => _target;
-        public bool HasProjectileAttack => _hasProjectileAttack;
-        public List<Transform> ProjectileSpawnPoints => _projectileSpawnPoints;
-        public GameObject Projectile => _projectilePrefab;        
+        [HideInInspector]public Vector3 ModelScale => _modelScale;
+        [HideInInspector] public Transform Target => _target;
+        [HideInInspector] public bool HasProjectileAttack => _hasProjectileAttack;
+        [HideInInspector] public List<Transform> ProjectileSpawnPoints => _projectileSpawnPoints;
+
+        [HideInInspector] public string ProjectileKey;
     }
 }

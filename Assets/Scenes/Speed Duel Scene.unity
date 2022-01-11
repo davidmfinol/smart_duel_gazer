@@ -1363,6 +1363,9 @@ MonoBehaviour:
   destructionParticles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
   activateEffectParticles: {fileID: 6539554599090701411, guid: cca986e9bb309aa45a3d1dbf7c036c30, type: 3}
   setCard: {fileID: 5233387070911847034, guid: 9055234d2df24ad4ea34b214b7f14c82, type: 3}
+  bulletProjectile: {fileID: 4139399795893220048, guid: 0769d9142cc9d314d956c8b430d1739f, type: 3}
+  fireProjectile: {fileID: 1417369935255252929, guid: fc76000a14ae8da48a39919d83d1a058, type: 3}
+  magicalProjectile: {fileID: 1417369935255252929, guid: 6c10a04ec921a5f4fa2d418214e45281, type: 3}
 --- !u!1 &1043626536
 GameObject:
   m_ObjectHideFlags: 0
