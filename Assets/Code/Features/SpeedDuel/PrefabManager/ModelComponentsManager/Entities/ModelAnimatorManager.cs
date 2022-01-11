@@ -19,10 +19,10 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         private Animator _animator;
         private ModelComponentsManager _modelComponentsManager;
-        private AttackAnimationObservableTrigger _attackAnimationObservable;
+        private AttackAnimationObservableTrigger _attackAnimationObservableTrigger;
 
         private bool _isInDefence;
-        private readonly int _waitForHurtTrigger = 200;
+        private const int _waitForHurtTrigger = 200;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -53,7 +53,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
             _animator = GetComponent<Animator>();
             _modelComponentsManager = GetComponent<ModelComponentsManager>();
 
-            _attackAnimationObservable = _animator.GetBehaviour<AttackAnimationObservableTrigger>();
+            _attackAnimationObservableTrigger = _animator.GetBehaviour<AttackAnimationObservableTrigger>();
 
             BindObservables();
         }
@@ -68,7 +68,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         private void BindObservables()
         {
-            _disposables.Add(_attackAnimationObservable.OnStateExitAsObservable()
+            _disposables.Add(_attackAnimationObservableTrigger.OnStateExitAsObservable()
                 .Subscribe(_ => _modelComponentsManager.ReturnToZone()));
         }
         

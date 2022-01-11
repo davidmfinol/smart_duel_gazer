@@ -63,7 +63,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         
         public void ActivateMovement(Transform attackingMonster, Vector3 targetPosition)
         {
-            _logger.Log(Tag, $"Activate(attackingMonster: {attackingMonster.name}, targetPosition: {targetPosition}");
+            _logger.Log(Tag, $"ActivateMovement(attackingMonster: {attackingMonster.name}, targetPosition: {targetPosition}");
             
             _modelTransform = attackingMonster;
             _targetPosition = targetPosition;

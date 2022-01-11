@@ -138,7 +138,7 @@ MonoBehaviour:
   _hasProjectileAttack: 1
   _projectileSpawnPoints:
   - {fileID: 6901288046580337425}
-  ProjectileKey: FireProjectile
+  _projectileType: 2
 --- !u!114 &3437069048848903940
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,6 +37,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         #region Properties
 
+        // Used for In-Editor Testing via Inspector Buttons
         public void CallSummonMonster() => SummonMonster(_parent.GetInstanceID());
         public void CallRemoveMonster() => RemoveMonster(_parent.GetInstanceID());
         public void CallTakeDamage() => _animatorManager.HandleTakeDamage();
@@ -275,7 +276,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
                 var projectile = _dataManager.GetGameObject(_settings.ProjectileKey);
                 if (projectile == null)
                 {
-                    _logger.Warning(Tag, "Projectile Key Didn't Work!");
+                    _logger.Warning(Tag, $"Projectile Key {_settings.ProjectileKey} Didn't Work!");
                     return;
                 }
 

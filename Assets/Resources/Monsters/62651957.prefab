@@ -132,7 +132,7 @@ MonoBehaviour:
   _projectileSpawnPoints:
   - {fileID: 7174211886753352001}
   - {fileID: 3645601644469575955}
-  ProjectileKey: BulletProjectile
+  _projectileType: 1
 --- !u!114 &6317486533154293682
 MonoBehaviour:
   m_ObjectHideFlags: 0
