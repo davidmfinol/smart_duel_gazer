@@ -119,7 +119,6 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
             _setCardEventHandler.Remove(currentSetCardModel.GetInstanceID());
             currentSetCardModel.SetActive(false);
-            _dataManager.SaveGameObject(GameObjectKeys.SetCardKey, currentSetCardModel);
         }
 
         private void HandleFaceUpDefencePosition(PlayCard updatedCard, GameObject instantiatedMonsterModel, Transform playMatZone,

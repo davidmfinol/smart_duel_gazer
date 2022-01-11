@@ -15,11 +15,11 @@ namespace Code.Features.SpeedDuel.PrefabManager
     public class SpeedDuelPrefabManager : MonoBehaviour
     {
         private const string Tag = "SpeedDuelPrefabManager";
-        private const int AmountToInstantiate = 16;
+        private const int AmountToInstantiate = 20;
 
-        [SerializeField] private GameObject _destructionParticles;
-        [SerializeField] private GameObject _activateEffectParticles;
-        [SerializeField] private GameObject _setCard;
+        [SerializeField] private GameObject destructionParticles;
+        [SerializeField] private GameObject activateEffectParticles;
+        [SerializeField] private GameObject setCard;
 
         private IDataManager _dataManager;
         private SetCard.Factory _setCardFactory;
@@ -82,9 +82,9 @@ namespace Code.Features.SpeedDuel.PrefabManager
             
             return key switch
             {
-                GameObjectKeys.SetCardKey => _setCardFactory.Create(_setCard).transform.gameObject,
-                GameObjectKeys.DestructionParticlesKey => _particleFactory.Create(_destructionParticles).transform.gameObject,
-                GameObjectKeys.ActivateEffectParticlesKey => _effectParticlesFactory.Create(_activateEffectParticles).transform.gameObject,
+                GameObjectKeys.SetCardKey => _setCardFactory.Create(setCard).transform.gameObject,
+                GameObjectKeys.DestructionParticlesKey => _particleFactory.Create(destructionParticles).transform.gameObject,
+                GameObjectKeys.ActivateEffectParticlesKey => _effectParticlesFactory.Create(activateEffectParticles).transform.gameObject,
                 _ => null,
             };
         }
