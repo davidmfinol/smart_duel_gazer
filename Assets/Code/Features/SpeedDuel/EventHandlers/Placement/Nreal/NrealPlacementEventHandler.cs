@@ -2,11 +2,12 @@ using Code.Core.DataManager;
 using Code.Core.Logger;
 using Code.Features.SpeedDuel.PrefabManager;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts;
+using Code.Wrappers.WrapperNreal;
 using NRKernal;
 using UnityEngine;
 using Zenject;
 
-namespace Code.Features.SpeedDuel.EventHandlers.Placement
+namespace Code.Features.SpeedDuel.EventHandlers.Placement.Nreal
 {
     public class NrealPlacementEventHandler : MonoBehaviour
     {
@@ -18,11 +19,13 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private IDataManager _dataManager;
         private IPlayfieldEventHandler _playfieldEventHandler;
         private PlayfieldComponentsManager.Factory _playfieldFactory;
+        private INrealSessionManagerWrapper _nrealSessionManager;
         private IAppLogger _logger;
 
+        private NrealPlaneManager _planeManager;
         private GameObject _prefabManager;
+        
         private GameObject _speedDuelField;
-
         private Pose _placementPose;
         private bool _objectPlaced;
 
@@ -33,11 +36,13 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             IDataManager dataManager,
             IPlayfieldEventHandler playfieldEventHandler,
             PlayfieldComponentsManager.Factory playfieldFactory,
+            INrealSessionManagerWrapper nrealSessionManager,
             IAppLogger logger)
         {
             _dataManager = dataManager;
             _playfieldEventHandler = playfieldEventHandler;
             _playfieldFactory = playfieldFactory;
+            _nrealSessionManager = nrealSessionManager;
             _logger = logger;
         }
 
@@ -77,6 +82,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
 
         private void GetObjectReferences()
         {
+            _planeManager = FindObjectOfType<NrealPlaneManager>();
             _prefabManager = FindObjectOfType<SpeedDuelPrefabManager>().gameObject;
         }
 
@@ -144,8 +150,8 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             _logger.Log(Tag, "PlacePlayfieldIfNecessary()");
 
             PlacePlayfield();
-            /*SetPlayfieldScale();
-            StopPlaneTracking();*/
+            /*SetPlayfieldScale();*/
+            StopPlaneTracking();
         }
 
         private static bool HasTouchInput()
@@ -216,24 +222,29 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             }
 
             return plane.size.x;
-        }
+        }*/
 
         private void StopPlaneTracking()
         {
             _logger.Log(Tag, "StopPlaneTracking()");
-
-            _arPlaneManager.SetTrackablesActive(false);
-            _arPlaneManager.enabled = false;
-        }*/
+            
+            _nrealSessionManager.DisablePlaneDetection();
+            
+            _planeManager.SetPlaneObjectsActive(false);
+        }
 
         #endregion
 
         private void RemovePlayfield()
         {
+            _logger.Log(Tag, "RemovePlayfield()");
+
             _objectPlaced = false;
             placementIndicator.SetActive(true);
+            
+            _planeManager.SetPlaneObjectsActive(true);
 
-            /*_arPlaneManager.enabled = true;*/
+            _nrealSessionManager.EnablePlaneDetection();
         }
     }
 }

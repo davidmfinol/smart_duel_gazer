@@ -788,8 +788,8 @@ GameObject:
   - component: {fileID: 223974228}
   - component: {fileID: 223974227}
   - component: {fileID: 223974231}
-  - component: {fileID: 223974229}
   - component: {fileID: 223974230}
+  - component: {fileID: 223974229}
   m_Layer: 0
   m_Name: PlayfieldManager
   m_TagString: PlayfieldManager
@@ -832,10 +832,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 223974226}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2808874a8df43e4aab45def7eb613e9, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fe8f0877708447fbf6458bf68739894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectedPlanePrefab: {fileID: 1027744598515304, guid: 484172a328164874f9cc052dd9702481, type: 3}
+  detectedPlanePrefab: {fileID: 1027744598515304, guid: 484172a328164874f9cc052dd9702481, type: 3}
 --- !u!114 &223974230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3435,9 +3435,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a02d1d374d074a489a067c5127ab47c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destructionParticles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
-  _activateEffectParticles: {fileID: 6539554599090701411, guid: cca986e9bb309aa45a3d1dbf7c036c30, type: 3}
-  _setCard: {fileID: 5233387070911847034, guid: 9055234d2df24ad4ea34b214b7f14c82, type: 3}
+  destructionParticles: {fileID: 4096146142539288915, guid: dbc6c295dc079d143a70a531545d39f6, type: 3}
+  activateEffectParticles: {fileID: 6539554599090701411, guid: cca986e9bb309aa45a3d1dbf7c036c30, type: 3}
+  setCard: {fileID: 5233387070911847034, guid: 9055234d2df24ad4ea34b214b7f14c82, type: 3}
 --- !u!1 &973525330
 GameObject:
   m_ObjectHideFlags: 0

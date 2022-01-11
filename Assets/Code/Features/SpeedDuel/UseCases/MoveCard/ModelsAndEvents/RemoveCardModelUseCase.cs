@@ -61,8 +61,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
             var modelID = monsterModel.GetInstanceID();
             _modelEventHandler.Remove(modelID);
 
-            _recycleGameObjectUseCase.Execute(GameObjectKeys.DestructionParticlesKey, destructionParticles);
-            _recycleGameObjectUseCase.Execute(oldCard.YugiohCard.Id.ToString(), monsterModel);
+            _recycleGameObjectUseCase.Execute(destructionParticles);
+            _recycleGameObjectUseCase.Execute(monsterModel);
 
             if (!setCardModel) return;
 
@@ -72,7 +72,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         private void RemoveSetCard(GameObject setCardModel)
         {
             _setCardEventHandler.Remove(setCardModel.GetInstanceID());
-            _recycleGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, setCardModel);
+            _recycleGameObjectUseCase.Execute(setCardModel);
         }
     }
 }

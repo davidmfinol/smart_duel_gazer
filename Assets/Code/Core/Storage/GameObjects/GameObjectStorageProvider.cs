@@ -9,22 +9,22 @@ namespace Code.Core.Storage.GameObjects
     public interface IGameObjectStorageProvider
     {
         public GameObject GetGameObject(string key);
-        public void SaveGameObject(string key, GameObject model);
+        public void SaveGameObject(string key, GameObject go);
         public void RemoveGameObject(string key);
         public GameObject GetCardModel(int cardId);
         public GameObject GetPlayfield();
         public void SavePlayfield(GameObject playfield);
         public void RemovePlayfield();
     }
-    
+
     public class GameObjectStorageProvider : IGameObjectStorageProvider
     {
         private const string MonsterResourcesPath = "Monsters";
 
         private readonly IResourcesProvider _resourcesProvider;
 
-        private readonly Dictionary<string, Queue<GameObject>> _gameObjects = new Dictionary<string, Queue<GameObject>>();
-        private GameObject[] _cardModels;
+        private readonly Dictionary<string, List<GameObject>> _gameObjects = new Dictionary<string, List<GameObject>>();
+        private List<GameObject> _cardModels;
         private GameObject _playfield;
 
         [Inject]
@@ -38,22 +38,17 @@ namespace Code.Core.Storage.GameObjects
 
         public GameObject GetGameObject(string key)
         {
-            if (!_gameObjects.ContainsKey(key) || _gameObjects[key].Count == 0)
-            {
-                return null;
-            }
-
-            return _gameObjects[key].Dequeue();
+            return _gameObjects.ContainsKey(key) ? _gameObjects[key].FirstOrDefault(go => !go.activeInHierarchy) : null;
         }
 
-        public void SaveGameObject(string key, GameObject model)
+        public void SaveGameObject(string key, GameObject go)
         {
             if (!_gameObjects.ContainsKey(key))
             {
-                _gameObjects.Add(key, new Queue<GameObject>());
+                _gameObjects.Add(key, new List<GameObject>());
             }
 
-            _gameObjects[key].Enqueue(model);
+            _gameObjects[key].Add(go);
         }
 
         public void RemoveGameObject(string key)
@@ -71,7 +66,7 @@ namespace Code.Core.Storage.GameObjects
         public GameObject GetCardModel(int cardId)
         {
             var modelName = cardId.ToString();
-            
+
             var model = GetGameObject(modelName);
             if (model != null)
             {
@@ -88,7 +83,7 @@ namespace Code.Core.Storage.GameObjects
 
         private void LoadCardModels()
         {
-            _cardModels = _resourcesProvider.LoadAll<GameObject>(MonsterResourcesPath);
+            _cardModels = _resourcesProvider.LoadAll<GameObject>(MonsterResourcesPath).ToList();
         }
 
         #endregion

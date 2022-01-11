@@ -27,8 +27,8 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private GameObject _prefabManager;
+        
         private GameObject _speedDuelField;
-
         private Pose _placementPose;
         private TrackableId _placementTrackableId;
         private bool _objectPlaced;
@@ -245,6 +245,8 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
 
         private void RemovePlayfield()
         {
+            _logger.Log(Tag, "RemovePlayfield()");
+            
             _objectPlaced = false;
             placementIndicator.SetActive(true);
             _arPlaneManager.enabled = true;
