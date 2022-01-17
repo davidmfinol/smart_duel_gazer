@@ -40,6 +40,9 @@ namespace Code.Features.SpeedDuel.UseCases
             _dataManager.RemoveGameObject(GameObjectKeys.DestructionParticlesKey);
             _dataManager.RemoveGameObject(GameObjectKeys.ActivateEffectParticlesKey);
             _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.BulletProjectileKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.FireProjectileKey);
+            _dataManager.RemoveGameObject(GameObjectKeys.MagicalProjectileKey);
             _dataManager.RemovePlayfield();
 
             _navigationService.ShowConnectionScene();

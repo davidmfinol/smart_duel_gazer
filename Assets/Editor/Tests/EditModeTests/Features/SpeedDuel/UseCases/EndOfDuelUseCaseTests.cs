@@ -40,6 +40,9 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
         [TestCase(GameObjectKeys.DestructionParticlesKey)]
         [TestCase(GameObjectKeys.ActivateEffectParticlesKey)]
         [TestCase(GameObjectKeys.SetCardKey)]
+        [TestCase(GameObjectKeys.BulletProjectileKey)]
+        [TestCase(GameObjectKeys.FireProjectileKey)]
+        [TestCase(GameObjectKeys.MagicalProjectileKey)]
         [Parallelizable]
         public void When_ExecuteCalled_GameObjectRemoved(string key)
         {

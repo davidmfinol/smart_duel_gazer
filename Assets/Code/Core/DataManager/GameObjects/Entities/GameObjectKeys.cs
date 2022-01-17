@@ -1,5 +1,6 @@
 namespace Code.Core.DataManager.GameObjects.Entities
 {
+    // When adding new keys ensure they are removed at the end of the duel!!    
     public static class GameObjectKeys
     {
         public const string SetCardKey = "SetCard";
