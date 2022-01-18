@@ -10,7 +10,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
     public class ModelCollidersManager : MonoBehaviour
     {
         private const string Tag = "ModelCollidersManager";
-        
+
         private IAppLogger _logger;
         private ObservableTriggerTrigger _collisionTrigger;
 
@@ -18,7 +18,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         #region Properties
 
-        private Subject<Collider> _handleTakeDamage = new Subject<Collider>();
+        private readonly Subject<Collider> _handleTakeDamage = new Subject<Collider>();
         public IObservable<Collider> HandleTakeDamage => _handleTakeDamage;
 
         #endregion
@@ -40,7 +40,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         {
             _collisionTrigger = GetComponentInChildren<ObservableTriggerTrigger>();
 
-            if(_collisionTrigger == null)
+            if (_collisionTrigger == null)
             {
                 _logger.Warning(Tag, $"No Observable Available, Creating One: {transform.name}");
                 HandleNoObservableWarning();

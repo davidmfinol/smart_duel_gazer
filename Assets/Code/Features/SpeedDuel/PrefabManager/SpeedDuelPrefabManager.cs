@@ -6,6 +6,7 @@ using Code.Features.SpeedDuel.PrefabManager.Prefabs.SetCard.Scripts;
 using UnityEngine;
 using Zenject;
 using System.Collections.Generic;
+using Code.Core.General.Helpers;
 using Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles;
 
 namespace Code.Features.SpeedDuel.PrefabManager
@@ -58,12 +59,11 @@ namespace Code.Features.SpeedDuel.PrefabManager
 
         private void Awake()
         {
-            InstantiatePrefabs(GameObjectKeys.SetCardKey, AmountToInstantiate);
-            InstantiatePrefabs(GameObjectKeys.DestructionParticlesKey, AmountToInstantiate);
-            InstantiatePrefabs(GameObjectKeys.ActivateEffectParticlesKey, AmountToInstantiate);
-            InstantiatePrefabs(GameObjectKeys.BulletProjectileKey, AmountToInstantiate);
-            InstantiatePrefabs(GameObjectKeys.FireProjectileKey, AmountToInstantiate);
-            InstantiatePrefabs(GameObjectKeys.MagicalProjectileKey, AmountToInstantiate);
+            var gameObjectKeys = EnumHelper.GetEnumValues<GameObjectKey>();
+            foreach (var key in gameObjectKeys)
+            {
+                InstantiatePrefabs(key, AmountToInstantiate);
+            }
 
             // TODO: pre-instantiate models from deck:
             // DeckLists of duelists are available when a duel starts via a DuelRoom object
@@ -71,7 +71,7 @@ namespace Code.Features.SpeedDuel.PrefabManager
 
         #endregion
 
-        private void InstantiatePrefabs(string key, int amount)
+        private void InstantiatePrefabs(GameObjectKey key, int amount)
         {
             _logger.Log(Tag, $"InstantiatePrefabs(key: {key}, amount: {amount})");
             
@@ -83,22 +83,22 @@ namespace Code.Features.SpeedDuel.PrefabManager
                 go.transform.SetParent(transform);
                 go.SetActive(false);
 
-                _dataManager.SaveGameObject(key, go);
+                _dataManager.SaveGameObject(key.GetStringValue(), go);
             }
         }
 
-        private GameObject CreateGameObject(string key)
+        private GameObject CreateGameObject(GameObjectKey key)
         {
             _logger.Log(Tag, $"CreateGameObject(key: {key})");
             
             return key switch
             {
-                GameObjectKeys.SetCardKey => _setCardFactory.Create(setCard).transform.gameObject,
-                GameObjectKeys.DestructionParticlesKey => _particleFactory.Create(destructionParticles).transform.gameObject,
-                GameObjectKeys.ActivateEffectParticlesKey => _effectParticlesFactory.Create(activateEffectParticles).transform.gameObject,
-                GameObjectKeys.BulletProjectileKey => _projectileFactory.Create(bulletProjectile).transform.gameObject,
-                GameObjectKeys.FireProjectileKey => _projectileFactory.Create(fireProjectile).transform.gameObject,
-                GameObjectKeys.MagicalProjectileKey => _projectileFactory.Create(magicalProjectile).transform.gameObject,
+                GameObjectKey.SetCard => _setCardFactory.Create(setCard).transform.gameObject,
+                GameObjectKey.DestructionParticles => _particleFactory.Create(destructionParticles).transform.gameObject,
+                GameObjectKey.ActivateEffectParticles => _effectParticlesFactory.Create(activateEffectParticles).transform.gameObject,
+                GameObjectKey.BulletProjectile => _projectileFactory.Create(bulletProjectile).transform.gameObject,
+                GameObjectKey.FireProjectile => _projectileFactory.Create(fireProjectile).transform.gameObject,
+                GameObjectKey.MagicalProjectile => _projectileFactory.Create(magicalProjectile).transform.gameObject,
                 _ => null,
             };
         }

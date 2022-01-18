@@ -121,7 +121,7 @@ MonoBehaviour:
   _hasProjectileAttack: 1
   _projectileSpawnPoints:
   - {fileID: 8595059680959902878}
-  _projectileType: 1
+  _projectileType: BulletProjectile
 --- !u!114 &5244819786627709158
 MonoBehaviour:
   m_ObjectHideFlags: 0

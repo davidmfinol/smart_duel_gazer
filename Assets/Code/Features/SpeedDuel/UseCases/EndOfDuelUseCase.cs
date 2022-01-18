@@ -1,5 +1,6 @@
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
+using Code.Core.General.Helpers;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 
@@ -32,17 +33,18 @@ namespace Code.Features.SpeedDuel.UseCases
 
         #endregion
 
-        //Handle Async functions that haven't completed yet
+        // TODO: is this comment below still necessary?
+        // Handle Async functions that haven't completed yet
         public void Execute()
         {
             _logger.Log(Tag, "Execute()");
 
-            _dataManager.RemoveGameObject(GameObjectKeys.DestructionParticlesKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.ActivateEffectParticlesKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.SetCardKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.BulletProjectileKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.FireProjectileKey);
-            _dataManager.RemoveGameObject(GameObjectKeys.MagicalProjectileKey);
+            var gameObjectKeys = EnumHelper.GetEnumValues<GameObjectKey>();
+            foreach (var key in gameObjectKeys)
+            {
+                _dataManager.RemoveGameObject(key.GetStringValue());
+            }
+            
             _dataManager.RemovePlayfield();
 
             _navigationService.ShowConnectionScene();

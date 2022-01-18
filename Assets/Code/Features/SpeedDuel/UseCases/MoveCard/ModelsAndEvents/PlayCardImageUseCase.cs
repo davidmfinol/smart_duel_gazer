@@ -34,7 +34,8 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCardModel = zone.SetCardModel
                 ? zone.SetCardModel
-                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKey.SetCard.GetStringValue(), playMatZone.position,
+                    playMatZone.rotation);
 
             var modelEvent = GetModelEvent(zone, card);
             var isMonster = card.CardPosition.IsDefence();

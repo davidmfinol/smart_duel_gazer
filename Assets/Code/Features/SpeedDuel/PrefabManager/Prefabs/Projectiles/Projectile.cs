@@ -19,7 +19,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles
         [SerializeField] private float _speed = 10;
 
         private ITimeProvider _timeProvider;
-        private IDataManager _dataManager;
         private IAppLogger _logger;
 
         private ObservableTriggerTrigger _collisionTrigger;
@@ -34,11 +33,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Projectiles
         [Inject]
         public void Construct(
             ITimeProvider timeProvider,
-            IDataManager dataManager,
             IAppLogger appLogger)
         {
             _timeProvider = timeProvider;
-            _dataManager = dataManager;
             _logger = appLogger;
         }
 

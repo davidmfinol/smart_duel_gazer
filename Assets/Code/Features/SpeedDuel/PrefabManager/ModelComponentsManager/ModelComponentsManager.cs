@@ -11,7 +11,9 @@ using Code.Core.DataManager;
 
 namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 {
-    [RequireComponent(typeof(ModelAnimatorManager)), RequireComponent(typeof(ModelSettings)), RequireComponent(typeof(ModelMovementManager)),
+    [RequireComponent(typeof(ModelAnimatorManager)),
+     RequireComponent(typeof(ModelSettings)),
+     RequireComponent(typeof(ModelMovementManager)),
      RequireComponent(typeof(ModelCollidersManager))]
     public class ModelComponentsManager : MonoBehaviour
     {
@@ -30,9 +32,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private GameObject _parent;
         private GameObject _currentTarget;
         private bool _areRenderersEnabled;
-        private bool _isInBattle = false;        
+        private bool _isInBattle;
         private bool _isAttackingMonster;
-       
+
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         #region Properties
@@ -135,7 +137,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         }
 
         private void Action(ModelEvent eventName, int instanceID, ModelActionEventArgs args)
-        {            
+        {
             if (!_parent.ShouldModelListenToEvent(instanceID)) return;
 
             switch (eventName)
@@ -170,7 +172,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
         private void ActivatePlayfield()
         {
-            if (!gameObject.activeSelf) return;          
+            if (!gameObject.activeSelf) return;
             _renderers.SetRendererVisibility(_areRenderersEnabled);
         }
 
@@ -205,7 +207,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private void HandleAttackingMonster(ModelActionAttackEvent eventArgs)
         {
             _logger.Log(Tag, $"HandleAttackingMonster(eventArgs: {eventArgs})");
-            
+
             if (_settings.HasProjectileAttack)
             {
                 DamageStep(eventArgs);
@@ -219,7 +221,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         private void DamageStep(ModelActionEventArgs args)
         {
             _logger.Log(Tag, $"DamageStep(args: {args})");
-            
+
             if (!(args is ModelActionAttackEvent eventArgs)) return;
 
             _currentTarget = eventArgs.AttackTargetGameObject;
@@ -260,7 +262,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
         public void ReturnToZone()
         {
             _logger.Log(Tag, "ReturnToZone()");
-            
+
             _movementManager.ReturnToZone();
         }
 
@@ -270,7 +272,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
 
             if (!_settings.HasProjectileAttack || _settings.ProjectileSpawnPoints == null) return;
 
-            var targetTransform = _currentTarget.GetComponentInChildren<ModelSettings>().Target;            
+            var targetTransform = _currentTarget.GetComponentInChildren<ModelSettings>().Target;
             foreach (var spawnPoint in _settings.ProjectileSpawnPoints)
             {
                 var projectile = _dataManager.GetGameObject(_settings.ProjectileKey);
@@ -285,7 +287,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager
                 projectile.transform.LookAt(targetTransform);
 
                 projectile.GetComponent<Projectile>().SetTarget(_currentTarget.name, projectile.transform.forward);
-            }            
+            }
         }
 
         #endregion

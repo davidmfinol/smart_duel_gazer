@@ -55,8 +55,9 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
 
         private void RemoveMonsterModel(PlayCard oldCard, GameObject monsterModel, GameObject setCardModel)
         {
-            var destructionParticles = _getTransformedGameObjectUseCase.Execute(GameObjectKeys.DestructionParticlesKey,
-                monsterModel.transform.position, monsterModel.transform.rotation);
+            var destructionParticles = _getTransformedGameObjectUseCase.Execute(
+                GameObjectKey.DestructionParticles.GetStringValue(), monsterModel.transform.position,
+                monsterModel.transform.rotation);
 
             var modelID = monsterModel.GetInstanceID();
             _modelEventHandler.Remove(modelID);

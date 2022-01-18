@@ -5355,7 +5355,7 @@ MonoBehaviour:
   _hasProjectileAttack: 1
   _projectileSpawnPoints:
   - {fileID: 3700238145495318007}
-  ProjectileKey: MagicalProjectile
+  _projectileType: MagicalProjectile
 --- !u!114 &4070329535203279572
 MonoBehaviour:
   m_ObjectHideFlags: 0

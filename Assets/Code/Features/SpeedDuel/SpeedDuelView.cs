@@ -26,7 +26,7 @@ namespace Code.Features.SpeedDuel
         [SerializeField] private Slider scaleSlider;
         [SerializeField] private Animator playfieldAnimator;
         [SerializeField] private GameObject settingsMenu;
-        
+
         private SpeedDuelViewModel _speedDuelViewModel;
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
