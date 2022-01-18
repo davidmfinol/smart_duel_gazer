@@ -10,11 +10,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
     public class ModelMovementManager : MonoBehaviour
     {
         private const string Tag = "ModelMovementManager";
-        
+
         private IModelEventHandler _modelEventHandler;
         private ITimeProvider _timeProvider;
         private IAppLogger _logger;
-        
+
         private Transform _modelTransform;
         private Vector3 _targetPosition;
         private Vector3 _startingPosition;
@@ -22,7 +22,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         private float _speed = 1.7F;
         private float _startTime;
         private float _journeyLength;
-        private bool _isMoving = false;
+        private bool _isMoving;
         private bool _hasAttacked;
 
         #region Constructor
@@ -47,7 +47,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         {
             if (!_isMoving) return;
 
-            float distCovered = (_timeProvider.SceneRunTime - _startTime) * _speed;
+            var distCovered = (_timeProvider.SceneRunTime - _startTime) * _speed;
 
             if (distCovered >= _journeyLength)
             {
@@ -55,16 +55,16 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
                 return;
             }
 
-            float fractionOfJourney = distCovered / _journeyLength;
+            var fractionOfJourney = distCovered / _journeyLength;
             transform.position = Vector3.Lerp(_modelTransform.position, _targetPosition, fractionOfJourney);
         }
 
         #endregion
-        
+
         public void ActivateMovement(Transform attackingMonster, Vector3 targetPosition)
         {
             _logger.Log(Tag, $"ActivateMovement(attackingMonster: {attackingMonster.name}, targetPosition: {targetPosition}");
-            
+
             _modelTransform = attackingMonster;
             _targetPosition = targetPosition;
 
@@ -93,13 +93,14 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
             _hasAttacked = true;
         }
 
+        // Public so it can be called by the ModelComponentsManager when the Animator is finished
         public void ReturnToZone()
         {
             _logger.Log(Tag, "ReturnToZone()");
-            
+
             _modelTransform = transform;
             _targetPosition = _startingPosition;
-            
+
             _startTime = _timeProvider.SceneRunTime;
             _journeyLength = Vector3.Distance(_modelTransform.position, _targetPosition);
         }

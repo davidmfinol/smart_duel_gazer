@@ -8,7 +8,7 @@ namespace Code.Core.Config.Providers
 
     public class TimeProvider : ITimeProvider
     {
-        public float SceneRunTime { get => UnityEngine.Time.time; }
-        public float TimeSinceLastFrame { get => UnityEngine.Time.deltaTime; }
+        public float SceneRunTime => UnityEngine.Time.time;
+        public float TimeSinceLastFrame => UnityEngine.Time.deltaTime;
     }
 }

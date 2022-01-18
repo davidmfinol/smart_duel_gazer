@@ -126,7 +126,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKey.SetCard.GetStringValue(), playMatZone.position, playMatZone.rotation);
 
             newSetCardModel = setCard;
 
@@ -158,7 +158,7 @@ namespace Code.Features.SpeedDuel.UseCases.MoveCard.ModelsAndEvents
         {
             var setCard = currentSetCardModel
                 ? currentSetCardModel
-                : _getTransformedGameObjectUseCase.Execute(GameObjectKeys.SetCardKey, playMatZone.position, playMatZone.rotation);
+                : _getTransformedGameObjectUseCase.Execute(GameObjectKey.SetCard.GetStringValue(), playMatZone.position, playMatZone.rotation);
 
             var modelID = instantiatedMonsterModel.GetInstanceID();
             var setCardID = setCard.GetInstanceID();

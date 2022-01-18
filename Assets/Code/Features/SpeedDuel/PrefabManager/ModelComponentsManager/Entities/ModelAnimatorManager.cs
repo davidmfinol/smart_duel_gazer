@@ -13,7 +13,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
     public class ModelAnimatorManager : MonoBehaviour
     {
         private const string Tag = "ModelAnimatorManager";
-        private const int _waitForHurtTrigger = 200;
+        private const int WaitForHurtTrigger = 200;
 
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
@@ -24,7 +24,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
 
         private bool _isInDefence;
 
-        private CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         #region Properties
 
@@ -71,11 +71,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
             _disposables.Add(_attackAnimationObservableTrigger.OnStateExitAsObservable()
                 .Subscribe(_ => _modelComponentsManager.ReturnToZone()));
         }
-        
+
         public void SummonMonster()
         {
             _logger.Log(Tag, "SummonMonster()");
-            
+
             _animator.SetBool(AnimatorParameters.DefenceBool, false);
             _animator.SetTrigger(AnimatorParameters.SummoningTrigger);
         }
@@ -83,7 +83,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         public void RemoveMonster()
         {
             _logger.Log(Tag, "RemoveMonster");
-            
+
             // Death state is a custom animation that not all models have (ie. Buster Blader)
             if (_animator.HasState(0, AnimatorParameters.DeathTrigger))
             {
@@ -97,20 +97,20 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         public async void HandleTakeDamage()
         {
             _logger.Log(Tag, "HandleTakeDamage()");
-            
+
             _animator.SetTrigger(AnimatorParameters.TakeDamageTrigger);
 
             if (_isInDefence) return;
 
             // If Model was in Attack Mode before battle, return there
-            await _delayProvider.Wait(_waitForHurtTrigger);
+            await _delayProvider.Wait(WaitForHurtTrigger);
             _animator.SetBool(AnimatorParameters.DefenceBool, false);
         }
 
         public void HandleDefendingMonster()
         {
             _logger.Log(Tag, "HandleDefendingMonster()");
-            
+
             _isInDefence = _animator.GetBool(AnimatorParameters.DefenceBool);
             _animator.SetBool(AnimatorParameters.DefenceBool, true);
         }
@@ -118,14 +118,14 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         public void RevealSetMonster()
         {
             _logger.Log(Tag, "RevealSetMonster()");
-            
+
             _animator.SetBool(AnimatorParameters.DefenceBool, true);
         }
 
         public void PlayAttackAnimation()
         {
             _logger.Log(Tag, "PlayAttackAnimation()");
-            
+
             _animator.SetTrigger(AnimatorParameters.PlayMonsterAttack1Trigger);
         }
 

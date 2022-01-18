@@ -24,7 +24,7 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
         public void Execute(Zone playerZone, Zone targetZone, PlayerState targetState)
         {
             if (!(playerZone is SingleCardZone playerSingleCardZone)) return;
-            
+
             if (targetZone is MultiCardZone)
             {
                 _directAttackUseCase.Execute(playerSingleCardZone, targetState);

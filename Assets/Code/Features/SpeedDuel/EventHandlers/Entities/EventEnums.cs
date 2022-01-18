@@ -16,7 +16,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
         MonsterDestruction,
         AttackDeclaration,
         RevealSetMonsterModel,
-        DamageStep,
+        DamageStep
     }
 
     public enum SetCardEvent

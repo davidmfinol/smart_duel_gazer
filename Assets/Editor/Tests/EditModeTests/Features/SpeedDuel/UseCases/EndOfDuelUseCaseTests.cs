@@ -1,5 +1,6 @@
 using Code.Core.DataManager;
 using Code.Core.DataManager.GameObjects.Entities;
+using Code.Core.General.Helpers;
 using Code.Core.Logger;
 using Code.Core.Navigation;
 using Code.Features.SpeedDuel.UseCases;
@@ -37,18 +38,17 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel.UseCases
             _navigationService.Verify(ns => ns.ShowConnectionScene(), Times.Once);
         }
 
-        [TestCase(GameObjectKeys.DestructionParticlesKey)]
-        [TestCase(GameObjectKeys.ActivateEffectParticlesKey)]
-        [TestCase(GameObjectKeys.SetCardKey)]
-        [TestCase(GameObjectKeys.BulletProjectileKey)]
-        [TestCase(GameObjectKeys.FireProjectileKey)]
-        [TestCase(GameObjectKeys.MagicalProjectileKey)]
-        [Parallelizable]
-        public void When_ExecuteCalled_GameObjectRemoved(string key)
+        [Test]
+        public void When_ExecuteCalled_Then_AllGameObjectRemoved()
         {
+            var keys = EnumHelper.GetEnumValues<GameObjectKey>();
+
             _endOfDuel.Execute();
 
-            _dataManger.Verify(dm => dm.RemoveGameObject(key), Times.Once);
+            foreach (var key in keys)
+            {
+                _dataManger.Verify(dm => dm.RemoveGameObject(key.GetStringValue()), Times.Once);
+            }
         }
 
         [Test]

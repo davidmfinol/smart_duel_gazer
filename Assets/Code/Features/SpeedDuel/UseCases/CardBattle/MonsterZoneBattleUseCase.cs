@@ -40,15 +40,16 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
         public void Execute(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath)
         {
             _logger.Log(Tag, $"Execute(playerZone: {playerZone}, targetZone: {targetZone}, zonePath: {zonePath}");
-                        
+
             ExecuteAttackEvent(playerZone, targetZone, zonePath, true);
             ExecuteAttackEvent(targetZone, targetZone, zonePath, false);
         }
 
-        private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath, bool isAttackingMonster)
+        private void ExecuteAttackEvent(SingleCardZone playerZone, SingleCardZone targetZone, string zonePath,
+            bool isAttackingMonster)
         {
             _logger.Log(Tag, $"ExecuteAttackEvent(playerZone: {playerZone.Card.YugiohCard.Id}, targetZone: {targetZone}, " +
-                $"zonePath: {zonePath}, isAttackingMonster: {isAttackingMonster})");
+                             $"zonePath: {zonePath}, isAttackingMonster: {isAttackingMonster})");
 
             // Check if Card is Attacking while in Defence position
             if (isAttackingMonster && playerZone.Card.CardPosition != CardPosition.FaceUp) return;
@@ -60,10 +61,10 @@ namespace Code.Features.SpeedDuel.UseCases.CardBattle
                 var speedDuelField = _dataManager.GetPlayfield();
                 var targetTransformPath = $"{zonePath}/{targetZone.ZoneType}/{targetZone.ZoneType}AttackZone";
                 var targetTransform = speedDuelField.transform.Find(targetTransformPath);
-                
-                var eventArgs = new ModelActionAttackEvent 
-                { 
-                    IsAttackingMonster = isAttackingMonster, 
+
+                var eventArgs = new ModelActionAttackEvent
+                {
+                    IsAttackingMonster = isAttackingMonster,
                     PlayfieldTargetTransform = targetTransform,
                     AttackTargetGameObject = targetZone.MonsterModel
                 };

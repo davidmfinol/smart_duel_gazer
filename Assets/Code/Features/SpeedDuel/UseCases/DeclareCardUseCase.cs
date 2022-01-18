@@ -36,7 +36,7 @@ namespace Code.Features.SpeedDuel.UseCases
                 ? singleCardZone.SetCardModel.transform.position
                 : singleCardZone.MonsterModel.transform.position;
 
-            var activateEffectParticles = _dataManager.GetGameObject(GameObjectKeys.ActivateEffectParticlesKey);
+            var activateEffectParticles = _dataManager.GetGameObject(GameObjectKey.ActivateEffectParticles.GetStringValue());
             activateEffectParticles.transform.position = targetPosition;
             activateEffectParticles.SetActive(true);
         }

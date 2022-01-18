@@ -10,7 +10,7 @@ public class SmartDuelEventHandlerInspector : Editor
     {
         DrawDefaultInspector();
 
-        var _smartDuelEventHandler = (SmartDuelEventHandler) target;
+        var _smartDuelEventHandler = (SmartDuelEventHandler)target;
 
         if (GUILayout.Button("Attack Event"))
         {

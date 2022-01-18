@@ -25,17 +25,16 @@ namespace CustomAttributes
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            ProjectileListAsDropdownMenuAttribute att = attribute as ProjectileListAsDropdownMenuAttribute;
-            List<string> stringList;
+            var att = attribute as ProjectileListAsDropdownMenuAttribute;
 
-            if (att.PropertyType.GetField(att.PropertyName) == null) return;
+            if (att?.PropertyType.GetField(att.PropertyName) == null) return;
 
-            stringList = att.PropertyType.GetField(att.PropertyName).GetValue(att.PropertyType) as List<string>;
+            var stringList = att.PropertyType.GetField(att.PropertyName).GetValue(att.PropertyType) as List<string>;
 
-            if (stringList == null && stringList.Count == 0) return;
+            if (stringList == null || stringList.Count == 0) return;
 
-            int selectedIndex = stringList.IndexOf(property.stringValue);
-            if(selectedIndex < 0)
+            var selectedIndex = stringList.IndexOf(property.stringValue);
+            if (selectedIndex < 0)
             {
                 selectedIndex = 0;
             }
