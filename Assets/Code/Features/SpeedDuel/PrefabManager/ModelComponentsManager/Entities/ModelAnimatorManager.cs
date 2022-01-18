@@ -13,7 +13,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
     public class ModelAnimatorManager : MonoBehaviour
     {
         private const string Tag = "ModelAnimatorManager";
-        
+        private const int _waitForHurtTrigger = 200;
+
         private IDelayProvider _delayProvider;
         private IAppLogger _logger;
 
@@ -22,7 +23,6 @@ namespace Code.Features.SpeedDuel.PrefabManager.ModelComponentsManager.Entities
         private AttackAnimationObservableTrigger _attackAnimationObservableTrigger;
 
         private bool _isInDefence;
-        private const int _waitForHurtTrigger = 200;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 

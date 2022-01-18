@@ -160,7 +160,7 @@ MonoBehaviour:
   - {fileID: 2621508235111521632}
   - {fileID: 7379656644829412781}
   - {fileID: 661370022470742654}
-  _projectileType: 1
+  _projectileType: BulletProjectile
 --- !u!114 &8890336123437879720
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -182,11 +182,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8f014f8981154047817a1931e9241b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelScale: {x: 1, y: 1, z: 1}
   _target: {fileID: 8025039925841966731}
   _hasProjectileAttack: 0
   _projectileSpawnPoints: []
-  _projectilePrefab: {fileID: 0}
+  ProjectileType: MagicalProjectile
 --- !u!114 &8226399645845593500
 MonoBehaviour:
   m_ObjectHideFlags: 0

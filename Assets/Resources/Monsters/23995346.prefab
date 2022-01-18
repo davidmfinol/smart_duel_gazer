@@ -49,8 +49,7 @@ MonoBehaviour:
   - {fileID: 7129266822943611023}
   - {fileID: 1355410512564421161}
   - {fileID: 1523837860459562221}
-  _projectilePrefab: {fileID: 0}
-  ProjectileKey: MagicalProjectile
+  _projectileType: MagicalProjectile
 --- !u!114 &7281638302893054082
 MonoBehaviour:
   m_ObjectHideFlags: 0
