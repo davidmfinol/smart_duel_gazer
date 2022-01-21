@@ -10,6 +10,9 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
     public class PlayfieldComponentsManager : MonoBehaviour
     {
         private const string Tag = "PlayfieldComponentsManager";
+        private const string ZoneMaterialName = "Zone Material";
+        private const float ZoneInitialTransparency = 54f;
+        private const float MatInitialTransparency = 47f;
 
         private IPlayfieldEventHandler _playfieldEventHandler;
         private IAppLogger _logger;
@@ -67,17 +70,11 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
 
             switch (playfieldEvent)
             {
-                case PlayfieldEvent.Rotate:
-                    RotatePlayfield(args);
+                case PlayfieldEvent.Transparency:
+                    ChangeTransparency(args);
                     break;
                 case PlayfieldEvent.Scale:
                     ScalePlayfield(args);
-                    break;
-                case PlayfieldEvent.Flip:
-                    FlipPlayfield(args);
-                    break;
-                case PlayfieldEvent.Hide:
-                    HidePlayfield(args);
                     break;
                 default:
                     _logger.Log(Tag, $"Unexpected action: {playfieldEvent}");
@@ -95,35 +92,21 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
             }
         }
 
-        private void FlipPlayfield(PlayfieldEventArgs args)
+        private void ChangeTransparency(PlayfieldEventArgs args)
         {
-            _logger.Log(Tag, $"FlipPlayfield(args: {args})");
+            _logger.Log(Tag, $"ChangeTransparency(args: {args})");
 
-            if (!(args is PlayfieldEventValue<bool> state)) return;
-
-            var localRotation = state.Value ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
-            transform.localRotation = localRotation;
-        }
-
-        private void HidePlayfield(PlayfieldEventArgs args)
-        {
-            _logger.Log(Tag, $"HidePlayfield(args: {args})");
-
-            if (!(args is PlayfieldEventValue<bool> state)) return;
-
-            foreach (var meshRenderer in _renderers)
+            if (!(args is PlayfieldEventValue<float> transparency)) return;
+            
+            foreach(MeshRenderer renderer in _renderers)
             {
-                meshRenderer.enabled = state.Value;
+                var material = renderer.material;
+                var newTransparency = material.name == ZoneMaterialName
+                    ? Mathf.Clamp(transparency.Value - ZoneInitialTransparency, 0, 255) / 255
+                    : Mathf.Clamp(transparency.Value - MatInitialTransparency, 0, 255) / 255;
+
+                material.color = new Color(material.color.r, material.color.g, material.color.b, newTransparency);
             }
-        }
-
-        private void RotatePlayfield(PlayfieldEventArgs args)
-        {
-            _logger.Log(Tag, $"RotatePlayfield(args: {args})");
-
-            if (!(args is PlayfieldEventValue<float> rotation)) return;
-
-            transform.rotation = Quaternion.Euler(0, rotation.Value, 0);
         }
 
         private void ScalePlayfield(PlayfieldEventArgs args)

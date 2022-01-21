@@ -148,23 +148,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 21692174725799936
-    m_Key: speed_duel_menu_view_playmat
-    m_Metadata:
-      m_Items: []
-  - m_Id: 21692215590903808
-    m_Key: speed_duel_menu_flip_180
-    m_Metadata:
-      m_Items: []
-  - m_Id: 21692250760142848
-    m_Key: speed_duel_menu_rotation
+    m_Key: speed_duel_menu_transparency
     m_Metadata:
       m_Items: []
   - m_Id: 21692284297797632
     m_Key: speed_duel_menu_scale
     m_Metadata:
       m_Items: []
-  - m_Id: 21692306313699328
-    m_Key: speed_duel_menu_tap_to_attack
+  - m_Id: 30458484739756032
+    m_Key: speed_duel_menu_playfield_header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30814522441682944
+    m_Key: speed_duel_menu_remove_playfield
     m_Metadata:
       m_Items: []
   m_Metadata:

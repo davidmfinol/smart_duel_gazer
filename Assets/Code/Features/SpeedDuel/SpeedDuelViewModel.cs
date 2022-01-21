@@ -3,8 +3,6 @@ using Code.Features.SpeedDuel.EventHandlers;
 using Code.Core.Logger;
 using UniRx;
 using System;
-using UnityEngine;
-using Code.Features.SpeedDuel.Models;
 using Code.Features.SpeedDuel.UseCases;
 using Code.Core.DataManager;
 
@@ -21,11 +19,11 @@ namespace Code.Features.SpeedDuel
 
         #region Properties
 
-        private readonly Subject<PlayfieldTransformValues> _activatePlayfieldMenu = new Subject<PlayfieldTransformValues>();
-        public IObservable<PlayfieldTransformValues> ActivatePlayfieldMenu => _activatePlayfieldMenu;
+        private readonly BehaviorSubject<bool> _settingsMenuVisibility = new BehaviorSubject<bool>(false);
+        public IObservable<bool> SettingsMenuVisibility => _settingsMenuVisibility;
 
-        private readonly Subject<bool> _playfieldMenuVisibility = new Subject<bool>();
-        public IObservable<bool> PlayfieldMenuVisibility => _playfieldMenuVisibility;
+        private readonly Subject<float> _activatePlayfieldUIElements = new Subject<float>();
+        public IObservable<float> ActivatePlayfieldUIElements => _activatePlayfieldUIElements;
 
         private readonly Subject<bool> _removePlayfield = new Subject<bool>();
         public IObservable<bool> RemovePlayfield => _removePlayfield;
@@ -61,8 +59,7 @@ namespace Code.Features.SpeedDuel
 
             _playfieldEventHandler.OnActivatePlayfield -= OnActivatePlayfield;
 
-            _activatePlayfieldMenu.Dispose();
-            _playfieldMenuVisibility.Dispose();
+            _activatePlayfieldUIElements.Dispose();
             _removePlayfield.Dispose();
         }
 
@@ -75,25 +72,15 @@ namespace Code.Features.SpeedDuel
             var playfield = _dataManager.GetPlayfield();
             if (playfield == null) return;
 
-            var playfieldValues = GetPlayfieldTransformValues(playfield);
-            _activatePlayfieldMenu.OnNext(playfieldValues);
+            var playfieldScale = playfield.transform.localScale.x;
+            _activatePlayfieldUIElements.OnNext(playfieldScale);
         }
 
-        private PlayfieldTransformValues GetPlayfieldTransformValues(GameObject playfield)
+        public void UpdatePlayfieldTransparency(float transparency)
         {
-            _logger.Log(Tag, "GetPlayfieldTransformValues()");
+            _logger.Log(Tag, $"UpdatePlayfieldTransparency(transparency: {transparency})");
 
-            var scale = playfield.transform.localScale.x;
-            var rotation = playfield.transform.localRotation.y;
-
-            return new PlayfieldTransformValues(scale, rotation);
-        }
-
-        public void UpdatePlayfieldRotation(float rotation)
-        {
-            _logger.Log(Tag, $"UpdatePlayfieldRotation(rotation: {rotation})");
-
-            _playfieldEventHandler.Action(PlayfieldEvent.Rotate, new PlayfieldEventValue<float>(rotation));
+            _playfieldEventHandler.Action(PlayfieldEvent.Transparency, new PlayfieldEventValue<float>(transparency));
         }
 
         public void UpdatePlayfieldScale(float scale)
@@ -103,36 +90,22 @@ namespace Code.Features.SpeedDuel
             _playfieldEventHandler.Action(PlayfieldEvent.Scale, new PlayfieldEventValue<float>(scale));
         }
 
-        public void UpdatePlayfieldVisibility(bool showPlayfield)
-        {
-            _logger.Log(Tag, $"UpdatePlayfieldVisibility(showPlayfield: {showPlayfield})");
-
-            _playfieldEventHandler.Action(PlayfieldEvent.Hide, new PlayfieldEventValue<bool>(showPlayfield));
-        }
-
-        public void FlipPlayfield(bool shouldFlip)
-        {
-            _logger.Log(Tag, $"FlipPlayfield(shouldFlip: {shouldFlip})");
-
-            _playfieldEventHandler.Action(PlayfieldEvent.Flip, new PlayfieldEventValue<bool>(shouldFlip));
-        }
-
         #endregion
 
         #region UI Events
 
-        public void OnTogglePlayfieldMenu(bool showPlayfield)
+        public void OnToggleSettingsMenu(bool showMenu)
         {
-            _logger.Log(Tag, $"OnTogglePlayfieldMenu(showPlayfield: {showPlayfield})");
+            _logger.Log(Tag, $"OnToggleSettingsMenu(showMenu: {showMenu})");
 
-            _playfieldMenuVisibility.OnNext(showPlayfield);
+            _settingsMenuVisibility.OnNext(showMenu);
         }
 
         public void OnRemovePlayfield()
         {
             _logger.Log(Tag, "OnRemovePlayfield()");
 
-            _removePlayfield.OnNext(true);
+            _removePlayfield.OnNext(false);
             _playfieldEventHandler.RemovePlayfield();
         }
 

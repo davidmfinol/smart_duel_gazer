@@ -3,10 +3,6 @@ using UnityEngine.UI;
 using Zenject;
 using UniRx;
 using Code.Core.Logger;
-using Code.UI_Components.Constants;
-using System.Threading.Tasks;
-using Code.Core.Config.Providers;
-using Code.Features.SpeedDuel.Models;
 
 namespace Code.Features.SpeedDuel
 {
@@ -14,21 +10,14 @@ namespace Code.Features.SpeedDuel
     {
         private const string Tag = "SpeedDuelView";
 
-        private const int ExitAnimationsTimeInMs = 700;
-
-        [SerializeField] private Button backButton;
-        [SerializeField] private GameObject menu;
-        [SerializeField] private Toggle showPlayfieldMenusToggle;
-        [SerializeField] private Toggle playmatVisibilityToggle;
-        [SerializeField] private Toggle flipPlayfieldToggle;
-        [SerializeField] private Button removePlayfieldButton;
-        [SerializeField] private Slider rotationSlider;
+        [SerializeField] private Toggle showSettingsMenuToggle;
+        [SerializeField] private Slider transparencySlider;
         [SerializeField] private Slider scaleSlider;
-        [SerializeField] private Animator playfieldAnimator;
+        [SerializeField] private Button backButton;
+        [SerializeField] private Button removePlayfieldButton;
         [SerializeField] private GameObject settingsMenu;
 
         private SpeedDuelViewModel _speedDuelViewModel;
-        private IDelayProvider _delayProvider;
         private IAppLogger _logger;
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
@@ -38,11 +27,9 @@ namespace Code.Features.SpeedDuel
         [Inject]
         public void Construct(
             SpeedDuelViewModel speedDuelViewModel,
-            IDelayProvider delayProvider,
             IAppLogger appLogger)
         {
             _speedDuelViewModel = speedDuelViewModel;
-            _delayProvider = delayProvider;
             _logger = appLogger;
 
             OnViewModelSet();
@@ -73,76 +60,54 @@ namespace Code.Features.SpeedDuel
         {
             _logger.Log(Tag, "BindButtons()");
 
-            showPlayfieldMenusToggle.OnValueChangedAsObservable()
-                .Subscribe(_speedDuelViewModel.OnTogglePlayfieldMenu);
+            // Toggles
+            showSettingsMenuToggle.OnValueChangedAsObservable()
+                .Subscribe(_speedDuelViewModel.OnToggleSettingsMenu);
 
-            // Side Menu Items
-            rotationSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.UpdatePlayfieldRotation(value));
+            // Sliders
+            transparencySlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.UpdatePlayfieldTransparency(value));
             scaleSlider.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.UpdatePlayfieldScale(value));
 
-            // Bottom Menu Items
-            playmatVisibilityToggle.OnValueChangedAsObservable()
-                .Subscribe(value => _speedDuelViewModel.UpdatePlayfieldVisibility(value));
-            flipPlayfieldToggle.OnValueChangedAsObservable().Subscribe(value => _speedDuelViewModel.FlipPlayfield(value));
+            // Buttons
             removePlayfieldButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnRemovePlayfield());
-
-            // Back Button
             backButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnBackButtonPressed());
 
             // VM Streams
-            _disposables.Add(_speedDuelViewModel.ActivatePlayfieldMenu
-                .Subscribe(ActivatePlayfieldMenu));
-            _disposables.Add(_speedDuelViewModel.PlayfieldMenuVisibility
-                .Subscribe(UpdatePlayfieldMenuVisibility));
+            _disposables.Add(_speedDuelViewModel.SettingsMenuVisibility
+                .Subscribe(UpdateSettingsMenuVisibility));
+            _disposables.Add(_speedDuelViewModel.ActivatePlayfieldUIElements
+                .Subscribe(ActivatePlayfieldUIElements));
             _disposables.Add(_speedDuelViewModel.RemovePlayfield
-                .Subscribe(async state => await RemovePlayfieldMenu(state)));
+                .Subscribe(SetElementsInteractableState));
         }
 
-        private void ActivatePlayfieldMenu(PlayfieldTransformValues playfieldValues)
+        private void UpdateSettingsMenuVisibility(bool value)
         {
-            _logger.Log(Tag, $"ActivatePlayfieldMenu(playfieldValues: {playfieldValues})");
+            _logger.Log(Tag, $"UpdateSettingsMenuVisibility(value: {value})");
 
-            menu.SetActive(true);
+            settingsMenu.SetActive(value);
+        }
 
-            if (playfieldValues.Scale > 10f)
+        private void ActivatePlayfieldUIElements(float playfieldScale)
+        {
+            _logger.Log(Tag, $"ActivatePlayfieldMenu(playfieldScale: {playfieldScale})");
+
+            if (playfieldScale > 10f)
             {
-                scaleSlider.maxValue = playfieldValues.Scale;
+                scaleSlider.maxValue = playfieldScale;
             }
 
-            scaleSlider.value = playfieldValues.Scale;
-            rotationSlider.value = playfieldValues.YAxisRotation;
-            UpdateSlidersInteractability(true);
+            scaleSlider.value = playfieldScale;
+            SetElementsInteractableState(true);
         }
 
-        private void UpdatePlayfieldMenuVisibility(bool value)
+        private void SetElementsInteractableState(bool isInteractable)
         {
-            _logger.Log(Tag, $"UpdatePlayfieldMenuVisibility(value: {value})");
-
-            playfieldAnimator.SetBool(AnimatorParameters.OpenPlayfieldMenuBool, value);
-        }
-
-        private async Task RemovePlayfieldMenu(bool shouldRemove)
-        {
-            _logger.Log(Tag, $"RemovePlayfieldMenu(shouldRemove: {shouldRemove})");
-
-            if (!shouldRemove) return;
-
-            showPlayfieldMenusToggle.isOn = false;
-            playfieldAnimator.SetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
-
-            await _delayProvider.Wait(ExitAnimationsTimeInMs);
-            playfieldAnimator.ResetTrigger(AnimatorParameters.RemovePlayfieldTrigger);
-
-            UpdateSlidersInteractability(false);
-            menu.SetActive(false);
-        }
-
-        private void UpdateSlidersInteractability(bool isInteractable)
-        {
-            _logger.Log(Tag, $"UpdateSlidersInteractability(isInteractable: {isInteractable})");
+            _logger.Log(Tag, $"SetElementsInteractableState(isInteractable: {isInteractable})");
 
             scaleSlider.interactable = isInteractable;
-            rotationSlider.interactable = isInteractable;
+            transparencySlider.interactable = isInteractable;
+            removePlayfieldButton.interactable = isInteractable;
         }
     }
 }

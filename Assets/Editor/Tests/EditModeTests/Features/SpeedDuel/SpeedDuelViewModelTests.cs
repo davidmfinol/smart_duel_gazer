@@ -76,7 +76,7 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
             _dataManager.Setup(dm => dm.GetPlayfield()).Returns((GameObject)null);
 
             var activated = false;
-            _viewModel.ActivatePlayfieldMenu.Subscribe(_ => activated = true);
+            _viewModel.ActivatePlayfieldUIElements.Subscribe(_ => activated = true);
 
             _viewModel.Init();
             _playfieldEventHandler.Raise(eh => eh.OnActivatePlayfield += null);
@@ -88,27 +88,27 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
         [Test]
         public void Given_PlayfieldExists_When_PlayfieldActivated_Then_PlayfieldValuesEmitted()
         {
-            var expected = new PlayfieldTransformValues(PlayfieldScaleValue, 1);
+            var expected = PlayfieldScaleValue;
 
-            var onNext = new List<PlayfieldTransformValues>();
-            _viewModel.ActivatePlayfieldMenu.Subscribe(value => onNext.Add(value));
+            var onNext = new List<float>();
+            _viewModel.ActivatePlayfieldUIElements.Subscribe(value => onNext.Add(value));
 
             _viewModel.Init();
             _playfieldEventHandler.Raise(eh => eh.OnActivatePlayfield += null);
             _playfieldEventHandler.Object.ActivatePlayfield();
             
-            Assert.AreEqual(new List<PlayfieldTransformValues> { expected }, onNext);
+            Assert.AreEqual(new List<float> { expected }, onNext);
         }
 
         [Test]
-        public void When_PlayfieldRotationUpdated_Then_RotationActionTriggered()
+        public void When_PlayfieldTransparencyUpdated_Then_TransparencyActionTriggered()
         {
             const float value = 3f;
             var expectedArgs = new PlayfieldEventValue<float>(value);
 
-            _viewModel.UpdatePlayfieldRotation(value);
+            _viewModel.UpdatePlayfieldTransparency(value);
 
-            _playfieldEventHandler.Verify(eh => eh.Action(PlayfieldEvent.Rotate, expectedArgs), Times.Once);
+            _playfieldEventHandler.Verify(eh => eh.Action(PlayfieldEvent.Transparency, expectedArgs), Times.Once);
         }
 
         [Test]
@@ -123,48 +123,14 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
         }
 
         [Test]
-        public void When_PlayfieldVisibilityUpdated_Then_HideActionTriggered()
-        {
-            const bool value = true;
-            var expectedArgs = new PlayfieldEventValue<bool>(value);
-
-            _viewModel.UpdatePlayfieldVisibility(value);
-
-            _playfieldEventHandler.Verify(eh => eh.Action(PlayfieldEvent.Hide, expectedArgs), Times.Once);
-        }
-
-        [Test]
-        public void When_PlayfieldFlipped_Then_FlipActionTriggered()
-        {
-            const bool value = true;
-            var expectedArgs = new PlayfieldEventValue<bool>(value);
-
-            _viewModel.FlipPlayfield(value);
-
-            _playfieldEventHandler.Verify(eh => eh.Action(PlayfieldEvent.Flip, expectedArgs), Times.Once);
-        }
-
-        [Test]
-        public void When_PlayfieldMenuTogglePressed_Then_MenuVisibilityEmitted()
-        {
-            var onNext = new List<bool>();
-            _viewModel.PlayfieldMenuVisibility.Subscribe(value => onNext.Add(value));
-
-            _viewModel.OnTogglePlayfieldMenu(true);
-            _viewModel.OnTogglePlayfieldMenu(false);
-
-            Assert.AreEqual(new List<bool> { true, false }, onNext);
-        }
-
-        [Test]
-        public void When_PlayfieldRemoved_Then_RemovePlayfieldEmitsTrue()
+        public void When_PlayfieldRemoved_Then_RemovePlayfieldEmitsFalse()
         {
             var onNext = new List<bool>();
             _viewModel.RemovePlayfield.Subscribe(value => onNext.Add(value));
 
             _viewModel.OnRemovePlayfield();
 
-            Assert.AreEqual(new List<bool> { true }, onNext);
+            Assert.AreEqual(new List<bool> { false }, onNext);
         }
 
         [Test]
@@ -173,6 +139,17 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
             _viewModel.OnRemovePlayfield();
 
             _playfieldEventHandler.Verify(eh => eh.RemovePlayfield(), Times.Once);
+        }
+
+        [Test]
+        public void When_SettingsMenuToggled_Then_SettingsMenuVisibilityEmitsValue()
+        {
+            var onNext = new List<bool>();
+            _viewModel.SettingsMenuVisibility.Subscribe(value => onNext.Add(value));
+            
+            _viewModel.OnToggleSettingsMenu(true);
+
+            Assert.AreEqual(new List<bool> { true }, onNext);
         }
 
         [Test]
