@@ -18,7 +18,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         
         [SerializeField] private GameObject playfieldPrefab;
         [SerializeField] private GameObject placementIndicator;
-        [SerializeField] private GameObject _ghostField;
+        [SerializeField] private GameObject ghostField;
 
         private IDataManager _dataManager;
         private IPlayfieldEventHandler _playfieldEventHandler;
@@ -54,9 +54,6 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             _speedDuelViewModel = speedDuelViewModel;
             _playfieldFactory = playfieldFactory;
             _logger = logger;
-
-            _disposables.Add(_speedDuelViewModel.SettingsMenuVisibility
-                .Subscribe(UpdateSettingsMenuState));
         }
 
         #endregion
@@ -67,6 +64,9 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         {
             GetObjectReferences();
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
+
+            _disposables.Add(_speedDuelViewModel.SettingsMenuVisibility
+                .Subscribe(UpdateSettingsMenuState));
         }
 
         private void Update()
@@ -127,7 +127,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             }
             
             UpdatePlacementIndicator();
-            SetGameObjectScaleToPlaneSize(_ghostField);
+            SetGameObjectScaleToPlaneSize(ghostField);
         }
 
         private ARRaycastHit? GetValidRaycastHit()
