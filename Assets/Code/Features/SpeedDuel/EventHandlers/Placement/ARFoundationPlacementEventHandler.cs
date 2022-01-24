@@ -35,9 +35,6 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private Pose _placementPose;
         private TrackableId _placementTrackableId;
         private bool _objectPlaced;
-        private bool _settingsMenuActive;
-
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         #region Construct
 
@@ -64,9 +61,6 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         {
             GetObjectReferences();
             _playfieldEventHandler.OnRemovePlayfield += RemovePlayfield;
-
-            _disposables.Add(_speedDuelViewModel.SettingsMenuVisibility
-                .Subscribe(UpdateSettingsMenuState));
         }
 
         private void Update()
@@ -89,7 +83,6 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void OnDestroy()
         {
             _playfieldEventHandler.OnRemovePlayfield -= RemovePlayfield;
-            _disposables.Dispose();
         }
 
         #endregion
@@ -102,13 +95,6 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
             _arRaycastManager = FindObjectOfType<ARRaycastManager>();
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
             _prefabManager = FindObjectOfType<SpeedDuelPrefabManager>().gameObject;
-        }
-
-        private void UpdateSettingsMenuState(bool newState)
-        {
-            _logger.Log(Tag, $"UpdateSettingsMenuState(newState: {newState})");
-            
-            _settingsMenuActive = newState;
         }
 
         #region Placement Indicator
@@ -176,7 +162,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
 
         private void PlacePlayfieldIfNecessary()
         {
-            if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput() || _settingsMenuActive) return;
+            if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput() || _playfieldEventHandler.IsSettingsMenuActive) return;
             
             _logger.Log(Tag, "PlacePlayfieldIfNecessary()");
             

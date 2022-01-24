@@ -73,7 +73,7 @@ namespace Code.Features.SpeedDuel
             backButton.OnClickAsObservable().Subscribe(_ => _speedDuelViewModel.OnBackButtonPressed());
 
             // VM Streams
-            _disposables.Add(_speedDuelViewModel.SettingsMenuVisibility
+            _disposables.Add(_speedDuelViewModel.ShowSettingsMenu
                 .Subscribe(UpdateSettingsMenuVisibility));
             _disposables.Add(_speedDuelViewModel.ActivatePlayfieldUIElements
                 .Subscribe(ActivatePlayfieldUIElements));

@@ -19,8 +19,8 @@ namespace Code.Features.SpeedDuel
 
         #region Properties
 
-        private readonly BehaviorSubject<bool> _settingsMenuVisibility = new BehaviorSubject<bool>(false);
-        public IObservable<bool> SettingsMenuVisibility => _settingsMenuVisibility;
+        private readonly BehaviorSubject<bool> _showSettingsMenu = new BehaviorSubject<bool>(false);
+        public IObservable<bool> ShowSettingsMenu => _showSettingsMenu;
 
         private readonly Subject<float> _activatePlayfieldUIElements = new Subject<float>();
         public IObservable<float> ActivatePlayfieldUIElements => _activatePlayfieldUIElements;
@@ -98,7 +98,8 @@ namespace Code.Features.SpeedDuel
         {
             _logger.Log(Tag, $"OnToggleSettingsMenu(showMenu: {showMenu})");
 
-            _settingsMenuVisibility.OnNext(showMenu);
+            _showSettingsMenu.OnNext(showMenu);
+            _playfieldEventHandler.SetSettingsMenuState(showMenu);
         }
 
         public void OnRemovePlayfield()

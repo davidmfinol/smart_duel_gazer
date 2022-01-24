@@ -113,7 +113,7 @@ namespace Code.Di
             // ViewModels
             Container.Bind<OnboardingViewModel>().AsTransient();
             Container.Bind<ConnectionViewModel>().AsTransient();
-            Container.Bind<SpeedDuelViewModel>().AsSingle();
+            Container.Bind<SpeedDuelViewModel>().AsTransient();
             Container.Bind<DuelRoomViewModel>().AsTransient();
 
             // Event Handlers

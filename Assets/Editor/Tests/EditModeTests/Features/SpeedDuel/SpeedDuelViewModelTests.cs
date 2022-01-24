@@ -145,11 +145,19 @@ namespace Editor.Tests.EditModeTests.Features.SpeedDuel
         public void When_SettingsMenuToggled_Then_SettingsMenuVisibilityEmitsValue()
         {
             var onNext = new List<bool>();
-            _viewModel.SettingsMenuVisibility.Subscribe(value => onNext.Add(value));
+            _viewModel.ShowSettingsMenu.Subscribe(value => onNext.Add(value));
             
             _viewModel.OnToggleSettingsMenu(true);
 
-            Assert.AreEqual(new List<bool> { true }, onNext);
+            Assert.AreEqual(new List<bool> { false, true }, onNext);
+        }
+
+        [Test]
+        public void When_SettingsMenuToggled_Then_SetSettingsMenuStateCalled()
+        {
+            _viewModel.OnToggleSettingsMenu(true);
+
+            _playfieldEventHandler.Verify(eh => eh.SetSettingsMenuState(true), Times.Once);
         }
 
         [Test]

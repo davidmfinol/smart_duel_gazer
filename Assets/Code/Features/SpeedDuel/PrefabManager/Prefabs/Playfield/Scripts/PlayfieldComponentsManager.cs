@@ -100,6 +100,7 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
             
             foreach(MeshRenderer renderer in _renderers)
             {
+                // Change from material's Opacity (0-255) to an Alpha Value (0-1). Clamp to avoid negative values
                 var material = renderer.material;
                 var newTransparency = material.name == ZoneMaterialName
                     ? Mathf.Clamp(transparency.Value - ZoneInitialTransparency, 0, 255) / 255
