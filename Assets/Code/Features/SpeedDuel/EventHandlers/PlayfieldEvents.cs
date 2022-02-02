@@ -23,8 +23,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private event Action<PlayfieldEvent, PlayfieldEventArgs> _OnAction;
         private event Action _OnRemovePlayfield;
 
-        private bool _isSettingsMenuActive;
-        public bool IsSettingsMenuActive => _isSettingsMenuActive;
+        public bool IsSettingsMenuActive { get; private set; }
 
         #region Event Accessors
 
@@ -33,11 +32,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
             add => _OnActivatePlayfield += value;
             remove => _OnActivatePlayfield -= value;
         }
+
         public event Action<PlayfieldEvent, PlayfieldEventArgs> OnAction
         {
             add => _OnAction += value;
             remove => _OnAction -= value;
         }
+
         public event Action OnRemovePlayfield
         {
             add => _OnRemovePlayfield += value;
@@ -63,7 +64,7 @@ namespace Code.Features.SpeedDuel.EventHandlers
 
         public void SetSettingsMenuState(bool state)
         {
-            _isSettingsMenuActive = state;
+            IsSettingsMenuActive = state;
         }
     }
 }

@@ -97,8 +97,8 @@ namespace Code.Features.SpeedDuel.PrefabManager.Prefabs.Playfield.Scripts
             _logger.Log(Tag, $"ChangeTransparency(args: {args})");
 
             if (!(args is PlayfieldEventValue<float> transparency)) return;
-            
-            foreach(MeshRenderer renderer in _renderers)
+
+            foreach (var renderer in _renderers)
             {
                 // Change from material's Opacity (0-255) to an Alpha Value (0-1). Clamp to avoid negative values
                 var material = renderer.material;

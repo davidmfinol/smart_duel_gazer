@@ -5,7 +5,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
         Transparency,
         Scale
     }
-    
+
     public enum ModelEvent
     {
         SummonMonster,

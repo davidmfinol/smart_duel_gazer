@@ -15,14 +15,13 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
     public class ARFoundationPlacementEventHandler : MonoBehaviour
     {
         private const string Tag = "ARFoundationPlacementEventHandler";
-        
+
         [SerializeField] private GameObject playfieldPrefab;
         [SerializeField] private GameObject placementIndicator;
         [SerializeField] private GameObject ghostField;
 
         private IDataManager _dataManager;
         private IPlayfieldEventHandler _playfieldEventHandler;
-        private SpeedDuelViewModel _speedDuelViewModel;
         private PlayfieldComponentsManager.Factory _playfieldFactory;
         private IAppLogger _logger;
 
@@ -30,7 +29,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private ARRaycastManager _arRaycastManager;
         private ARPlaneManager _arPlaneManager;
         private GameObject _prefabManager;
-        
+
         private GameObject _speedDuelField;
         private Pose _placementPose;
         private TrackableId _placementTrackableId;
@@ -42,13 +41,11 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         public void Construct(
             IDataManager dataManager,
             IPlayfieldEventHandler playfieldEventHandler,
-            SpeedDuelViewModel speedDuelViewModel,
             PlayfieldComponentsManager.Factory playfieldFactory,
             IAppLogger logger)
         {
             _dataManager = dataManager;
             _playfieldEventHandler = playfieldEventHandler;
-            _speedDuelViewModel = speedDuelViewModel;
             _playfieldFactory = playfieldFactory;
             _logger = logger;
         }
@@ -65,7 +62,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
 
         private void Update()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
 
             // Use SpaceBar to place playfield if in Editor
             if (!_objectPlaced && Input.GetKeyDown(KeyCode.Space))
@@ -74,7 +71,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
                 return;
             }
 
-            #endif
+#endif
 
             UpdatePlacementIndicatorIfNecessary();
             PlacePlayfieldIfNecessary();
@@ -90,7 +87,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void GetObjectReferences()
         {
             _logger.Log(Tag, "GetObjectReferences()");
-            
+
             _mainCamera = Camera.main;
             _arRaycastManager = FindObjectOfType<ARRaycastManager>();
             _arPlaneManager = FindObjectOfType<ARPlaneManager>();
@@ -102,7 +99,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void UpdatePlacementIndicatorIfNecessary()
         {
             if (_objectPlaced) return;
-            
+
             _logger.Log(Tag, "UpdatePlacementIndicatorIfNecessary()");
 
             var validHit = GetValidRaycastHit();
@@ -111,7 +108,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
                 placementIndicator.SetActive(false);
                 return;
             }
-            
+
             UpdatePlacementIndicator();
             SetGameObjectScaleToPlaneSize(ghostField);
         }
@@ -119,7 +116,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private ARRaycastHit? GetValidRaycastHit()
         {
             _logger.Log(Tag, "GetValidRaycastHit()");
-            
+
             var hitResults = GetRaycastHitResults();
             if (hitResults.Count <= 0)
             {
@@ -136,7 +133,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private List<ARRaycastHit> GetRaycastHitResults()
         {
             _logger.Log(Tag, "GetRaycastHitResults()");
-            
+
             var screenCenter = _mainCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
             var hitResults = new List<ARRaycastHit>();
             _arRaycastManager.Raycast(screenCenter, hitResults, TrackableType.Planes);
@@ -147,11 +144,11 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void UpdatePlacementIndicator()
         {
             _logger.Log(Tag, "UpdatePlacementIndicator()");
-            
+
             var cameraForward = _mainCamera.transform.forward;
             var cameraBearing = new Vector3(cameraForward.x, 0, cameraForward.z).normalized;
             _placementPose.rotation = Quaternion.LookRotation(cameraBearing);
-            
+
             placementIndicator.transform.SetPositionAndRotation(_placementPose.position, _placementPose.rotation);
             placementIndicator.SetActive(true);
         }
@@ -162,10 +159,11 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
 
         private void PlacePlayfieldIfNecessary()
         {
-            if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput() || _playfieldEventHandler.IsSettingsMenuActive) return;
-            
+            if (_objectPlaced || !placementIndicator.activeSelf || !HasTouchInput() ||
+                _playfieldEventHandler.IsSettingsMenuActive) return;
+
             _logger.Log(Tag, "PlacePlayfieldIfNecessary()");
-            
+
             PlacePlayfield();
             SetGameObjectScaleToPlaneSize(_speedDuelField);
             StopPlaneTracking();
@@ -179,7 +177,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void PlacePlayfield()
         {
             _logger.Log(Tag, "PlacePlayfield()");
-            
+
             _objectPlaced = true;
             placementIndicator.SetActive(false);
 
@@ -199,7 +197,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void CreatePlayfield()
         {
             _logger.Log(Tag, "CreatePlayfield()");
-            
+
             _speedDuelField = _playfieldFactory.Create(playfieldPrefab).gameObject;
             _dataManager.SavePlayfield(_speedDuelField);
 
@@ -232,9 +230,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         {
             _logger.Log(Tag, $"GetPlaneSize(plane: {plane}, objectToScale: {objectToScale})");
 
-            var cameraForwardRotation = _mainCamera.transform.rotation.y > 0 
-                ? _mainCamera.transform.rotation.y 
-                : _mainCamera.transform.rotation.y * (-1);
+            var cameraForwardRotation = Mathf.Abs(_mainCamera.transform.rotation.y);
 
             return cameraForwardRotation.IsWithinRange(0.35f, 0.7f)
                 ? plane.size.normalized.y
@@ -254,14 +250,16 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement
         private void RemovePlayfield()
         {
             _logger.Log(Tag, "RemovePlayfield()");
-            
+
             _objectPlaced = false;
             placementIndicator.SetActive(true);
-            _arPlaneManager.enabled = true;
-            foreach(ARPlane plane in _arPlaneManager.trackables)
+
+            foreach (var plane in _arPlaneManager.trackables)
             {
                 plane.gameObject.SetActive(false);
             }
+
+            _arPlaneManager.enabled = true;
         }
     }
 }
