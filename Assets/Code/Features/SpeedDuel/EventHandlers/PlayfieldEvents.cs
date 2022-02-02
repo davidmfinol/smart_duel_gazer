@@ -9,9 +9,12 @@ namespace Code.Features.SpeedDuel.EventHandlers
         event Action OnActivatePlayfield;
         event Action OnRemovePlayfield;
 
+        bool IsSettingsMenuActive { get; }
+
         void Action(PlayfieldEvent playfieldEvent, PlayfieldEventArgs args);
         void ActivatePlayfield();
         void RemovePlayfield();
+        void SetSettingsMenuState(bool state);
     }
 
     public class PlayfieldEventHandler : IPlayfieldEventHandler
@@ -20,6 +23,8 @@ namespace Code.Features.SpeedDuel.EventHandlers
         private event Action<PlayfieldEvent, PlayfieldEventArgs> _OnAction;
         private event Action _OnRemovePlayfield;
 
+        public bool IsSettingsMenuActive { get; private set; }
+
         #region Event Accessors
 
         public event Action OnActivatePlayfield
@@ -27,11 +32,13 @@ namespace Code.Features.SpeedDuel.EventHandlers
             add => _OnActivatePlayfield += value;
             remove => _OnActivatePlayfield -= value;
         }
+
         public event Action<PlayfieldEvent, PlayfieldEventArgs> OnAction
         {
             add => _OnAction += value;
             remove => _OnAction -= value;
         }
+
         public event Action OnRemovePlayfield
         {
             add => _OnRemovePlayfield += value;
@@ -53,6 +60,11 @@ namespace Code.Features.SpeedDuel.EventHandlers
         public void RemovePlayfield()
         {
             _OnRemovePlayfield?.Invoke();
+        }
+
+        public void SetSettingsMenuState(bool state)
+        {
+            IsSettingsMenuActive = state;
         }
     }
 }

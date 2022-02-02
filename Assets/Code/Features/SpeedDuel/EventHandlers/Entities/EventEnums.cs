@@ -2,12 +2,10 @@ namespace Code.Features.SpeedDuel.EventHandlers.Entities
 {
     public enum PlayfieldEvent
     {
-        Hide,
-        Flip,
-        Rotate,
+        Transparency,
         Scale
     }
-    
+
     public enum ModelEvent
     {
         SummonMonster,

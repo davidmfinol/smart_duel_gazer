@@ -157,23 +157,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 21692174725799936
-    m_Localized: View playmat
-    m_Metadata:
-      m_Items: []
-  - m_Id: 21692215590903808
-    m_Localized: Flip 180
-    m_Metadata:
-      m_Items: []
-  - m_Id: 21692250760142848
-    m_Localized: Rotation
+    m_Localized: Transparency
     m_Metadata:
       m_Items: []
   - m_Id: 21692284297797632
     m_Localized: Scale
     m_Metadata:
       m_Items: []
-  - m_Id: 21692306313699328
-    m_Localized: Enable tap to attack
+  - m_Id: 30458484739756032
+    m_Localized: Playfield Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30814522441682944
+    m_Localized: Remove Playfield
     m_Metadata:
       m_Items: []
   references:
