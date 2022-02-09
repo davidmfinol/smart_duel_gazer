@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 6f6ea86f4533f584cb43edbbccae3258
+guid: 029e9e0ddfc0d4b228438a4fed9e248c
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
-      74: 6931780922251176017
+      74: 3804888327085006769
     second: Summon
   - first:
-      74: 2141874832789898191
+      74: 8801700154105434811
     second: Attack
   - first:
       74: -3100369314251171874
@@ -42,9 +42,9 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Summon
-      takeName: Armature|s0009_a
+      takeName: M0009_skeleton|S0009_a
       internalID: 0
-      firstFrame: 53
+      firstFrame: 30
       lastFrame: 129
       wrapMode: 0
       orientationOffsetY: 0
@@ -71,7 +71,7 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Attack
-      takeName: Armature|s0009_d
+      takeName: M0009_skeleton|S0009_d
       internalID: 0
       firstFrame: 0
       lastFrame: 129
@@ -100,10 +100,10 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Idle
-      takeName: Armature|s0009_d
+      takeName: M0009_skeleton|S0009_d
       internalID: 0
-      firstFrame: 0
-      lastFrame: 31
+      firstFrame: 3
+      lastFrame: 28
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -121,7 +121,32 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
+      curves:
+      - name: Curve
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          preInfinity: 2
+          postInfinity: 2
+          rotationOrder: 4
       events: []
       transformMask: []
       maskType: 3
@@ -130,7 +155,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.017
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -181,7 +206,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.00017
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

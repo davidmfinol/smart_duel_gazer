@@ -31,7 +31,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8f014f8981154047817a1931e9241b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelScale: {x: 60, y: 60, z: 60}
+  _target: {fileID: 0}
+  _hasProjectileAttack: 0
+  _projectileSpawnPoints: []
+  _projectileType: 
 --- !u!114 &1254671972290426412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,7 +84,7 @@ Transform:
   m_GameObject: {fileID: 4593465148772911428}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 60, y: 60, z: 60}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1545406900111779458}
   m_Father: {fileID: 0}

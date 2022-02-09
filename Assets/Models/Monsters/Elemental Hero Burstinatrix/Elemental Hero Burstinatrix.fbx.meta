@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: da641a4ca84372f478fc9f7824ef7c4b
+guid: aeb7366a00d56184d92f22851c32a65e
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
@@ -48,7 +48,7 @@ ModelImporter:
       takeName: idle1
       internalID: 0
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -77,7 +77,7 @@ ModelImporter:
       takeName: idle2
       internalID: 0
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -106,7 +106,7 @@ ModelImporter:
       takeName: attack
       internalID: 0
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -135,7 +135,7 @@ ModelImporter:
       takeName: hurt
       internalID: 0
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -162,7 +162,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 55
+    globalScale: 50
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -213,7 +213,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.55
+    globalScale: 0.5
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
