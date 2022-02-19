@@ -357,6 +357,18 @@ PrefabInstance:
       value: 2160
       objectReference: {fileID: 0}
     - target: {fileID: 4764241833824013048, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4764241833824013048, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4764241833824013048, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4764241833824013048, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -404,10 +416,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4764241833824013050, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4764241833824013051, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 716563111}
+    - target: {fileID: 4764241833824013051, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
+      propertyPath: m_RenderMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4764241833824013052, guid: 41787ed3ae412bf459d7d8cb2dff77db, type: 3}
       propertyPath: m_Name
       value: Duel Room Scene Canvas

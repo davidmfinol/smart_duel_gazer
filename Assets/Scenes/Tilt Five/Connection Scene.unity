@@ -324,10 +324,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Connection Scene Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 8149749747496513427, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8149749747496513428, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 131388684}
+    - target: {fileID: 8149749747496513428, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
+      propertyPath: m_RenderMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -363,6 +371,18 @@ PrefabInstance:
     - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
       propertyPath: m_SizeDelta.y
       value: 2160
+      objectReference: {fileID: 0}
+    - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8149749747496513429, guid: 8f0526d91b0b51e4088dbad7b36bec40, type: 3}
       propertyPath: m_LocalPosition.x
