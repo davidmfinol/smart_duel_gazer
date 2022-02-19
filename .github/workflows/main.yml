@@ -9,12 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        projectPath:
-          - ./
-        unityVersion:
-          - 2020.2.3f1
         targetPlatform:
           - Android
+          - StandaloneWindows64
     steps:
       # Checkout
       - name: Checkout repository
@@ -26,10 +23,9 @@ jobs:
       # Cache
       - uses: actions/cache@v2
         with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
           restore-keys: |
-            Library-${{ matrix.projectPath }}-
             Library-
 
       # Test
@@ -38,8 +34,6 @@ jobs:
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       # Build
