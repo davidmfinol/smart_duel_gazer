@@ -5,16 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Onboarding Scene.unity
     guid: 381e214a740fc0f41913f14f7a8efc40
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Connection Scene.unity
     guid: b8e5010263c5048bfad847b968a33615
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Duel Room Scene.unity
     guid: 991cb406cbe194363afe5db72f2768f0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Speed Duel Scene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 0
@@ -29,6 +29,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Nreal/Speed Duel Scene.unity
     guid: cdd92058d14c94f4fbc99cb689a87cfd
+  - enabled: 1
+    path: Assets/Scenes/Tilt Five/Onboarding Scene.unity
+    guid: 22a12cbcdbd57cd49a4fdc24bc52b5eb
+  - enabled: 1
+    path: Assets/Scenes/Tilt Five/Connection Scene.unity
+    guid: a26f6e709fb19054680c5bc9057d562d
+  - enabled: 1
+    path: Assets/Scenes/Tilt Five/Duel Room Scene.unity
+    guid: 9d17cf16ae0751c4cb70da8a3ddaed4c
+  - enabled: 1
+    path: Assets/Scenes/Tilt Five/Speed Duel Scene.unity
+    guid: 10ba9b7b5c6c3cc4ab9c8ffb59f07092
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: f11997d799f3c4a4199c168314b61545, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 4175e6ccaee864e75b197a751a7bc233, type: 2}
