@@ -24,8 +24,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: Library
-          key: Library-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
+            Library-${{ matrix.targetPlatform }}-
             Library-
 
       # Test
