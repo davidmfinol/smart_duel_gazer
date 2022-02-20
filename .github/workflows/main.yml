@@ -47,6 +47,7 @@ jobs:
           version: 0.5.0
           androidVersionCode: 50000
           targetPlatform: ${{ matrix.targetPlatform }}
+          androidKeystoreName: ${{ secrets.ANDROID_KEYSTORE_NAME }}
           androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME }}
