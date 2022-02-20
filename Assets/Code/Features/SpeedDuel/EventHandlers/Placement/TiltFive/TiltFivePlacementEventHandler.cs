@@ -103,7 +103,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement.Nreal
                 _speedDuelField.transform.rotation);
 
             // Scale up Playfield to fill up the GameBoard
-            _speedDuelField.transform.localScale = new Vector3(2, 2, 2);
+            _speedDuelField.transform.localScale = new Vector3(3, 3, 3);
         }
         
         #endregion
