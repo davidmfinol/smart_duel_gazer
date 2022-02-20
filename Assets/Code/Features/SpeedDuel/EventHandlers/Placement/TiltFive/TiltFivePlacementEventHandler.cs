@@ -11,6 +11,8 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement.Nreal
     {
         private const string Tag = "TiltFivePlacementEventHandler";
 
+        private const float SpeedDuelFieldScaleFactor = 2;
+
         [SerializeField] private GameObject playfieldPrefab;
         [SerializeField] private GameObject placementIndicator;
 
@@ -103,7 +105,7 @@ namespace Code.Features.SpeedDuel.EventHandlers.Placement.Nreal
                 _speedDuelField.transform.rotation);
 
             // Scale up Playfield to fill up the GameBoard
-            _speedDuelField.transform.localScale = new Vector3(3, 3, 3);
+            _speedDuelField.transform.localScale = new Vector3(SpeedDuelFieldScaleFactor, SpeedDuelFieldScaleFactor, SpeedDuelFieldScaleFactor);
         }
         
         #endregion
